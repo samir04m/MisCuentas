@@ -15,7 +15,7 @@ class Cuenta(models.Model):
         ordering = ['nombre']
 
     def __str__(self):
-        return "{} - {}".format(self.user, self.nombre)
+        return self.nombre
 
 class Etiqueta(models.Model):
     nombre = models.CharField('Nombre de la Etiqueta', max_length=50)
@@ -27,7 +27,7 @@ class Etiqueta(models.Model):
         ordering = ['nombre']
 
     def __str__(self):
-        return "{} - {}".format(self.user, self.nombre)
+        return self.nombre
 
 
 class Persona(models.Model):
@@ -40,7 +40,7 @@ class Persona(models.Model):
         ordering = ['nombre']
 
     def __str__(self):
-        return "{} - {}".format(self.user, self.nombre)
+        return self.nombre
 
 class Transaccion(models.Model):
     TIPO_CHOICES = [('ingreso', 'Ingreso'),
@@ -61,4 +61,4 @@ class Transaccion(models.Model):
         ordering = ['fecha']
 
     def __str__(self):
-        return "{} {} por $ {}".format(self.cuenta, self.tipo, self.cantidad)
+        return self.tipo
