@@ -8,8 +8,27 @@
     <title>{% block title %}Inicio{% endblock %} • Mis Cuentas</title>
 
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-</head>
-<body>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/fontawesome.js' %}" charset="utf-8"></script>
 
+</head>
+<body class="bg-secondary">
+    {% block navbar %}
+        {% include 'base/navbar.html' %}
+    {% endblock %}
+
+    <main>
+        {% block contenido %}
+        <h6>Soy el contenido</h6>
+        {% endblock %}
+    </main>
+
+    {% block footer %}
+        {% include 'base/footer.html' %}
+    {% endblock %}
+
+    <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/popper.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/bootstrap.js' %}" charset="utf-8"></script>
 </body>
 </html>
