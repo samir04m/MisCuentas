@@ -3,11 +3,12 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 class Cuenta(models.Model):
     nombre = models.CharField('Nombre de la Cuenta', max_length=30)
     saldo = models.IntegerField('Saldo de cuenta')
-    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE, default=get_user_model())
 
     class Meta:
         verbose_name = 'Cuenta'

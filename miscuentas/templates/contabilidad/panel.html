@@ -1,0 +1,50 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Panel de administracion{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md 6 col-lg-8">
+                <h4 class="text-light">Hola, {{request.user}}. <br>Panel de Administación</h4>
+                <div class="card">
+                    <div class="card-header text-center">
+                        <b>Mis Cuentas</b>
+                    </div>
+                    <div class="card-body">
+                        {% if cuentas %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Cuenta</th>
+                                        <th>Saldo</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c in cuentas %}
+                                        <tr>
+                                            <td><a href="">{{c.nombre}}</a></td>
+                                            <td>$ {{c.saldo}}</td>
+                                            <td>
+                                                <a href="" class="btn btn-primary">Ingreso</a>
+                                                <a href="" class="btn btn-danger">Egreso</a>
+                                            </td>
+                                        </tr>
+
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <h5>No se registras ninguna cuenta</h5>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-right">
+                        <a href="{% url 'conta:crear_cuenta' %}" class="btn btn-primary">Crear una cuenta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
