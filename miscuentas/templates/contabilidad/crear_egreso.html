@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Formulario de Egreso{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        Formulario de Egreso
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{form.as_p}}
+                            <center>
+                                <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
+                            </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

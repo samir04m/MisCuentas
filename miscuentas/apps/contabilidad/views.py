@@ -31,11 +31,24 @@ def crear_persona(request):
     if request.method == 'POST':
         form = PersonaForm(request.POST)
         if form.is_valid():
-            cuenta = form.save(commit=False)
-            cuenta.user = request.user
-            cuenta.save()
+            persona = form.save(commit=False)
+            persona.user = request.user
+            persona.save()
             return redirect('panel:panel')
     else:
         form = PersonaForm()
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
+
+def crear_egreso(request):
+    if request.method == 'POST':
+        form = EgresoForm(request.POST)
+        if form.is_valid():
+            egreso = form.save(commit=False)
+            egreso.tipo = 'egreso'
+            egreso.save()
+            return redirect('panel:panel')
+    else:
+        form = EgresoForm()
+
+    return render(request, 'contabilidad/crear_egreso.html', {"form": form})
