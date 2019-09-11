@@ -4,7 +4,7 @@ from .models import *
 class CuentaForm(forms.ModelForm):
     class Meta:
         model = Cuenta
-        fields = ['nombre','saldo','user']
+        fields = ['nombre','saldo']
 
         widgets = {
             'nombre': forms.TextInput(
@@ -21,10 +21,19 @@ class CuentaForm(forms.ModelForm):
                     'id': 'nombre'
                 }
             ),
-            'user': forms.Select(
+        }
+
+class PersonaForm(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = ['nombre']
+
+        widgets = {
+            'nombre': forms.TextInput(
                 attrs = {
-                    'label':'',
-                    'disabled':''
+                    'class':'form-control',
+                    'placeholder':'Nombre de la cuenta',
+                    'id': 'nombre'
                 }
             ),
         }

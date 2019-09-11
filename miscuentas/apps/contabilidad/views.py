@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
 from .forms import *
@@ -14,8 +14,28 @@ def panel(request):
     cuentas = Cuenta.objects.filter(user = request.user)
     return render(request, 'contabilidad/panel.html', {'cuentas':cuentas})
 
-class CrearCuenta(CreateView):
-    model = Cuenta
-    form_class = CuentaForm
-    template_name = 'contabilidad/crear_cuenta.html'
-    success_url = reverse_lazy('conta:panel')
+def crear_cuenta(request):
+    if request.method == 'POST':
+        form = CuentaForm(request.POST)
+        if form.is_valid():
+            cuenta = form.save(commit=False)
+            cuenta.user = request.user
+            cuenta.save()
+            return redirect('conta:panel')
+    else:
+        form = CuentaForm()
+
+    return render(request, 'contabilidad/crear_cuenta.html', {"form": form})
+
+def crear_persona(request):
+    if request.method == 'POST':
+        form = PersonaForm(request.POST)
+        if form.is_valid():
+            cuenta = form.save(commit=False)
+            cuenta.user = request.user
+            cuenta.save()
+            return redirect('conta:panel')
+    else:
+        form = PersonaForm()
+
+    return render(request, 'contabilidad/crear_persona.html', {"form": form})
