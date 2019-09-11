@@ -117,7 +117,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-LOGIN_REDIRECT_URL = reverse_lazy('conta:panel')
+LOGIN_REDIRECT_URL = reverse_lazy('panel:panel')
 LOGOUT_REDIRECT_URL = reverse_lazy('login')
 
 # Static files (CSS, JavaScript, Images)

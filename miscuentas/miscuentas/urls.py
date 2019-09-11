@@ -22,7 +22,7 @@ from django.contrib.auth.views import logout_then_login
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name="home"),
-    path('contabilidad/', include(('apps.contabilidad.urls', 'conta'))),
+    path('panel/', include(('apps.contabilidad.urls', 'panel'))),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', logout_then_login, name='logout'),
 ]

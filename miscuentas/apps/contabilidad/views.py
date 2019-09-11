@@ -21,7 +21,7 @@ def crear_cuenta(request):
             cuenta = form.save(commit=False)
             cuenta.user = request.user
             cuenta.save()
-            return redirect('conta:panel')
+            return redirect('panel:panel')
     else:
         form = CuentaForm()
 
@@ -34,7 +34,7 @@ def crear_persona(request):
             cuenta = form.save(commit=False)
             cuenta.user = request.user
             cuenta.save()
-            return redirect('conta:panel')
+            return redirect('panel:panel')
     else:
         form = PersonaForm()
 
