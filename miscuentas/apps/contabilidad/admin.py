@@ -50,13 +50,23 @@ class TransaccionResource(resources.ModelResource):
 
 class TransaccionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['tipo']
-    list_display = ('cuenta','tipo','cantidad','etiqueta','fecha','persona',)
+    list_display = ('cuenta','tipo','cantidad','etiqueta','fecha',)
     resource_class = TransaccionResource
+
+class PrestamoResource(resources.ModelResource):
+    class Meta:
+        model = Prestamo
+
+class PrestamoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    search_fields = ['tipo']
+    list_display = ('cuenta','tipo','cantidad','persona','fecha','cancelada',)
+    resource_class = PrestamoResource
 
 admin.site.register(Cuenta, CuentaAdmin)
 admin.site.register(Etiqueta, EtiquetaAdmin)
 admin.site.register(Persona, PersonaAdmin)
 admin.site.register(Transaccion, TransaccionAdmin)
+admin.site.register(Prestamo, PrestamoAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
