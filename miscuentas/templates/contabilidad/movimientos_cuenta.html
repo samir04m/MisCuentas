@@ -6,7 +6,7 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 col-lg-8">
+            <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header text-center">
                         Movimientos en {{cuenta.nombre}}
@@ -16,22 +16,22 @@
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
-                                        <th>Tipo</th>
                                         <th>Valor</th>
                                         <th>Etiqueta</th>
+                                        <th>Info</th>
                                         <th>Fecha</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for t in transaciones %}
-                                        <tr class="" >
-                                            <td>{{t.tipo}}</td>
-                                            <td>$ {{t.cantidad|puntomil}}</td>
+                                        <tr class="{{t.tipo|textcolor}}">
+                                            <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
                                             <td>{{t.etiqueta}}</td>
-                                            <!-- <td <clas></clas>s="d-md-none">{{t.fecha}}</td> -->
-                                            <td class="">
+                                            <td>{{t.info}}</td>
+                                            <td class="d-none d-md-block">{{t.fecha}}</td>
+                                            <td class="d-md-none">
                                                 <button type="button" class="btn btn-outline-primary btn-sm"
-                                                data-toggle="tooltip" data-placement="left" title="{{t.fecha}}">Ver</button>
+                                                data-toggle="tooltip" data-placement="left" title="{{t.fecha}}">Fecha</button>
                                             </td>
                                         </tr>
                                     {% endfor %}

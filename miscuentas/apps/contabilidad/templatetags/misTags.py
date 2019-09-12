@@ -17,3 +17,19 @@ def puntomil(cantidad):
     result.reverse()
     cadena = "".join(result)
     return cadena
+
+@register.filter
+def textcolor(tipo):
+    if tipo == 'ingreso': return 'text-primary'
+    elif tipo == 'egreso': return 'text-danger'
+
+@register.filter
+def signo(tipo):
+    if tipo == 'ingreso': return '+'
+    elif tipo == 'egreso': return '-'
+
+@register.filter
+def fecha(fecha):
+    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+    fecha_str = str(fecha.hour)+":"+str(fecha.minute)+" - "+str(fecha.day)+" "+meses[fecha.month-1]+" "+str(fecha.year)
+    return fecha_str

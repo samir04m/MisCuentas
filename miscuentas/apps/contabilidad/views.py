@@ -108,6 +108,6 @@ def crear_ingreso(request, cuenta_id):
 
 def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
-    transaciones = Transaccion.objects.filter(cuenta=cuenta.id)
+    transaciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
     context =  {"transaciones": transaciones, "cuenta":cuenta}
     return render(request, 'contabilidad/movimientos_cuenta.html', context)
