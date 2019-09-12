@@ -23,7 +23,7 @@ class CuentaResource(resources.ModelResource):
 
 class CuentaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['nombre']
-    list_display = ('nombre', 'saldo', 'user',)
+    list_display = ('id','nombre', 'saldo', 'user',)
     resource_class = CuentaResource
 
 class EtiquetaResource(resources.ModelResource):

@@ -48,6 +48,7 @@ class EgresoForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Valor del Egreso',
+                    'min':'50',
                     'id': 'cantidad'
                 }
             ),

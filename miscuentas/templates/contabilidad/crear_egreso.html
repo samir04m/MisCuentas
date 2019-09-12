@@ -11,12 +11,21 @@
                         Egreso en {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
+                        <div class="alert alert-primary p-10" role="alert">
+                            <b>Información:</b> El valor Maximo del egreso es de $ {{cuenta.saldo}}
+                        </div>
+                        {% if mensaje %}
+                            <div class="alert alert-danger p-10" role="alert">
+                                <b>Mensaje:</b> {{mensaje}}
+                            </div>
+                        {% endif %}
                         <form method="post">
                             {% csrf_token %}
                             {{form.as_p}}
                             <p>
                                 <label for="tag">Seleccione una etiqueta</label>
-                                <select name="tag" class="form-control" id="tag">
+                                <select name="tag" class="form-control" id="tag" required>
+                                    <option value="" selected disabled>Seleccionar</option>
                                     <option value="">Ninguna</option>
                                     {% if tags %}
                                         {% for t in tags %}

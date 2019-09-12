@@ -42,26 +42,31 @@ def crear_persona(request):
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
 
+from django.shortcuts import get_object_or_404
+
 def crear_egreso(request, cuenta_id):
-    tags = None
-    cuenta = Cuenta.objects.get(id=cuenta_id)
+    mensaje = None
+    # cuenta = Cuenta.objects.get(id=cuenta_id)
+    cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
-        #validar Cantidad
-
         form = EgresoForm(request.POST)
         if form.is_valid():
             egreso = form.save(commit=False)
-            egreso.tipo = 'egreso'
-            egreso.cuenta = cuenta
+            if egreso.cantidad <= cuenta.saldo:
+                egreso.tipo = 'egreso'
+                egreso.cuenta = cuenta
 
-            etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
-            egreso.etiqueta = etiqueta
-            egreso.save()
-            return redirect('panel:panel')
+                etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
+                egreso.etiqueta = etiqueta
+                egreso.save()
+                return redirect('panel:panel')
+            else:
+                form = EgresoForm(request.POST)
+                mensaje = "El valor del egreso no puede superar el valor maximo."
     else:
         form = EgresoForm()
-        tags = Etiqueta.objects.filter(user=request.user.id)
 
-    context = {"form": form, "cuenta":cuenta, "tags":tags}
+    tags = Etiqueta.objects.filter(user=request.user.id)
+    context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
     return render(request, 'contabilidad/crear_egreso.html', context)
