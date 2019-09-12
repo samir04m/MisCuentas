@@ -42,15 +42,26 @@ def crear_persona(request):
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
 
-def crear_egreso(request):
+def crear_egreso(request, cuenta_id):
+    tags = None
+    cuenta = Cuenta.objects.get(id=cuenta_id)
+
     if request.method == 'POST':
+        #validar Cantidad
+
         form = EgresoForm(request.POST)
         if form.is_valid():
             egreso = form.save(commit=False)
             egreso.tipo = 'egreso'
+            egreso.cuenta = cuenta
+
+            etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
+            egreso.etiqueta = etiqueta
             egreso.save()
             return redirect('panel:panel')
     else:
         form = EgresoForm()
+        tags = Etiqueta.objects.filter(user=request.user.id)
 
-    return render(request, 'contabilidad/crear_egreso.html', {"form": form})
+    context = {"form": form, "cuenta":cuenta, "tags":tags}
+    return render(request, 'contabilidad/crear_egreso.html', context)

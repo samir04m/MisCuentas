@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Formulario de Egreso{% endblock %}
+{% block title %}Egreso{% endblock %}
 
 {% block contenido %}
     <div class="container">
@@ -8,14 +8,26 @@
             <div class="col-sm-12 offset-md-3 col-md-6">
                 <div class="card">
                     <div class="card-header text-center">
-                        Formulario de Egreso
+                        Egreso en {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
                             {{form.as_p}}
+                            <p>
+                                <label for="tag">Seleccione una etiqueta</label>
+                                <select name="tag" class="form-control" id="tag">
+                                    <option value="">Ninguna</option>
+                                    {% if tags %}
+                                        {% for t in tags %}
+                                            <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                    {% endif %}
+                                </select>
+                            </p>
                             <center>
-                                <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
+                                <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
                             </center>
                         </form>
                     </div>

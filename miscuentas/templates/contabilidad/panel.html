@@ -23,7 +23,7 @@
                                         Saldo $ {{c.saldo}}
                                         <div class="float-right">
                                             <a href="" class="btn btn-sm btn-primary">Ingreso</a>
-                                            <a href="" class="btn btn-sm btn-danger">Egreso</a>
+                                            <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger">Egreso</a>
                                         </div>
                                     </div>
                                 </div>

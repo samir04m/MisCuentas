@@ -15,7 +15,7 @@ class Cuenta(models.Model):
         ordering = ['nombre']
 
     def __str__(self):
-        return self.nombre
+        return "{} - {}".format(self.user.username, self.nombre)
 
 class Etiqueta(models.Model):
     nombre = models.CharField('Nombre de la Etiqueta', max_length=50)
