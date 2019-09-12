@@ -38,6 +38,21 @@ class PersonaForm(forms.ModelForm):
             ),
         }
 
+class EtiquetaForm(forms.ModelForm):
+    class Meta:
+        model = Etiqueta
+        fields = ['nombre']
+
+        widgets = {
+            'nombre': forms.TextInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Nombre de la etiqueta',
+                    'id': 'nombre'
+                }
+            ),
+        }
+
 class TransaccionForm(forms.ModelForm):
     class Meta:
         model = Transaccion

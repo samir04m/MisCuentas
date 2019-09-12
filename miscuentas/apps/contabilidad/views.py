@@ -43,6 +43,19 @@ def crear_persona(request):
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
 
+def crear_etiqueta(request):
+    if request.method == 'POST':
+        form = EtiquetaForm(request.POST)
+        if form.is_valid():
+            etiqueta = form.save(commit=False)
+            etiqueta.user = request.user
+            etiqueta.save()
+            return redirect('panel:panel')
+    else:
+        form = EtiquetaForm()
+
+    return render(request, 'contabilidad/crear_etiqueta.html', {"form": form})
+
 
 def crear_egreso(request, cuenta_id):
     mensaje = None

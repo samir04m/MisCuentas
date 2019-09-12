@@ -27,14 +27,22 @@
                                 <label for="tag">Seleccione una etiqueta</label>
                                 <select name="tag" class="form-control" id="tag" required>
                                     <option value="" selected disabled>Seleccionar</option>
-                                    {% if tags %}
-                                        {% for t in tags %}
-                                            <option value="{{t.id}}">{{t.nombre}}</option>
-                                        {% endfor %}
-                                    {% else %}
-                                    {% endif %}
+                                    {% for t in tags %}
+                                        <option value="{{t.id}}">{{t.nombre}}</option>
+                                    {% endfor %}
                                 </select>
                             </p>
+                            {% if not tags %}
+                                <div class="alert alert-warning" role="alert">
+                                    <b>Atención:</b> Aun no has creado una etiqueta, por favor
+                                    crea una para registrar un egreso.
+                                    <hr>
+                                    <div class="text-center">
+                                        <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-warning">Crear Etiqueta</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <!-- </p> -->
                             <center>
                                 <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
                             </center>
