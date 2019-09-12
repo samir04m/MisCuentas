@@ -1,0 +1,57 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Movimientos en {{cuenta.nombre}}{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-lg-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        Movimientos en {{cuenta.nombre}}
+                    </div>
+                    <div class="card-body">
+                        {% if transaciones %}
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Valor</th>
+                                        <th>Etiqueta</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in transaciones %}
+                                        <tr class="" >
+                                            <td>{{t.tipo}}</td>
+                                            <td>{{t.cantidad}}</td>
+                                            <td>{{t.etiqueta}}</td>
+                                            <!-- <td class="d-md-none">{{t.fecha}}</td> -->
+                                            <td class="">
+                                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                                data-toggle="tooltip" data-placement="left" title="{{t.fecha}}">Ver</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="fs-18 text-center">
+                                No hay movimientos en esta cuenta
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+{% endblock %}

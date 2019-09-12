@@ -19,7 +19,7 @@
                             <div class="col-sm-12 col-lg-6 m-b-20">
                                 <div class="card purple-gradient color-block" >
                                     <div class="card-body p-t-10 p-b-10">
-                                        <b><a href="" class="fs-18">{{c.nombre}}</a></b> <br>
+                                        <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
                                         Saldo $ {{c.saldo}}
                                         <div class="float-right">
                                             <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary">Ingreso</a>
