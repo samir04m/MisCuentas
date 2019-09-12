@@ -22,7 +22,7 @@
                                         <b><a href="" class="fs-18">{{c.nombre}}</a></b> <br>
                                         Saldo $ {{c.saldo}}
                                         <div class="float-right">
-                                            <a href="" class="btn btn-sm btn-primary">Ingreso</a>
+                                            <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary">Ingreso</a>
                                             <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger">Egreso</a>
                                         </div>
                                     </div>

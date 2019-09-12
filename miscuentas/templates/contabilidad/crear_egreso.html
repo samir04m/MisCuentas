@@ -26,7 +26,6 @@
                                 <label for="tag">Seleccione una etiqueta</label>
                                 <select name="tag" class="form-control" id="tag" required>
                                     <option value="" selected disabled>Seleccionar</option>
-                                    <option value="">Ninguna</option>
                                     {% if tags %}
                                         {% for t in tags %}
                                             <option value="{{t.id}}">{{t.nombre}}</option>

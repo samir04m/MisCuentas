@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
+from django.shortcuts import get_object_or_404
 from .forms import *
 from .models import *
 
@@ -42,7 +43,6 @@ def crear_persona(request):
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
 
-from django.shortcuts import get_object_or_404
 
 def crear_egreso(request, cuenta_id):
     mensaje = None
@@ -50,7 +50,7 @@ def crear_egreso(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
-        form = EgresoForm(request.POST)
+        form = TransaccionForm(request.POST)
         if form.is_valid():
             egreso = form.save(commit=False)
             if egreso.cantidad <= cuenta.saldo:
@@ -60,13 +60,34 @@ def crear_egreso(request, cuenta_id):
                 etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
                 egreso.etiqueta = etiqueta
                 egreso.save()
+                cuenta.saldo -= egreso.cantidad
+                cuenta.save()
                 return redirect('panel:panel')
             else:
-                form = EgresoForm(request.POST)
+                form = TransaccionForm(request.POST)
                 mensaje = "El valor del egreso no puede superar el valor maximo."
     else:
-        form = EgresoForm()
+        form = TransaccionForm()
 
     tags = Etiqueta.objects.filter(user=request.user.id)
     context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
     return render(request, 'contabilidad/crear_egreso.html', context)
+
+def crear_ingreso(request, cuenta_id):
+    cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
+
+    if request.method == 'POST':
+        form = TransaccionForm(request.POST)
+        if form.is_valid():
+            ingreso = form.save(commit=False)
+            ingreso.tipo = 'ingreso'
+            ingreso.cuenta = cuenta
+            ingreso.save()
+            cuenta.saldo += ingreso.cantidad
+            cuenta.save()
+            return redirect('panel:panel')
+    else:
+        form = TransaccionForm()
+
+    context = {"form": form, "cuenta":cuenta}
+    return render(request, 'contabilidad/crear_ingreso.html', context)

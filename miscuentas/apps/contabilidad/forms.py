@@ -38,7 +38,7 @@ class PersonaForm(forms.ModelForm):
             ),
         }
 
-class EgresoForm(forms.ModelForm):
+class TransaccionForm(forms.ModelForm):
     class Meta:
         model = Transaccion
         fields = ['cantidad','info']
@@ -47,7 +47,7 @@ class EgresoForm(forms.ModelForm):
             'cantidad': forms.NumberInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Valor del Egreso',
+                    'placeholder':'Valor o cantidad',
                     'min':'50',
                     'id': 'cantidad'
                 }
