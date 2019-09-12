@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load misTags %}
 
 {% block title %}Panel de administracion{% endblock %}
 
@@ -20,7 +21,7 @@
                                 <div class="card purple-gradient color-block" >
                                     <div class="card-body p-t-10 p-b-10">
                                         <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
-                                        Saldo $ {{c.saldo}}
+                                        Saldo $ {{c.saldo|puntomil}}
                                         <div class="float-right">
                                             <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary">Ingreso</a>
                                             <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger">Egreso</a>
@@ -43,14 +44,12 @@
                     <div class="card">
                         <div class="card-body p-b-0">
                             {% if personas %}
-                            <table class="table table-hover">
+                            <table class="table table-hover table-responsive-sm"">
                                 <tbody>
                                     {% for p in personas %}
                                     <tr>
-                                        <td>{{p.nombre}}</td>
-                                        <td>
-                                            <a href="" class="btn btn-sm btn-outline-info">Consultar</a>
-                                        </td>
+                                        <td><a href="">{{p.nombre}}</a></td>
+                                        <td>Saldo $1000</td>
                                         <td>
                                             <a href="" class="btn btn-sm btn-primary">Prestar</a>
                                         </td>

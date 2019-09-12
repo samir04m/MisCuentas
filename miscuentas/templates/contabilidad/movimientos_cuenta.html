@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load misTags %}
 
 {% block title %}Movimientos en {{cuenta.nombre}}{% endblock %}
 
@@ -25,9 +26,9 @@
                                     {% for t in transaciones %}
                                         <tr class="" >
                                             <td>{{t.tipo}}</td>
-                                            <td>{{t.cantidad}}</td>
+                                            <td>$ {{t.cantidad|puntomil}}</td>
                                             <td>{{t.etiqueta}}</td>
-                                            <!-- <td class="d-md-none">{{t.fecha}}</td> -->
+                                            <!-- <td <clas></clas>s="d-md-none">{{t.fecha}}</td> -->
                                             <td class="">
                                                 <button type="button" class="btn btn-outline-primary btn-sm"
                                                 data-toggle="tooltip" data-placement="left" title="{{t.fecha}}">Ver</button>
