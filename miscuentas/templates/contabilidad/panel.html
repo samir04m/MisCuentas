@@ -5,44 +5,68 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 col-md 6 col-lg-8">
-                <h4 class="text-light">Hola, {{request.user}}. <br>Panel de Administación</h4>
-                <div class="card">
-                    <div class="card-header text-center">
-                        <b>Mis Cuentas</b>
+            <div class="col-sm-12 col-md-6 col-lg-8">
+                <h4 class="text-light m-b-20">Panel de Administación</h4>
+                <div class="m-20 text-center text-light">
+                    <b class="fs-18">Mis cuentas</b>
+                    <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-sm btn-outline-light">
+                        Crear Cuenta  <i class="fas fa-plus"></i></a>
+                </div>
+
+                {% if  cuentas%}
+                    <div class="row m-b-10">
+                        {% for c in cuentas %}
+                            <div class="col-sm-12 col-lg-6 m-b-20">
+                                <div class="card purple-gradient color-block" >
+                                    <div class="card-body p-t-10 p-b-10">
+                                        <b><a href="" class="fs-18">{{c.nombre}}</a></b> <br>
+                                        Saldo $ {{c.saldo}}
+                                        <div class="float-right">
+                                            <a href="" class="btn btn-sm btn-primary">Ingreso</a>
+                                            <a href="" class="btn btn-sm btn-danger">Egreso</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    <div class="card-body">
-                        {% if cuentas %}
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Cuenta</th>
-                                        <th>Saldo</th>
-                                        <th>Opciones</th>
-                                    </tr>
-                                </thead>
+                {% else %}
+                    <h5 class="text-light text-center m-30">Aun no registras un cuenta.</h5>
+                {% endif %}
+
+                <!-- <div class="row"> -->
+                <div class="m-20 text-center text-light">
+                    <b class="fs-18">Personas</b>
+                    <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
+                        Crear Persona  <i class="fas fa-plus"></i></a>
+                </div>
+                    <div class="card">
+                        <div class="card-body p-b-0">
+                            {% if personas %}
+                            <table class="table table-hover">
                                 <tbody>
-                                    {% for c in cuentas %}
-                                        <tr>
-                                            <td><a href="">{{c.nombre}}</a></td>
-                                            <td>$ {{c.saldo}}</td>
-                                            <td>
-                                                <a href="" class="btn btn-primary">Ingreso</a>
-                                                <a href="" class="btn btn-danger">Egreso</a>
-                                            </td>
-                                        </tr>
+                                    {% for p in personas %}
+                                    <tr>
+                                        <td>{{p.nombre}}</td>
+                                        <td>
+                                            <a href="" class="btn btn-sm btn-outline-info">Consultar</a>
+                                        </td>
+                                        <td>
+                                            <a href="" class="btn btn-sm btn-primary">Prestar</a>
+                                        </td>
+
+                                    </tr>
 
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        {% else %}
-                            <h5>No se registras ninguna cuenta</h5>
-                        {% endif %}
+                            {% else %}
+                                <h6 class="m-20">No se registras ninguna Persona</h6>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="card-footer text-right">
-                        <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-primary">Crear una cuenta</a>
-                    </div>
-                </div>
+            <!-- </div> -->
+
             </div>
         </div>
     </div>

@@ -12,7 +12,9 @@ def home(request):
 
 def panel(request):
     cuentas = Cuenta.objects.filter(user = request.user)
-    return render(request, 'contabilidad/panel.html', {'cuentas':cuentas})
+    personas = Persona.objects.filter(user = request.user)
+    context = {'cuentas':cuentas, 'personas':personas}
+    return render(request, 'contabilidad/panel.html', context)
 
 def crear_cuenta(request):
     if request.method == 'POST':
