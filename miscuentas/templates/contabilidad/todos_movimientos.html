@@ -1,0 +1,77 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Todos mis Movimientos{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <b>Todos Mis Movimientos</b>
+                    </div>
+                    <div class="card-body">
+                        {% if transaciones %}
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Cuenta</th>
+                                        <th>Valor</th>
+                                        <th>Etiqueta</th>
+                                        <th>Info</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in transaciones %}
+                                        <tr class="{{t.tipo|textcolor}}">
+                                            <td> {{t.cuenta.nombre}}</td>
+                                            <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
+                                            <td>{{t.etiqueta}}</td>
+                                            <td>{{t.info}}</td>
+                                            <td class="d-none d-md-block">{{t.fecha}}</td>
+                                            <td class="d-md-none">
+                                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                                data-toggle="tooltip" data-placement="left" title="{{t.fecha}}">Fecha</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <div class="text-center">
+                                {% if transaciones.has_previous %}
+                                        <a href="?page={{transaciones.previous_page_number}}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-arrow-left"></i> Anterior</a>
+                                {% else %}
+                                    <button class="btn btn-sm btn-primary" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+                                {% endif %}
+                                {% if transaciones.has_next %}
+                                        <a href="?page={{transaciones.next_page_number}}" class="btn btn-sm btn-primary">
+                                            Siguente <i class="fas fa-arrow-right"></i></a>
+                                {% else %}
+                                    <button class="btn btn-sm btn-primary" disabled>Siguente <i class="fas fa-arrow-right"></i></button>
+                                {% endif %}
+                            </div>
+
+
+                        {% else %}
+                            <div class="fs-18 text-center">
+                                No hay movimientos.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+{% endblock %}

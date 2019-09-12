@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 from .forms import *
 from .models import *
 
@@ -111,3 +112,11 @@ def movimientos_cuenta(request, cuenta_id):
     transaciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
     context =  {"transaciones": transaciones, "cuenta":cuenta}
     return render(request, 'contabilidad/movimientos_cuenta.html', context)
+
+def todos_movimientos(request):
+    transaciones = Transaccion.objects.filter(cuenta__user = request.user.id).order_by('-fecha')
+
+    paginator = Paginator(transaciones, 20)
+    page = request.GET.get('page')
+    transaciones = paginator.get_page(page)
+    return render(request, 'contabilidad/todos_movimientos.html', {"transaciones":transaciones})
