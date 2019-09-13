@@ -55,7 +55,7 @@ class Transaccion(models.Model):
     class Meta:
         verbose_name = 'Transaccion'
         verbose_name_plural = 'Transacciones'
-        ordering = ['fecha']
+        ordering = ['-fecha']
 
     def __str__(self):
         return self.tipo
@@ -74,7 +74,7 @@ class Prestamo(models.Model):
     class Meta:
         verbose_name = 'Prestamo'
         verbose_name_plural = 'Prestamos'
-        ordering = ['fecha']
+        ordering = ['-fecha']
 
     def __str__(self):
         return self.tipo

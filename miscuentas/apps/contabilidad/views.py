@@ -164,7 +164,7 @@ def crear_prestamo(request, persona_id):
             prestamo = form.save(commit=False)
             cuenta = Cuenta.objects.get(id=int(request.POST.get('cuenta')))
 
-            if prestamo.cantidad <= cuenta.saldo:
+            if (prestamo.tipo == 'yopresto' and prestamo.cantidad <= cuenta.saldo) or prestamo.tipo == 'meprestan':
                 prestamo.cuenta = cuenta
                 prestamo.persona = persona
                 prestamo.save()
@@ -173,7 +173,7 @@ def crear_prestamo(request, persona_id):
                 elif prestamo.tipo == 'meprestan':
                     cuenta.saldo += prestamo.cantidad
                 cuenta.save()
-                return redirect('panel:panel')
+                return redirect('panel:vista_persona', prestamo.persona.id)
             else:
                 form = PrestamoForm(request.POST)
                 mensaje = "El valor del prestamo no puede superar el saldo en cuenta."
