@@ -112,6 +112,16 @@ def todos_movimientos(request):
     transaciones = paginator.get_page(page)
     return render(request, 'contabilidad/todos_movimientos.html', {"transaciones":transaciones})
 
+def movimientos_etiqueta(request, etiqueta_id):
+    etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
+    transaciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
+
+    paginator = Paginator(transaciones, 20)
+    page = request.GET.get('page')
+    transaciones = paginator.get_page(page)
+    context =  {"transaciones": transaciones, "etiqueta":etiqueta}
+    return render(request, 'contabilidad/movimientos_etiqueta.html', context)
+
 def crear_etiqueta(request):
     if request.method == 'POST':
         form = EtiquetaForm(request.POST)

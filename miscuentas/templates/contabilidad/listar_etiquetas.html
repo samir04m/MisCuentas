@@ -26,7 +26,7 @@
                             <tbody>
                                 {% for e in etiquetas %}
                                     <tr>
-                                        <td>{{e.nombre}}</td>
+                                        <td><a href="{% url 'panel:movimientos_etiqueta' e.id %}">{{e.nombre}}</a></td>
                                         <td>{{e.transaccion_set.count}}</td>
                                         <td>
                                             <a href="{% url 'panel:editar_etiqueta' e.id %}" class="btn btn-sm btn-success">

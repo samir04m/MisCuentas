@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('todos-mis-movimientos/', todos_movimientos, name='todos_movimientos'),
     path('movimientos-cuenta/<int:cuenta_id>/', movimientos_cuenta, name='movimientos_cuenta'),
-    path('movimientos-cuenta/<int:cuenta_id>/', movimientos_cuenta, name='movimientos_cuenta'),
+    path('movimientos-etiqueta/<int:etiqueta_id>/', movimientos_etiqueta, name='movimientos_etiqueta'),
 
     path('<int:cuenta_id>/crear-egreso/', crear_egreso, name='crear_egreso'),
     path('<int:cuenta_id>/crear-ingreso/', crear_ingreso, name='crear_ingreso'),
