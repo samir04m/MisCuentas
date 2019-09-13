@@ -1,0 +1,45 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Crear un Prestamo{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        Crear un Prestamo
+                    </div>
+                    <div class="card-body">
+                        <div class="fs-20 m-b-20 text-primary">
+                            <b>Prestamo con {{persona.nombre}}</b>
+                        </div>
+                        <hr>
+                        {% if mensaje %}
+                            <div class="alert alert-danger p-10" role="alert">
+                                <b>Mensaje:</b> {{mensaje}}
+                            </div>
+                        {% endif %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <p>
+                                <label for="cuenta">Seleccione una cuenta</label>
+                                <select class="form-control" name="cuenta">
+                                    <option selected disabled>Seleccionar</option>
+                                    {% for c in cuentas %}
+                                        <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            {{form.as_p}}
+                            <center>
+                                <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
+                            </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

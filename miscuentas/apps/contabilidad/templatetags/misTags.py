@@ -28,10 +28,6 @@ def signo(tipo):
     if tipo == 'ingreso': return '+'
     elif tipo == 'egreso': return '-'
 
-@register.filter
-def desabilitar(nRegistros):
-    if nRegistros == 0: return "disabled"
-    else: return ""
 
 @register.filter
 def fecha(fecha):

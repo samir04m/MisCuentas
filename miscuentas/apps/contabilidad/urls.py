@@ -17,5 +17,6 @@ urlpatterns = [
 
     path('<int:cuenta_id>/crear-egreso/', crear_egreso, name='crear_egreso'),
     path('<int:cuenta_id>/crear-ingreso/', crear_ingreso, name='crear_ingreso'),
+    path('<int:persona_id>/crear-prestamo/', crear_prestamo, name='crear_prestamo'),
 
 ]

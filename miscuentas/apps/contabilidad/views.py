@@ -74,6 +74,7 @@ def crear_egreso(request, cuenta_id):
     context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
     return render(request, 'contabilidad/crear_egreso.html', context)
 
+
 def crear_ingreso(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
@@ -148,3 +149,33 @@ class EditarEtiqueta(UpdateView):
 class EliminarEtiqueta(DeleteView):
     model = Etiqueta
     success_url = reverse_lazy('panel:listar_etiquetas')
+
+def crear_prestamo(request, persona_id):
+    mensaje = None
+    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
+
+    if request.method == 'POST':
+        form = PrestamoForm(request.POST)
+        if form.is_valid():
+            prestamo = form.save(commit=False)
+            cuenta = Cuenta.objects.get(id=int(request.POST.get('cuenta')))
+
+            if prestamo.cantidad <= cuenta.saldo:
+                prestamo.cuenta = cuenta
+                prestamo.persona = persona
+                prestamo.save()
+                if prestamo.tipo == 'yopresto':
+                    cuenta.saldo -= prestamo.cantidad
+                elif prestamo.tipo == 'meprestan':
+                    cuenta.saldo += prestamo.cantidad
+                cuenta.save()
+                return redirect('panel:panel')
+            else:
+                form = PrestamoForm(request.POST)
+                mensaje = "El valor del prestamo no puede superar el saldo en cuenta."
+    else:
+        form = PrestamoForm()
+
+    cuentas = Cuenta.objects.filter(user=request.user.id)
+    context = {"form": form, "cuentas":cuentas, "persona":persona, "mensaje":mensaje}
+    return render(request, 'contabilidad/crear_prestamo.html', context)

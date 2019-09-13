@@ -75,3 +75,33 @@ class TransaccionForm(forms.ModelForm):
                 }
             ),
         }
+
+class PrestamoForm(forms.ModelForm):
+    class Meta:
+        model = Prestamo
+        fields = ['tipo','cantidad','info']
+
+        widgets = {
+            'tipo': forms.Select(
+                attrs = {
+                    'class':'form-control',
+                    'id': 'tipo',
+                    'required':''
+                }
+            ),
+            'cantidad': forms.NumberInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Valor o cantidad',
+                    'min':'50',
+                    'id': 'cantidad'
+                }
+            ),
+            'info': forms.TextInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Infromacion (opcional)',
+                    'id': 'info'
+                }
+            ),
+        }

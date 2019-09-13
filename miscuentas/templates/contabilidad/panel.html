@@ -51,7 +51,7 @@
                                         <td><a href="">{{p.nombre}}</a></td>
                                         <td>Saldo $1000</td>
                                         <td>
-                                            <a href="" class="btn btn-sm btn-primary">Prestar</a>
+                                            <a href="{% url 'panel:crear_prestamo' p.id %}" class="btn btn-sm btn-primary">Prestar</a>
                                         </td>
 
                                     </tr>
