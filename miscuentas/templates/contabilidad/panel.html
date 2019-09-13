@@ -35,36 +35,34 @@
                     <h5 class="text-light text-center m-30">Aun no registras un cuenta.</h5>
                 {% endif %}
 
-                <!-- <div class="row"> -->
+
                 <div class="m-20 text-center text-light">
                     <b class="fs-18">Personas</b>
                     <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
                         Crear Persona  <i class="fas fa-plus"></i></a>
                 </div>
-                    <div class="card">
-                        <div class="card-body p-b-0">
-                            {% if personas %}
-                            <table class="table table-hover table-responsive-sm"">
-                                <tbody>
-                                    {% for p in personas %}
-                                    <tr>
-                                        <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.nombre}}</a></td>
-                                        <td>Saldo $1000</td>
-                                        <td>
-                                            <a href="{% url 'panel:crear_prestamo' p.id %}" class="btn btn-sm btn-primary">Prestar</a>
-                                        </td>
-
-                                    </tr>
-
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            {% else %}
-                                <h6 class="m-20">No se registras ninguna Persona</h6>
-                            {% endif %}
+                    {% if personas %}
+                        <div class="row">
+                            {% for p in personas %}
+                                <div class="col-sm-12 col-lg-6 m-b-20">
+                                    <div class="card rounded-pill">
+                                        <div class="card-body">
+                                            <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
+                                                <i class="fas fa-user-circle fa-lg"></i> {{p.nombre}}</a>
+                                            <div class="float-right">
+                                                <a href="{% url 'panel:crear_prestamo' p.id %}"
+                                                    class="btn btn-sm btn-primary rounded-pill">Prestar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
-                    </div>
-            <!-- </div> -->
+                    {% else %}
+                        <div class="text-center">
+                            <h6 class="m-30 text-white">Todavia no creas una Persona</h6>
+                        </div>
+                    {% endif %}
 
             </div>
             <div class="col-sm-12 offset-md-1 col-md-5 offset-lg-1 col-lg-3 m-t-40">
