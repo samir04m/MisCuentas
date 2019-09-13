@@ -44,6 +44,9 @@ def crear_persona(request):
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
 
+def vista_persona(request, persona_id):
+    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
+    return render(request, 'contabilidad/vista_persona.html', {"persona":persona})
 
 def crear_egreso(request, cuenta_id):
     mensaje = None

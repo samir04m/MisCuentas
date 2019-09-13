@@ -1,0 +1,54 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista Persona{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        Informaciónde la Persona
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <div style="font-size:40px;">
+                                <i class="fas fa-user-circle"></i> {{persona.nombre}}
+                            </div>
+                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">Crear Prestamo</a>
+                        </div>
+                        <hr>
+                        Has realizado {{persona.prestamo_set.count}} pretamos con esta persona
+
+                        <div class="m-t-20"></div>
+
+                        {% if persona.prestamo_set.all %}
+                            <h5 class="text-center"><b>Prestamos</b></h5>
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Cantidad</th>
+                                        <th>Estado</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in persona.prestamo_set.all %}
+                                        <tr class="{{p.cancelada|cancelada_color}}">
+                                            <td>{{p.get_tipo_display}}</td>
+                                            <td>${{p.cantidad|puntomil}}</td>
+                                            <td><i class="{{p.cancelada|cancelada_icono}}"></i></td>
+                                            <td><a href="" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

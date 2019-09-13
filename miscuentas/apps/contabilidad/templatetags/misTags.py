@@ -28,6 +28,15 @@ def signo(tipo):
     if tipo == 'ingreso': return '+'
     elif tipo == 'egreso': return '-'
 
+@register.filter
+def cancelada_icono(cancelada):
+    if cancelada: return 'far fa-check-circle text-success'
+    else: return 'far fa-times-circle text-danger'
+
+@register.filter
+def cancelada_color(cancelada):
+    if cancelada: return 'text-secondary'
+    else: return 'text-primary'
 
 @register.filter
 def fecha(fecha):

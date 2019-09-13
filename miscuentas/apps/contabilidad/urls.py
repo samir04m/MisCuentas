@@ -5,6 +5,7 @@ urlpatterns = [
     path('', panel, name='panel'),
     path('crear-cuenta', crear_cuenta, name='crear_cuenta'),
     path('crear-persona', crear_persona, name='crear_persona'),
+    path('<int:persona_id>/vista-persona', vista_persona, name='vista_persona'),
 
     path('crear-etiqueta', crear_etiqueta, name='crear_etiqueta'),
     path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),
