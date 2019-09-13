@@ -5,7 +5,11 @@ urlpatterns = [
     path('', panel, name='panel'),
     path('crear-cuenta', crear_cuenta, name='crear_cuenta'),
     path('crear-persona', crear_persona, name='crear_persona'),
+
     path('crear-etiqueta', crear_etiqueta, name='crear_etiqueta'),
+    path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),
+    path('editar-etiqueta/<int:pk>',EditarEtiqueta.as_view(), name = 'editar_etiqueta'),
+    path('eliminar-etiqueta/<int:pk>',EliminarEtiqueta.as_view(), name = 'eliminar_etiqueta'),
 
     path('todos-mis-movimientos/', todos_movimientos, name='todos_movimientos'),
     path('movimientos-cuenta/<int:cuenta_id>/', movimientos_cuenta, name='movimientos_cuenta'),

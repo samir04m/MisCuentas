@@ -29,6 +29,11 @@ def signo(tipo):
     elif tipo == 'egreso': return '-'
 
 @register.filter
+def desabilitar(nRegistros):
+    if nRegistros == 0: return "disabled"
+    else: return ""
+
+@register.filter
 def fecha(fecha):
     meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
     fecha_str = str(fecha.hour)+":"+str(fecha.minute)+" - "+str(fecha.day)+" "+meses[fecha.month-1]+" "+str(fecha.year)

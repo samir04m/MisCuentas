@@ -1,0 +1,50 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Mis Etiquetas{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="m-b-20 text-center text-light">
+                    <b class="fs-18">Mis Etiquetas</b>
+                    <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-sm btn-outline-light">
+                        Crear Etiqueta  <i class="fas fa-plus"></i></a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nombre de la etiqueta</th>
+                                    <th>N° de registros</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in etiquetas %}
+                                    <tr>
+                                        <td>{{e.nombre}}</td>
+                                        <td>{{e.transaccion_set.count}}</td>
+                                        <td>
+                                            <a href="{% url 'panel:editar_etiqueta' e.id %}" class="btn btn-sm btn-success">
+                                            <i class="far fa-edit"></i></a>
+                                        </td>
+                                        <td>
+                                            {% if e.transaccion_set.count == 0 %}
+                                            <a href="{% url 'panel:eliminar_etiqueta' e.id %}" class="btn btn-sm btn-danger">
+                                                <i class="far fa-trash-alt"></i></a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

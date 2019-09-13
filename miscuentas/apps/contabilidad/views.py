@@ -44,19 +44,6 @@ def crear_persona(request):
 
     return render(request, 'contabilidad/crear_persona.html', {"form": form})
 
-def crear_etiqueta(request):
-    if request.method == 'POST':
-        form = EtiquetaForm(request.POST)
-        if form.is_valid():
-            etiqueta = form.save(commit=False)
-            etiqueta.user = request.user
-            etiqueta.save()
-            return redirect('panel:panel')
-    else:
-        form = EtiquetaForm()
-
-    return render(request, 'contabilidad/crear_etiqueta.html', {"form": form})
-
 
 def crear_egreso(request, cuenta_id):
     mensaje = None
@@ -110,6 +97,10 @@ def crear_ingreso(request, cuenta_id):
 def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
     transaciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
+
+    paginator = Paginator(transaciones, 20)
+    page = request.GET.get('page')
+    transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "cuenta":cuenta}
     return render(request, 'contabilidad/movimientos_cuenta.html', context)
 
@@ -120,3 +111,30 @@ def todos_movimientos(request):
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
     return render(request, 'contabilidad/todos_movimientos.html', {"transaciones":transaciones})
+
+def crear_etiqueta(request):
+    if request.method == 'POST':
+        form = EtiquetaForm(request.POST)
+        if form.is_valid():
+            etiqueta = form.save(commit=False)
+            etiqueta.user = request.user
+            etiqueta.save()
+            return redirect('panel:listar_etiquetas')
+    else:
+        form = EtiquetaForm()
+
+    return render(request, 'contabilidad/crear_etiqueta.html', {"form": form})
+
+def listar_etiquetas(request):
+    etiquetas = Etiqueta.objects.filter(user = request.user.id).order_by('-nombre')
+    return render(request, 'contabilidad/listar_etiquetas.html', {"etiquetas":etiquetas})
+
+class EditarEtiqueta(UpdateView):
+    model = Etiqueta
+    form_class = EtiquetaForm
+    template_name = 'contabilidad/crear_etiqueta.html'
+    success_url = reverse_lazy('panel:listar_etiquetas')
+
+class EliminarEtiqueta(DeleteView):
+    model = Etiqueta
+    success_url = reverse_lazy('panel:listar_etiquetas')
