@@ -1,0 +1,54 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista Prestamo{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="text-center">Detalles de Prestamo</h5>
+                        <table class="table table-borderless table-responsive-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Prestamo a:</th>
+                                    <td>{{prestamo.persona.nombre}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo de prestamo:</th>
+                                    <td>{{prestamo.get_tipo_display}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valor:</th>
+                                    <td>$ {{prestamo.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Información:</th>
+                                    <td>{{prestamo.info}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cancelado:</th>
+                                    <td><i class="{{prestamo.cancelada|cancelada_icono}}"></i></td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{prestamo.fecha}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr>
+                        <div class="text-center">
+                            {% if prestamo.cancelada %}
+                                <div class="text-secondary fs-14">El PRESTAMO YA FUE CANCELADO</div>
+                            {% else %}
+                                <a href="{% url 'panel:cancelar_prestamo' prestamo.id %}" class="btn btn-success">Cancelar Prestamo</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

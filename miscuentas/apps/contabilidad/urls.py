@@ -6,6 +6,8 @@ urlpatterns = [
     path('crear-cuenta', crear_cuenta, name='crear_cuenta'),
     path('crear-persona', crear_persona, name='crear_persona'),
     path('<int:persona_id>/vista-persona', vista_persona, name='vista_persona'),
+    path('<int:prestamo_id>/vista-prestamo', vista_prestamo, name='vista_prestamo'),
+    path('<int:prestamo_id>/cancelar-prestamo', cancelar_prestamo, name='cancelar_prestamo'),
 
     path('crear-etiqueta', crear_etiqueta, name='crear_etiqueta'),
     path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),

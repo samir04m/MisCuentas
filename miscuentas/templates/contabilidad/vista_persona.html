@@ -40,7 +40,7 @@
                                             <td>{{p.get_tipo_display}}</td>
                                             <td>${{p.cantidad|puntomil}}</td>
                                             <td><i class="{{p.cancelada|cancelada_icono}}"></i></td>
-                                            <td><a href="" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                                            <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

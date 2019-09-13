@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
 from .forms import *
 from .models import *
 
@@ -182,3 +183,13 @@ def crear_prestamo(request, persona_id):
     cuentas = Cuenta.objects.filter(user=request.user.id)
     context = {"form": form, "cuentas":cuentas, "persona":persona, "mensaje":mensaje}
     return render(request, 'contabilidad/crear_prestamo.html', context)
+
+def vista_prestamo(request, prestamo_id):
+    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
+    return render(request, 'contabilidad/vista_prestamo.html', {"prestamo":prestamo})
+
+def cancelar_prestamo(request, prestamo_id):
+    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
+    prestamo.cancelada = True
+    prestamo.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
