@@ -20,12 +20,10 @@
                             <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">Crear Prestamo</a>
                         </div>
                         <hr>
-                        Has realizado {{persona.prestamo_set.count}} pretamos con esta persona
-
-                        <div class="m-t-20"></div>
+                        Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
 
                         {% if persona.prestamo_set.all %}
-                            <h5 class="text-center"><b>Prestamos</b></h5>
+                            <h5 class="text-center mt-3"><b>Registros de Prestamos</b></h5>
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>

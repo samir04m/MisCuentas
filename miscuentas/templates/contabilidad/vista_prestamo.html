@@ -14,7 +14,7 @@
                             <tbody>
                                 <tr>
                                     <th>Prestamo a:</th>
-                                    <td>{{prestamo.persona.nombre}}</td>
+                                    <td><a href="{% url 'panel:vista_persona' prestamo.persona.id %}">{{prestamo.persona.nombre}}</a></td>
                                 </tr>
                                 <tr>
                                     <th>Tipo de prestamo:</th>

@@ -8,23 +8,23 @@
         <div class="row">
             <div class="col-sm-12 col-md-6 col-lg-8">
                 <!-- <h4 class="text-light m-b-20">Panel de Administación</h4> -->
-                <div class="m-b-20 text-center text-light">
+                <div class="mb-3 text-center text-light">
                     <b class="fs-18">Mis cuentas</b>
                     <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-sm btn-outline-light">
                         Crear Cuenta  <i class="fas fa-plus"></i></a>
                 </div>
 
                 {% if  cuentas%}
-                    <div class="row m-b-10">
+                    <div class="row">
                         {% for c in cuentas %}
-                            <div class="col-sm-12 col-lg-6 m-b-20">
-                                <div class="card purple-gradient color-block" >
-                                    <div class="card-body p-t-10 p-b-10">
+                            <div class="col-sm-12 col-lg-6 my-2">
+                                <div class="card" >
+                                    <div class="card-body py-2">
                                         <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
                                         Saldo $ {{c.saldo|puntomil}}
                                         <div class="float-right">
-                                            <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary">Ingreso</a>
-                                            <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger">Egreso</a>
+                                            <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary rounded-pill">Ingreso</a>
+                                            <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger rounded-pill">Egreso</a>
                                         </div>
                                     </div>
                                 </div>
@@ -32,21 +32,22 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <h5 class="text-light text-center m-30">Aun no registras un cuenta.</h5>
+                    <h5 class="text-light text-center my-5">Aun no registras un cuenta.</h5>
                 {% endif %}
 
 
-                <div class="m-20 text-center text-light">
+                <div class="text-center text-light my-3">
                     <b class="fs-18">Personas</b>
                     <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
                         Crear Persona  <i class="fas fa-plus"></i></a>
                 </div>
+
                     {% if personas %}
                         <div class="row">
                             {% for p in personas %}
-                                <div class="col-sm-12 col-lg-6 m-b-20">
+                                <div class="col-sm-12 col-lg-6 py-2">
                                     <div class="card rounded-pill">
-                                        <div class="card-body">
+                                        <div class="card-body p-2">
                                             <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
                                                 <i class="fas fa-user-circle fa-lg"></i> {{p.nombre}}</a>
                                             <div class="float-right">
@@ -65,7 +66,7 @@
                     {% endif %}
 
             </div>
-            <div class="col-sm-12 offset-md-1 col-md-5 offset-lg-1 col-lg-3 m-t-40">
+            <div class="col-sm-12 offset-md-1 col-md-5 offset-lg-1 col-lg-3 mt-3">
                 {% include 'base/panel_enlaces.html' %}
             </div>
         </div>

@@ -9,7 +9,7 @@ main {
 }
 
 .gradiente {
-	background: #1e5799; /* Old browsers */
+	background: #1e5799;
 	background: -moz-linear-gradient(top,  #1e5799 0%, #564d8e 100%); /* FF3.6-15 */
 	background: -webkit-linear-gradient(top,  #1e5799 0%,#564d8e 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to bottom,  #1e5799 0%,#564d8e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
