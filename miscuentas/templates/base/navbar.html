@@ -17,9 +17,9 @@
                          role="button" aria-haspopup="true" aria-expanded="false">
                          <i class="far fa-user"></i> {{ request.user.username }}</a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
+                            <a class="dropdown-item" href="{% url 'panel:todos_movimientos' %}">Movimientos</a>
+                            <a class="dropdown-item" href="{% url 'panel:listar_etiquetas' %}">Etiquetas</a>
+                            <a class="dropdown-item" href="{% url 'panel:listar_personas' %}">Personas</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Salir</a>
                         </div>

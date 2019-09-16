@@ -1,0 +1,58 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Personas{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="m-b-20 text-center text-light">
+                    <b class="fs-18">Mis Personas</b>
+                    <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
+                        Crear Persona  <i class="fas fa-plus"></i></a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center fs-18 mb-3">
+                            <b>Registro de Personas</b>
+                        </div>
+                        {% if personas %}
+                            <table class="table table-responive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Prestamos</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in personas %}
+                                        <tr>
+                                            <td>{{p.nombre}}</td>
+                                            <td>{{p.prestamo_set.count}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:editar_etiqueta' p.id %}" class="btn btn-sm btn-success">
+                                                <i class="far fa-edit"></i></a>
+                                            </td>
+                                            <td>
+                                                {% if p.prestamo_set.count == 0 %}
+                                                <a href="{% url 'panel:eliminar_etiqueta' p.id %}" class="btn btn-sm btn-danger">
+                                                    <i class="far fa-trash-alt"></i></a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="fs-18 text-center py-3">
+                                No hay registro de personas.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -16,17 +16,17 @@
                         <table class="table table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th>Nombre de la etiqueta</th>
-                                    <th>N° de registros</th>
-                                    <th>Editar</th>
-                                    <th>Eliminar</th>
+                                    <th>Nombre</th>
+                                    <th>Registros</th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for e in etiquetas %}
                                     <tr>
                                         <td><a href="{% url 'panel:movimientos_etiqueta' e.id %}">{{e.nombre}}</a></td>
-                                        <td>{{e.transaccion_set.count}}</td>
+                                        <td class="text-center">{{e.transaccion_set.count}}</td>
                                         <td>
                                             <a href="{% url 'panel:editar_etiqueta' e.id %}" class="btn btn-sm btn-success">
                                             <i class="far fa-edit"></i></a>

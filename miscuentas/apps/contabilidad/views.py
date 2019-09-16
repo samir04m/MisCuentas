@@ -141,7 +141,7 @@ def crear_etiqueta(request):
     return render(request, 'contabilidad/crear_etiqueta.html', {"form": form})
 
 def listar_etiquetas(request):
-    etiquetas = Etiqueta.objects.filter(user = request.user.id).order_by('-nombre')
+    etiquetas = Etiqueta.objects.filter(user = request.user.id).order_by('nombre')
     return render(request, 'contabilidad/listar_etiquetas.html', {"etiquetas":etiquetas})
 
 class EditarEtiqueta(UpdateView):
@@ -193,3 +193,7 @@ def cancelar_prestamo(request, prestamo_id):
     prestamo.cancelada = True
     prestamo.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+def listar_personas(request):
+    personas = Persona.objects.filter(user = request.user.id)
+    return render(request, 'contabilidad/listar_personas.html', {"personas":personas})
