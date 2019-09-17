@@ -10,16 +10,20 @@
 
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'panel:panel' %}">Panel <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{% url 'panel:panel' %}">
+                            <i class="far fa-chart-bar"></i> Panel <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
                          role="button" aria-haspopup="true" aria-expanded="false">
                          <i class="far fa-user"></i> {{ request.user.username }}</a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{% url 'panel:todos_movimientos' %}">Movimientos</a>
-                            <a class="dropdown-item" href="{% url 'panel:listar_etiquetas' %}">Etiquetas</a>
-                            <a class="dropdown-item" href="{% url 'panel:listar_personas' %}">Personas</a>
+                            <a class="dropdown-item" href="{% url 'panel:todos_movimientos' %}">
+                                <i class="fas fa-money-check-alt"></i> Movimientos</a>
+                            <a class="dropdown-item" href="{% url 'panel:listar_etiquetas' %}">
+                                <i class="fas fa-tags"></i> Etiquetas</a>
+                            <a class="dropdown-item" href="{% url 'panel:listar_personas' %}">
+                                <i class="fas fa-users"></i> Personas</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Salir</a>
                         </div>
