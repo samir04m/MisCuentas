@@ -198,3 +198,14 @@ def cancelar_prestamo(request, prestamo_id):
 def listar_personas(request):
     personas = Persona.objects.filter(user = request.user.id)
     return render(request, 'contabilidad/persona/listar_personas.html', {"personas":personas})
+
+class EditarPersona(UpdateView):
+    model = Persona
+    form_class = PersonaForm
+    template_name = 'contabilidad/persona/crear_persona.html'
+    success_url = reverse_lazy('panel:listar_personas')
+
+class EliminarPersona(DeleteView):
+    model = Persona
+    template_name = 'contabilidad/persona/persona_confirm_delete.html'
+    success_url = reverse_lazy('panel:listar_personas')

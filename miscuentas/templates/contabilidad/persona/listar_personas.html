@@ -29,15 +29,15 @@
                                 <tbody>
                                     {% for p in personas %}
                                         <tr>
-                                            <td>{{p.nombre}}</td>
+                                            <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.nombre}}</a></td>
                                             <td>{{p.prestamo_set.count}}</td>
                                             <td>
-                                                <a href="{% url 'panel:editar_etiqueta' p.id %}" class="btn btn-sm btn-success">
+                                                <a href="{% url 'panel:editar_persona' p.id %}" class="btn btn-sm btn-success">
                                                 <i class="far fa-edit"></i></a>
                                             </td>
                                             <td>
                                                 {% if p.prestamo_set.count == 0 %}
-                                                <a href="{% url 'panel:eliminar_etiqueta' p.id %}" class="btn btn-sm btn-danger">
+                                                <a href="{% url 'panel:eliminar_persona' p.id %}" class="btn btn-sm btn-danger">
                                                     <i class="far fa-trash-alt"></i></a>
                                                 {% endif %}
                                             </td>

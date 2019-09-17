@@ -1,0 +1,29 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Eliminar Persona{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        Eliminar Persona
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                             <p>
+                                 ¿Desea eliminar el registro {{ object }}?
+                             </p>
+                            <center>
+                                <a href="{% url 'panel:listar_personas' %}" class="btn btn-outline-dark">Cancelar</a>
+                                <button type="submit" class="btn btn-danger">Si Eliminar</button>
+                            </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

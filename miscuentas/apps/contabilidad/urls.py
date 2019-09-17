@@ -8,6 +8,8 @@ urlpatterns = [
     path('crear-persona', crear_persona, name='crear_persona'),
     path('<int:persona_id>/vista-persona', vista_persona, name='vista_persona'),
     path('administar-personas', listar_personas, name='listar_personas'),
+    path('editar-persona/<int:pk>',EditarPersona.as_view(), name = 'editar_persona'),
+    path('eliminar-persona/<int:pk>',EliminarPersona.as_view(), name = 'eliminar_persona'),
 
     path('<int:prestamo_id>/vista-prestamo', vista_prestamo, name='vista_prestamo'),
     path('<int:prestamo_id>/cancelar-prestamo', cancelar_prestamo, name='cancelar_prestamo'),
