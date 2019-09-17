@@ -30,7 +30,7 @@ def crear_cuenta(request):
     else:
         form = CuentaForm()
 
-    return render(request, 'contabilidad/crear_cuenta.html', {"form": form})
+    return render(request, 'contabilidad/cuenta/crear_cuenta.html', {"form": form})
 
 def crear_persona(request):
     if request.method == 'POST':
@@ -43,11 +43,11 @@ def crear_persona(request):
     else:
         form = PersonaForm()
 
-    return render(request, 'contabilidad/crear_persona.html', {"form": form})
+    return render(request, 'contabilidad/persona/crear_persona.html', {"form": form})
 
 def vista_persona(request, persona_id):
     persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
-    return render(request, 'contabilidad/vista_persona.html', {"persona":persona})
+    return render(request, 'contabilidad/persona/vista_persona.html', {"persona":persona})
 
 def crear_egreso(request, cuenta_id):
     mensaje = None
@@ -76,7 +76,7 @@ def crear_egreso(request, cuenta_id):
 
     tags = Etiqueta.objects.filter(user=request.user.id)
     context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
-    return render(request, 'contabilidad/crear_egreso.html', context)
+    return render(request, 'contabilidad/transacion/crear_egreso.html', context)
 
 
 def crear_ingreso(request, cuenta_id):
@@ -96,7 +96,7 @@ def crear_ingreso(request, cuenta_id):
         form = TransaccionForm()
 
     context = {"form": form, "cuenta":cuenta}
-    return render(request, 'contabilidad/crear_ingreso.html', context)
+    return render(request, 'contabilidad/transaccion/crear_ingreso.html', context)
 
 
 def movimientos_cuenta(request, cuenta_id):
@@ -107,7 +107,7 @@ def movimientos_cuenta(request, cuenta_id):
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "cuenta":cuenta}
-    return render(request, 'contabilidad/movimientos_cuenta.html', context)
+    return render(request, 'contabilidad/transaccion/movimientos_cuenta.html', context)
 
 def todos_movimientos(request):
     transaciones = Transaccion.objects.filter(cuenta__user = request.user.id).order_by('-fecha')
@@ -115,7 +115,7 @@ def todos_movimientos(request):
     paginator = Paginator(transaciones, 20)
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
-    return render(request, 'contabilidad/todos_movimientos.html', {"transaciones":transaciones})
+    return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transaciones":transaciones})
 
 def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
@@ -125,7 +125,7 @@ def movimientos_etiqueta(request, etiqueta_id):
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "etiqueta":etiqueta}
-    return render(request, 'contabilidad/movimientos_etiqueta.html', context)
+    return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
 
 def crear_etiqueta(request):
     if request.method == 'POST':
@@ -138,20 +138,21 @@ def crear_etiqueta(request):
     else:
         form = EtiquetaForm()
 
-    return render(request, 'contabilidad/crear_etiqueta.html', {"form": form})
+    return render(request, 'contabilidad/etiqueta/crear_etiqueta.html', {"form": form})
 
 def listar_etiquetas(request):
     etiquetas = Etiqueta.objects.filter(user = request.user.id).order_by('nombre')
-    return render(request, 'contabilidad/listar_etiquetas.html', {"etiquetas":etiquetas})
+    return render(request, 'contabilidad/etiqueta/listar_etiquetas.html', {"etiquetas":etiquetas})
 
 class EditarEtiqueta(UpdateView):
     model = Etiqueta
     form_class = EtiquetaForm
-    template_name = 'contabilidad/crear_etiqueta.html'
+    template_name = 'contabilidad/etiqueta/crear_etiqueta.html'
     success_url = reverse_lazy('panel:listar_etiquetas')
 
 class EliminarEtiqueta(DeleteView):
     model = Etiqueta
+    template_name = 'contabilidad/etiqueta/etiqueta_confirm_delete.html'
     success_url = reverse_lazy('panel:listar_etiquetas')
 
 def crear_prestamo(request, persona_id):
@@ -182,11 +183,11 @@ def crear_prestamo(request, persona_id):
 
     cuentas = Cuenta.objects.filter(user=request.user.id)
     context = {"form": form, "cuentas":cuentas, "persona":persona, "mensaje":mensaje}
-    return render(request, 'contabilidad/crear_prestamo.html', context)
+    return render(request, 'contabilidad/prestamo/crear_prestamo.html', context)
 
 def vista_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    return render(request, 'contabilidad/vista_prestamo.html', {"prestamo":prestamo})
+    return render(request, 'contabilidad/prestamo/vista_prestamo.html', {"prestamo":prestamo})
 
 def cancelar_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
@@ -196,4 +197,4 @@ def cancelar_prestamo(request, prestamo_id):
 
 def listar_personas(request):
     personas = Persona.objects.filter(user = request.user.id)
-    return render(request, 'contabilidad/listar_personas.html', {"personas":personas})
+    return render(request, 'contabilidad/persona/listar_personas.html', {"personas":personas})
