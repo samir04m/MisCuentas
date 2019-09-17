@@ -12,6 +12,7 @@ urlpatterns = [
     path('editar-persona/<int:pk>', login_required(EditarPersona.as_view()), name = 'editar_persona'),
     path('eliminar-persona/<int:pk>', login_required(EliminarPersona.as_view()), name = 'eliminar_persona'),
 
+    path('listar-prestamos', listar_prestamos, name='listar_prestamos'),
     path('<int:prestamo_id>/vista-prestamo', vista_prestamo, name='vista_prestamo'),
     path('<int:prestamo_id>/cancelar-prestamo', cancelar_prestamo, name='cancelar_prestamo'),
 

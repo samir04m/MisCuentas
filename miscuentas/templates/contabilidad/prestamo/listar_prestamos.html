@@ -1,0 +1,51 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Todos Mis Prestamos{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-responsive-sm">
+                    <thead>
+                        <tr>
+                            <th>Persona</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Fecha</th>
+                            <th>Ver</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in prestamos %}
+                            <tr>
+                                <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.persona.nombre}}</a></td>
+                                <td>{{p.get_tipo_display}}</td>
+                                <td>$ {{p.cantidad|puntomil}}</td>
+                                <td>{{p.fecha}}</td>
+                                <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="text-center">
+                    {% if prestamos.has_previous %}
+                            <a href="?page={{prestamos.previous_page_number}}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-arrow-left"></i> Anterior</a>
+                    {% else %}
+                        <button class="btn btn-sm btn-primary" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+                    {% endif %}
+                    {% if prestamos.has_next %}
+                            <a href="?page={{prestamos.next_page_number}}" class="btn btn-sm btn-primary">
+                                Siguente <i class="fas fa-arrow-right"></i></a>
+                    {% else %}
+                        <button class="btn btn-sm btn-primary" disabled>Siguente <i class="fas fa-arrow-right"></i></button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

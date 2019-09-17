@@ -112,7 +112,7 @@ def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
     transaciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
 
-    paginator = Paginator(transaciones, 20)
+    paginator = Paginator(transaciones, 10)
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "cuenta":cuenta}
@@ -122,7 +122,7 @@ def movimientos_cuenta(request, cuenta_id):
 def todos_movimientos(request):
     transaciones = Transaccion.objects.filter(cuenta__user = request.user.id).order_by('-fecha')
 
-    paginator = Paginator(transaciones, 20)
+    paginator = Paginator(transaciones, 10)
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
     return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transaciones":transaciones})
@@ -132,7 +132,7 @@ def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
     transaciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
 
-    paginator = Paginator(transaciones, 20)
+    paginator = Paginator(transaciones, 10)
     page = request.GET.get('page')
     transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "etiqueta":etiqueta}
@@ -226,3 +226,11 @@ class EliminarPersona(DeleteView):
     model = Persona
     template_name = 'contabilidad/persona/persona_confirm_delete.html'
     success_url = reverse_lazy('panel:listar_personas')
+
+@login_required
+def listar_prestamos(request):
+    prestamos = Prestamo.objects.filter(persona__user = request.user.id)
+    paginator = Paginator(prestamos, 10)
+    page = request.GET.get('page')
+    prestamos = paginator.get_page(page)
+    return render(request, 'contabilidad/prestamo/listar_prestamos.html', {'prestamos':prestamos})
