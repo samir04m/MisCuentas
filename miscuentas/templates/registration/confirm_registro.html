@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Informacion de Registro{% endblock %}
+
+{% block contenido %}
+
+    <div class="container">
+        <div class="row pt-3">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="alert alert-primary" role="alert">
+                    <h4 class="alert-heading pb-3">Registro Exitoso!</h4>
+                    <p class="text-justify">Te has registrado de manera exitosa. Ya dispones de una cuenta con la que podras
+                    iniciar sesión.</p>
+                    <hr>
+                    <p class="mb-0">Para iniciar sesión has click aqui:</p>
+                    <div class="text-center">
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary my-3">Iniciar Sesión</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

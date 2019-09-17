@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name="home"),
     path('panel/', include(('apps.contabilidad.urls', 'panel'))),
+    path('user/', include(('apps.usuario.urls', 'user'))),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', logout_then_login, name='logout'),
 ]
