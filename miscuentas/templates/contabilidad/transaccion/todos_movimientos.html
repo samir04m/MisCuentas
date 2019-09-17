@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load static %}
 {% load misTags %}
 
 {% block title %}Todos mis Movimientos{% endblock %}
@@ -13,7 +14,7 @@
                     </div>
                     <div class="card-body">
                         {% if transaciones %}
-                            <table class="table table-responsive-sm">
+                            <table class="table table-responsive-sm"  id="miTabla">
                                 <thead>
                                     <tr>
                                         <th>Cuenta</th>
@@ -30,31 +31,18 @@
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
                                             <td>{{t.etiqueta}}</td>
                                             <td>{{t.info}}</td>
-                                            <td class="d-none d-md-block">{{t.fecha}}</td>
-                                            <td class="d-md-none">
-                                                <button type="button" class="btn btn-outline-primary btn-sm"
-                                                data-toggle="tooltip" data-placement="left" title="{{t.fecha}}">Fecha</button>
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{t.fecha}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{t.fecha|date:'H:i d-m-Y'}}
+                                                </span>
                                             </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-
-                            <div class="text-center">
-                                {% if transaciones.has_previous %}
-                                        <a href="?page={{transaciones.previous_page_number}}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-arrow-left"></i> Anterior</a>
-                                {% else %}
-                                    <button class="btn btn-sm btn-primary" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
-                                {% endif %}
-                                {% if transaciones.has_next %}
-                                        <a href="?page={{transaciones.next_page_number}}" class="btn btn-sm btn-primary">
-                                            Siguente <i class="fas fa-arrow-right"></i></a>
-                                {% else %}
-                                    <button class="btn btn-sm btn-primary" disabled>Siguente <i class="fas fa-arrow-right"></i></button>
-                                {% endif %}
-                            </div>
-
 
                         {% else %}
                             <div class="fs-18 text-center">
@@ -69,9 +57,12 @@
 {% endblock %}
 
 {% block script %}
+    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
+    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
+
     <script type="text/javascript">
-        $(function () {
-          $('[data-toggle="tooltip"]').tooltip();
-        })
+        $(document).ready(function() {
+            $('#miTabla').DataTable();
+        });
     </script>
-{% endblock %}
+{% endblock %} %}

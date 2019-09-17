@@ -8,35 +8,41 @@
     <div class="container">
         <div class="card">
             <div class="card-body">
-                <table class="table table-responsive-sm" id="table_id">
-                    <thead>
-                        <tr>
-                            <th>Persona</th>
-                            <th>Tipo</th>
-                            <th>Cantidad</th>
-                            <th>Fecha</th>
-                            <th>Ver</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in prestamos %}
+                {% if prestamos %}
+                    <table class="table table-responsive-sm" id="miTabla">
+                        <thead>
                             <tr>
-                                <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.persona.nombre}}</a></td>
-                                <td>{{p.get_tipo_display}}</td>
-                                <td>$ {{p.cantidad|puntomil}}</td>
-                                <td>
-                                    <span class="d-none d-md-block">
-                                        {{p.fecha}}
-                                    </span>
-                                    <span  class="d-md-none">
-                                        {{p.fecha|date:'H:i d-m-Y'}}
-                                    </span>
-                                </td>
-                                <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                                <th>Persona</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Fecha</th>
+                                <th>Ver</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for p in prestamos %}
+                                <tr>
+                                    <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.persona.nombre}}</a></td>
+                                    <td>{{p.get_tipo_display}}</td>
+                                    <td>$ {{p.cantidad|puntomil}}</td>
+                                    <td>
+                                        <span class="d-none d-md-block">
+                                            {{p.fecha}}
+                                        </span>
+                                        <span  class="d-md-none">
+                                            {{p.fecha|date:'H:i d-m-Y'}}
+                                        </span>
+                                    </td>
+                                    <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="fs-18 text-center my-5">
+                        No hay Prestamos.
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -49,7 +55,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#table_id').DataTable();
+            $('#miTabla').DataTable();
         });
     </script>
 {% endblock %}

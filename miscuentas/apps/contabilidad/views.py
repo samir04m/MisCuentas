@@ -111,20 +111,12 @@ def crear_ingreso(request, cuenta_id):
 def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
     transaciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
-
-    paginator = Paginator(transaciones, 10)
-    page = request.GET.get('page')
-    transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "cuenta":cuenta}
     return render(request, 'contabilidad/transaccion/movimientos_cuenta.html', context)
 
 @login_required
 def todos_movimientos(request):
     transaciones = Transaccion.objects.filter(cuenta__user = request.user.id).order_by('-fecha')
-
-    paginator = Paginator(transaciones, 10)
-    page = request.GET.get('page')
-    transaciones = paginator.get_page(page)
     return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transaciones":transaciones})
 
 @login_required
@@ -132,9 +124,6 @@ def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
     transaciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
 
-    paginator = Paginator(transaciones, 10)
-    page = request.GET.get('page')
-    transaciones = paginator.get_page(page)
     context =  {"transaciones": transaciones, "etiqueta":etiqueta}
     return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
 
