@@ -230,7 +230,4 @@ class EliminarPersona(DeleteView):
 @login_required
 def listar_prestamos(request):
     prestamos = Prestamo.objects.filter(persona__user = request.user.id)
-    paginator = Paginator(prestamos, 10)
-    page = request.GET.get('page')
-    prestamos = paginator.get_page(page)
     return render(request, 'contabilidad/prestamo/listar_prestamos.html', {'prestamos':prestamos})
