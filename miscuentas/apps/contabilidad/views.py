@@ -116,7 +116,7 @@ def movimientos_cuenta(request, cuenta_id):
 
 @login_required
 def todos_movimientos(request):
-    transaciones = Transaccion.objects.filter(cuenta__user = request.user.id).order_by('-fecha')
+    transaciones = Transaccion.objects.filter(cuenta__user = request.user.id)
     return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transaciones":transaciones})
 
 @login_required

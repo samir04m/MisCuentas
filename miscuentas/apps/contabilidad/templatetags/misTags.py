@@ -39,7 +39,6 @@ def cancelada_color(cancelada):
     else: return 'text-primary'
 
 @register.filter
-def fecha(fecha):
-    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-    fecha_str = str(fecha.hour)+":"+str(fecha.minute)+" - "+str(fecha.day)+" "+meses[fecha.month-1]+" "+str(fecha.year)
-    return fecha_str
+def sin_etiqueta(etiqueta):
+    if not etiqueta: return "- - - - - -"
+    else: return etiqueta

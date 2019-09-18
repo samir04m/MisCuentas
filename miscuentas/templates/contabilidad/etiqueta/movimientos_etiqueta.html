@@ -21,6 +21,7 @@
                                         <th>Valor</th>
                                         <th>Info</th>
                                         <th>Fecha</th>
+                                        <th>Hora</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -28,20 +29,21 @@
                                         <tr class="{{t.tipo|textcolor}}">
                                             <td>{{t.cuenta.nombre}}</td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>{{t.info}}</td>
+                                            <td>{{t.info|truncatechars:'15'}}</td>
                                             <td>
                                                 <span class="d-none d-md-block">
-                                                    {{t.fecha}}
+                                                    {{t.fecha|date:'D, d M Y'}}
                                                 </span>
                                                 <span  class="d-md-none">
-                                                    {{t.fecha|date:'H:i d-m-Y'}}
+                                                    {{t.fecha|date:'D, d M y'}}
                                                 </span>
                                             </td>
+                                            <td>{{t.fecha|date:'h:i A'}}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            
+
                         {% else %}
                             <div class="fs-18 text-center">
                                 No hay movimientos en esta etiqueta
@@ -60,7 +62,9 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#miTabla').DataTable();
+            $('#miTabla').DataTable({
+                order: []
+            });
         });
     </script>
 {% endblock %} %}
