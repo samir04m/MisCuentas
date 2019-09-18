@@ -220,3 +220,8 @@ class EliminarPersona(DeleteView):
 def listar_prestamos(request):
     prestamos = Prestamo.objects.filter(persona__user = request.user.id)
     return render(request, 'contabilidad/prestamo/listar_prestamos.html', {'prestamos':prestamos})
+
+@login_required
+def vista_transaccion(request, transaccion_id):
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cuenta__user=request.user.id)
+    return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})

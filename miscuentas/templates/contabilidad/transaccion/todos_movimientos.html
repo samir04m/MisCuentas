@@ -9,10 +9,11 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
-                    <div class="card-header text-center">
-                        <b>Todos Mis Movimientos</b>
-                    </div>
                     <div class="card-body">
+                        <div class="text-center">
+                            <b>Todos Mis Movimientos</b>
+                        </div>
+                        <hr>
                         {% if transaciones %}
                             <table class="table table-responsive-sm"  id="miTabla">
                                 <thead>
@@ -23,6 +24,7 @@
                                         <th>Info</th>
                                         <th>Fecha</th>
                                         <th>Hora</th>
+                                        <th>Ver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -41,6 +43,11 @@
                                                 </span>
                                             </td>
                                             <td>{{t.fecha|date:'h:i A'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' t.id %}"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt"></i></a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

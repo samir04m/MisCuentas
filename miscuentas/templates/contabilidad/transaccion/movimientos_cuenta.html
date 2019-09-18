@@ -22,6 +22,7 @@
                                         <th>Info</th>
                                         <th>Fecha</th>
                                         <th>Hora</th>
+                                        <th>Ver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -39,6 +40,11 @@
                                                 </span>
                                             </td>
                                             <td>{{t.fecha|date:'h:i A'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' t.id %}"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt"></i></a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
