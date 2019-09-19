@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.contabilidad',
     'apps.usuario',
+    'apps.reporte',
     'import_export',
 ]
 

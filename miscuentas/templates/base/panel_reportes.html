@@ -3,9 +3,18 @@
         <b>Reportes</b>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item"><a href="{% url 'panel:reporte_diario' %}">
-          Reportes Diarios</a></li>
-        <li class="list-group-item"><a href="{% url 'panel:reporte_mensual' %}">
+        <li class="list-group-item">
+            <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Reporte Diario
+          </a>
+              <div class="collapse" id="collapseExample">
+                  <div class="p-2 pl-3">
+                      <a href="{% url 'reporte:diario' %}">Reporte de Egresos</a>
+                  </div>
+
+            </div>
+        </li>
+        <li class="list-group-item"><a href="{% url 'reporte:mensual' %}">
           Reportes Mensuales</a></li>
     </ul>
 </div>

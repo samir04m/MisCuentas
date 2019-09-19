@@ -30,7 +30,4 @@ urlpatterns = [
     path('<int:cuenta_id>/crear-ingreso/', crear_ingreso, name='crear_ingreso'),
     path('<int:persona_id>/crear-prestamo/', crear_prestamo, name='crear_prestamo'),
 
-    path('reporte-diario/', reporte_diario, name='reporte_diario'),
-    path('reporte-mensual/', reporte_mensual, name='reporte_mensual'),
-
 ]
