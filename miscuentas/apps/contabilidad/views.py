@@ -85,7 +85,7 @@ def crear_egreso(request, cuenta_id):
 
     tags = Etiqueta.objects.filter(user=request.user.id)
     context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
-    return render(request, 'contabilidad/transacion/crear_egreso.html', context)
+    return render(request, 'contabilidad/transaccion/crear_egreso.html', context)
 
 @login_required
 def crear_ingreso(request, cuenta_id):
@@ -110,21 +110,21 @@ def crear_ingreso(request, cuenta_id):
 @login_required
 def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
-    transaciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
-    context =  {"transaciones": transaciones, "cuenta":cuenta}
+    transacciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
+    context =  {"transacciones": transacciones, "cuenta":cuenta}
     return render(request, 'contabilidad/transaccion/movimientos_cuenta.html', context)
 
 @login_required
 def todos_movimientos(request):
-    transaciones = Transaccion.objects.filter(cuenta__user = request.user.id)
-    return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transaciones":transaciones})
+    transacciones = Transaccion.objects.filter(cuenta__user = request.user.id)
+    return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transacciones":transacciones})
 
 @login_required
 def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
-    transaciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
+    transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
 
-    context =  {"transaciones": transaciones, "etiqueta":etiqueta}
+    context =  {"transacciones": transacciones, "etiqueta":etiqueta}
     return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
 
 @login_required
@@ -229,21 +229,29 @@ def vista_transaccion(request, transaccion_id):
 
 from django.db.models.functions import TruncMonth, TruncDay
 from django.db.models import Count, Sum
+from django.template import RequestContext
 
 @login_required
 def reporte_diario(request):
-    egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
-        .annotate(day=TruncDay('fecha')).values('day').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()
-    print(egresos)
-    for e in egresos:
-        print(e['day'], e['total'])
+    egresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
+            .annotate(day=TruncDay('fecha')).values('day').annotate(nt=Count('id'), total=Sum('cantidad')).order_by() )
 
-    return render(request, 'contabilidad/transaccion/reporte_diario.html', {"egresos":egresos})
+    chart_egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
+            .annotate(day=TruncDay('fecha')).values('day').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()[:7]
+
+
+    context = {"egresos":egresos, "chart_egresos":chart_egresos}
+    return render(request, 'contabilidad/transaccion/reporte_diario.html', context)
+
 
 @login_required
-def reporte_mes(request):
+def reporte_mensual(request):
     egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso'). \
         annotate(month=TruncMonth('fecha')).values('month').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()
     print(egresos)
+    for e in egresos:
+        for i, n in e.items():
+            print(type(i), i, n)
+        print("--------------------")
 
     return render(request, 'contabilidad/transaccion/reporte_diario.html', {"egresos":egresos})

@@ -51,6 +51,7 @@ class TransaccionResource(resources.ModelResource):
 class TransaccionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['tipo']
     list_display = ('cuenta','tipo','cantidad','etiqueta','fecha',)
+    readonly_fields = ('fecha',)
     resource_class = TransaccionResource
 
 class PrestamoResource(resources.ModelResource):

@@ -42,3 +42,7 @@ def cancelada_color(cancelada):
 def sin_etiqueta(etiqueta):
     if not etiqueta: return "- - - - - -"
     else: return etiqueta
+
+@register.filter
+def invertir(querySet):
+    return querySet.reverse()
