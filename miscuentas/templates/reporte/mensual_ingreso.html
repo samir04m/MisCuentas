@@ -2,16 +2,16 @@
 {% load static %}
 {% load misTags %}
 
-{% block title %}Egresos por Mes{% endblock %}
+{% block title %}Ingresos por Mes{% endblock %}
 
 {% block contenido %}
     <div class="container">
         <div class="row">
             <div class="col-sm-12 col-lg-9">
-                <h5 class="text-white text-center mb-3">Reporte Mensual de Egresos</h5>
+                <h5 class="text-white text-center mb-3">Reporte Mensual de Ingresos</h5>
                 <div class="card">
                   <div class="card-body">
-                      {% if egresos %}
+                      {% if ingresos %}
                           <div id="container" style="width:100%; height:400px;"></div>
                             <br>
                           <table class="table table-responsive-sm" id="miTabla">
@@ -23,15 +23,15 @@
                                   </tr>
                               </thead>
                               <tbody>
-                                  {% for egreso in egresos %}
+                                  {% for ingreso in ingresos %}
                                       <tr>
-                                          {% for key, value in egreso.items %}
+                                          {% for key, value in ingreso.items %}
                                               {% if key == 'month' %}
                                                   <td>{{value|date:'M Y'}}</td>
                                               {% elif key == 'total' %}
                                                   <td>$ {{value|puntomil}}</td>
                                               {% else %}
-                                                  <td>{{value}} egresos</td>
+                                                  <td>{{value}} ingresos</td>
                                               {% endif %}
                                           {% endfor %}
                                       </tr>
@@ -73,11 +73,11 @@
                     type: 'column'
                 },
                 title: {
-                    text: 'Egresos de los ultimos 6 meses'
+                    text: 'Ingresos de los ultimos 6 meses'
                 },
                 xAxis: {
                     categories: [
-                    {% for egreso in chart_egresos %}"{% for key, value in egreso.items %}{% if key == 'month' %}{{value|date:'M y'}}{% endif %}{% endfor %}", {% endfor %}
+                    {% for o in chart_ingresos %}"{% for key, value in o.items %}{% if key == 'month' %}{{value|date:'M y'}}{% endif %}{% endfor %}", {% endfor %}
                     ]
                 },
                 yAxis: {
@@ -86,10 +86,10 @@
                     }
                 },
                 series: [{
-                    name: 'Egreso',
-                     color: '#ff5d5d',
+                    name: 'Ingreso',
+                     color: '#005aad',
                     data: [
-                    {% for egreso in chart_egresos %}{% for key, value in egreso.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
+                    {% for o in chart_ingresos %}{% for key, value in o.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
                     ]
                 }]
             });

@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header py-2 text-center">
+    <div class="text-center py-2">
         <b>Reportes</b>
     </div>
     <ul class="list-group list-group-flush">
@@ -8,11 +8,10 @@
             Reporte Diario <i class="fas fa-angle-down"></i>
           </a>
               <div class="collapse" id="diario">
-                  <div class="p-2">
-                      <ul class="pl-3">
-                          <li><a href="{% url 'reporte:diario_egreso' %}">Reporte de Egresos</a></li>
-                          <li><a href="{% url 'reporte:diario_ingreso' %}">Reporte de Ingresos</a></li>
-                      </ul>
+                  <div class="p-2 pl-4 row">
+                        <a href="{% url 'reporte:diario_egreso' %}" class="my-2"><i class="fas fa-minus-circle"></i> Reporte de Egresos</a>
+                        <br>
+                        <a href="{% url 'reporte:diario_ingreso' %}" class="my-2"><i class="fas fa-plus-circle"></i> Reporte de Ingresos</a>
                   </div>
 
             </div>
@@ -22,8 +21,10 @@
             Reporte Mensuales <i class="fas fa-angle-down"></i>
           </a>
               <div class="collapse" id="mensual">
-                  <div class="p-2 pl-3">
-                      <a href="{% url 'reporte:mensual_egreso' %}">Reporte de Egresos</a>
+                  <div class="p-2 pl-4 row">
+                      <a href="{% url 'reporte:mensual_egreso' %}" class="my-2"><i class="fas fa-minus-circle"></i> Reporte de Egresos</a>
+                      <br>
+                      <a href="{% url 'reporte:mensual_ingreso' %}" class="my-2"><i class="fas fa-plus-circle"></i> Reporte de Ingresos</a>
                   </div>
 
             </div>

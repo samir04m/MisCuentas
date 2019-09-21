@@ -13,7 +13,6 @@ def diario_egreso(request):
     chart_egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
             .annotate(day=TruncDay('fecha')).values('day').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()[:7]
 
-
     context = {"egresos":egresos, "chart_egresos":chart_egresos}
     return render(request, 'reporte/diario_egreso.html', context)
 
@@ -33,11 +32,21 @@ def diario_ingreso(request):
 @login_required
 def mensual_egreso(request):
     egresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
-            .annotate(month=TruncMonth('fecha')).values('month').annotate(nt=Count('id'), total=Sum('cantidad')).order_by() )
+            .annotate(month=TruncMonth('fecha')).values('month').annotate(nRegistros=Count('id'), total=Sum('cantidad')).order_by() )
 
     chart_egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
-            .annotate(month=TruncMonth('fecha')).values('month').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()[:7]
-
+            .annotate(month=TruncMonth('fecha')).values('month').annotate(nRegistros=Count('id'), total=Sum('cantidad')).order_by()[:6]
 
     context = {"egresos":egresos, "chart_egresos":chart_egresos}
-    return render(request, 'reporte/diario_egreso.html', context)
+    return render(request, 'reporte/mensual_egreso.html', context)
+
+@login_required
+def mensual_ingreso(request):
+    ingresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='ingreso') \
+            .annotate(month=TruncMonth('fecha')).values('month').annotate(nRegistros=Count('id'), total=Sum('cantidad')).order_by() )
+
+    chart_ingresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='ingreso') \
+            .annotate(month=TruncMonth('fecha')).values('month').annotate(nRegistros=Count('id'), total=Sum('cantidad')).order_by()[:6]
+
+    context = {"ingresos":ingresos, "chart_ingresos":chart_ingresos}
+    return render(request, 'reporte/mensual_ingreso.html', context)

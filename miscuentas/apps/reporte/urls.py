@@ -6,4 +6,5 @@ urlpatterns = [
     path('diario-egreso/', diario_egreso, name='diario_egreso'),
     path('diario-ingreso/', diario_ingreso, name='diario_ingreso'),
     path('mensual-egreso/', mensual_egreso, name='mensual_egreso'),
+    path('mensual-ingreso/', mensual_ingreso, name='mensual_ingreso'),
 ]
