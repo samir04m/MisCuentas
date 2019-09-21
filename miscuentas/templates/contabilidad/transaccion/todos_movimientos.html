@@ -14,7 +14,7 @@
                             <b>Todos Mis Movimientos</b>
                         </div>
                         <hr>
-                        {% if transaciones %}
+                        {% if transacciones %}
                             <table class="table table-responsive-sm"  id="miTabla">
                                 <thead>
                                     <tr>
@@ -28,7 +28,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for t in transaciones %}
+                                    {% for t in transacciones %}
                                         <tr class="{{t.tipo|textcolor}}">
                                             <td> {{t.cuenta.nombre}}</td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>

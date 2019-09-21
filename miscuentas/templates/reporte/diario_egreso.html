@@ -2,7 +2,7 @@
 {% load static %}
 {% load misTags %}
 
-{% block title %}Reporte Diario{% endblock %}
+{% block title %}Egresos por Dia{% endblock %}
 
 {% block contenido %}
     <div class="container">
@@ -87,6 +87,7 @@
                 },
                 series: [{
                     name: 'Egreso',
+                     color: '#ff5d5d',
                     data: [
                     {% for egreso in chart_egresos %}{% for key, value in egreso.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
                     ]
