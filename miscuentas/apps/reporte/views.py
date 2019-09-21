@@ -32,12 +32,12 @@ def diario_ingreso(request):
 
 @login_required
 def mensual_egreso(request):
-    egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso'). \
-        annotate(month=TruncMonth('fecha')).values('month').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()
-    print(egresos)
-    for e in egresos:
-        for i, n in e.items():
-            print(type(i), i, n)
-        print("--------------------")
+    egresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
+            .annotate(month=TruncMonth('fecha')).values('month').annotate(nt=Count('id'), total=Sum('cantidad')).order_by() )
 
-    return render(request, 'reporte/mensual.html', {"egresos":egresos})
+    chart_egresos = Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
+            .annotate(month=TruncMonth('fecha')).values('month').annotate(nt=Count('id'), total=Sum('cantidad')).order_by()[:7]
+
+
+    context = {"egresos":egresos, "chart_egresos":chart_egresos}
+    return render(request, 'reporte/diario_egreso.html', context)

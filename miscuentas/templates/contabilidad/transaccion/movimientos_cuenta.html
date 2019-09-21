@@ -8,10 +8,12 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
+                <div class="mb-3 text-center text-light">
+                    <b class="fs-18">Movimientos en {{cuenta.nombre}}</b>
+                    <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
+                        Crear Cuenta  <i class="fas fa-plus"></i></a>
+                </div>
                 <div class="card">
-                    <div class="card-header text-center">
-                        Movimientos en {{cuenta.nombre}}
-                    </div>
                     <div class="card-body">
                         {% if transacciones %}
                             <table class="table table-responsive-sm" id="miTabla">

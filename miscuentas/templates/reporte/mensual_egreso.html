@@ -1,0 +1,100 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load misTags %}
+
+{% block title %}Egresos por Dia{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-lg-9">
+                <h5 class="text-white text-center mb-3">Reporte Diario de Egresos</h5>
+                <div class="card">
+                  <div class="card-body">
+                      {% if egresos %}
+                          <div id="container" style="width:100%; height:400px;"></div>
+                            <br>
+                          <table class="table table-responsive-sm" id="miTabla">
+                              <thead>
+                                  <tr>
+                                      <th>Dia</th>
+                                      <th>N° Egresos</th>
+                                      <th>Total</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% for egreso in egresos %}
+                                      <tr>
+                                          {% for key, value in egreso.items %}
+                                              {% if key == 'day' %}
+                                                  <td>{{value|date:'M'}}</td>
+                                              {% elif key == 'total' %}
+                                                  <td>$ {{value|puntomil}}</td>
+                                              {% else %}
+                                                  <td>{{value}} egresos</td>
+                                              {% endif %}
+                                          {% endfor %}
+                                      </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+
+                      {% else %}
+                          <div class="text-center">No hay Reporte disponible</div>
+                      {% endif %}
+
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-3">
+                <br>
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
+    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/highcharts.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#miTabla').DataTable({
+                order: []
+            });
+
+            var myChart = Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Egresos de los ultimos 7 dias'
+                },
+                xAxis: {
+                    categories: [
+                    {% for egreso in chart_egresos %}"{% for key, value in egreso.items %}{% if key == 'day' %}{{value|date:'D d'}}{% endif %}{% endfor %}", {% endfor %}
+                    ]
+                },
+                yAxis: {
+                    title: {
+                        text: '$ COP'
+                    }
+                },
+                series: [{
+                    name: 'Egreso',
+                     color: '#ff5d5d',
+                    data: [
+                    {% for egreso in chart_egresos %}{% for key, value in egreso.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
+                    ]
+                }]
+            });
+
+
+        });
+    </script>
+{% endblock %} %}
