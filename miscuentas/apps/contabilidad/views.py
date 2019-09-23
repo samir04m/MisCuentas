@@ -253,4 +253,4 @@ def transferir(request, cuenta_id):
 
     tags = Etiqueta.objects.filter(user=request.user.id)
     context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
-    return render(request, 'contabilidad/transaccion/transferir_a_cuenta.html', context)
+    return render(request, 'contabilidad/transaccion/transferir.html', context)
