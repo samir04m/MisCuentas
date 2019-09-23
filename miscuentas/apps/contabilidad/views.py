@@ -230,6 +230,8 @@ def vista_transaccion(request, transaccion_id):
 def transferir(request, cuenta_id):
     mensaje = None
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
+    cuentas_destino = Cuenta.objects.filter(user = request.user.id).exclude(id= cuenta.id)
+    print(cuentas_destino)
 
     if request.method == 'POST':
         form = TransaccionForm(request.POST)

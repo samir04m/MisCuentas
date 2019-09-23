@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load misTags %}
 
-{% block title %}Egreso{% endblock %}
+{% block title %}Transferir a otra cuentra{% endblock %}
 
 {% block contenido %}
     <div class="container">
@@ -9,11 +9,11 @@
             <div class="col-sm-12 offset-md-3 col-md-6">
                 <div class="card">
                     <div class="card-header text-center">
-                        Egreso en {{cuenta.nombre}}
+                        Transferencia desde {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
                         <div class="alert alert-primary p-10" role="alert">
-                            <b>Información:</b> El valor Maximo del egreso es de $ {{cuenta.saldo|puntomil}}
+                            <b>Información:</b> El Maximo que se puede transferir es de ${{cuenta.saldo|puntomil}}
                         </div>
                         {% if mensaje %}
                             <div class="alert alert-danger p-10" role="alert">
