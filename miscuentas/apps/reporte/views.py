@@ -50,3 +50,9 @@ def mensual_ingreso(request):
 
     context = {"ingresos":ingresos, "chart_ingresos":chart_ingresos}
     return render(request, 'reporte/mensual_ingreso.html', context)
+
+
+@login_required
+def etiqueta_egreso(request):
+    etiquetas = Etiqueta.objects.filter(user = request.user.id).annotate(nRegistros=Count('id'),total=Sum('transaccion__cantidad'))
+    return render(request, 'reporte/etiqueta_egreso.html', {"etiquetas":etiquetas})

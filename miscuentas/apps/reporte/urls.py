@@ -7,4 +7,5 @@ urlpatterns = [
     path('diario-ingreso/', diario_ingreso, name='diario_ingreso'),
     path('mensual-egreso/', mensual_egreso, name='mensual_egreso'),
     path('mensual-ingreso/', mensual_ingreso, name='mensual_ingreso'),
+    path('etiqueta-egreso/', etiqueta_egreso, name='etiqueta_egreso'),
 ]
