@@ -231,28 +231,29 @@ def transferir(request, cuenta_id):
     mensaje = None
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
     cuentas_destino = Cuenta.objects.filter(user = request.user.id).exclude(id= cuenta.id)
-    print(cuentas_destino)
 
     if request.method == 'POST':
-        form = TransaccionForm(request.POST)
-        if form.is_valid():
-            egreso = form.save(commit=False)
-            if egreso.cantidad <= cuenta.saldo:
-                egreso.tipo = 'egreso'
-                egreso.cuenta = cuenta
+        egreso = Transaccion(cantidad=int(request.POST.get('cantidad')))
 
-                etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
-                egreso.etiqueta = etiqueta
-                egreso.save()
-                cuenta.saldo -= egreso.cantidad
-                cuenta.save()
-                return redirect('panel:panel')
-            else:
-                form = TransaccionForm(request.POST)
-                mensaje = "El valor del egreso no puede superar el valor maximo."
-    else:
-        form = TransaccionForm()
+        if egreso.cantidad <= cuenta.saldo:
+            cuenta_destino = Cuenta.objects.get(id=int(request.POST.get('cuenta_destino')))
+            egreso.info = 'Transferencia a '+cuenta_destino.nombre
+            egreso.tipo = 'egreso'
+            egreso.cuenta = cuenta
 
-    tags = Etiqueta.objects.filter(user=request.user.id)
-    context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
+            egreso.save()
+            cuenta.saldo -= egreso.cantidad
+            cuenta.save()
+
+            ingreso = Transaccion(tipo='ingreso', cantidad=egreso.cantidad,
+                                  info='Transferencia desde '+cuenta.nombre,
+                                  cuenta=cuenta_destino)
+            ingreso.save()
+            cuenta_destino.saldo += ingreso.cantidad
+            cuenta_destino.save()
+            return redirect('panel:panel')
+        else:
+            mensaje = "El valor de la transferencia no puede superar el valor maximo."
+
+    context = {"cuenta":cuenta, "cuentas_destino":cuentas_destino,  "mensaje":mensaje}
     return render(request, 'contabilidad/transaccion/transferir.html', context)

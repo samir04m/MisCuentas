@@ -22,27 +22,42 @@
                         {% endif %}
                         <form method="post">
                             {% csrf_token %}
-                            {{form.as_p}}
-                            <p>
-                                <label for="tag">Seleccione una etiqueta</label>
-                                <select name="tag" class="form-control" id="tag" required>
-                                    <option value="" selected disabled>Seleccionar</option>
-                                    {% for t in tags %}
-                                        <option value="{{t.id}}">{{t.nombre}}</option>
+                            <div class="form-group">
+                                <label for="tag">Cuenta destino</label>
+                                <select name="cuenta_destino" class="form-control" required>
+                                    <option value="" selected disabled>Seleccionar cuenta</option>
+                                    {% for cuenta in cuentas_destino %}
+                                    <option value="{{cuenta.id}}">{{cuenta.nombre}}</option>
                                     {% endfor %}
                                 </select>
-                            </p>
-                            {% if not tags %}
+                            </div>
+                            {% if not cuentas_destino %}
                                 <div class="alert alert-warning" role="alert">
-                                    <b>Atención:</b> Aun no has creado una etiqueta, por favor
-                                    crea una para registrar un egreso.
+                                    <b>Atención:</b> No tienes registradas mas cuentas
                                     <hr>
                                     <div class="text-center">
-                                        <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-warning">Crear Etiqueta</a>
+                                        <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-warning">Crear Cuenta</a>
                                     </div>
                                 </div>
                             {% endif %}
-                            <!-- </p> -->
+
+                            <div class="form-group">
+                                <label for="cantidad">Valor / Cantidad</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                    </div>
+                                    <input type="number" name="cantidad" class="form-control" min=50 max="{{cuenta.saldo}}"
+                                    aria-describedby="cantidadInfo" required >
+                                </div>
+                                <small id="cantidadInfo" class="form-text text-muted">
+                                    El valor de la transferencia No puede superar los $ {{cuenta.saldo|puntomil}}
+                                </small>
+
+                            </div>
+
+
+
                             <center>
                                 <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
                             </center>

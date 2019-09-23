@@ -9,9 +9,11 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="mb-3 text-center text-light">
-                    <b class="fs-18">Movimientos en {{cuenta.nombre}}</b>
+                    <b class="fs-18">Movimientos en {{cuenta.nombre}}</b><br>
+                    <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
+                        Nuevo Ingreso  <i class="fas fa-plus"></i></a>
                     <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
-                        Crear Cuenta  <i class="fas fa-plus"></i></a>
+                        Nuevo Egreso  <i class="fas fa-minus"></i></a>
                 </div>
                 <div class="card">
                     <div class="card-body">
@@ -31,7 +33,7 @@
                                     {% for t in transacciones %}
                                         <tr class="{{t.tipo|textcolor}}">
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>{{t.etiqueta|sin_etiqueta}}</td>
+                                            <td>{{t|sin_etiqueta}}</td>
                                             <td>{{t.info|truncatechars:'20'}}</td>
                                             <td>
                                                 <span class="d-none d-md-block">

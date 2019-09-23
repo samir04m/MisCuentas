@@ -39,9 +39,13 @@ def cancelada_color(cancelada):
     else: return 'text-primary'
 
 @register.filter
-def sin_etiqueta(etiqueta):
-    if not etiqueta: return "- - - - - -"
-    else: return etiqueta
+def sin_etiqueta(transaccion):
+    if not transaccion.etiqueta:
+        if 'Transferencia' in transaccion.info:
+            return 'Transferencia'
+        else:
+            return "- - - - - -"
+    else: return transaccion.etiqueta
 
 @register.filter
 def invertir(querySet):
