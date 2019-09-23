@@ -30,4 +30,6 @@ urlpatterns = [
     path('<int:cuenta_id>/crear-ingreso/', crear_ingreso, name='crear_ingreso'),
     path('<int:persona_id>/crear-prestamo/', crear_prestamo, name='crear_prestamo'),
 
+    path('<int:cuenta_id>/transferir/', transferir, name='transferir'),
+
 ]

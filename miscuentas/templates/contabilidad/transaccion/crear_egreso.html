@@ -6,33 +6,34 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 offset-md-3 col-md-6">
-                <div class="card">
-                    <div class="card-header text-center">
-                        Egreso en {{cuenta.nombre}}
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-primary p-10" role="alert">
-                            <b>Información:</b> El valor Maximo del egreso es de $ {{cuenta.saldo|puntomil}}
+            <div class="col-sm-12 col-lg-8">
+                <div class="col-sm-12 offset-md-2 col-md-8">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            Egreso en {{cuenta.nombre}}
                         </div>
-                        {% if mensaje %}
+                        <div class="card-body">
+                            <div class="alert alert-primary p-10" role="alert">
+                                <b>Información:</b> El valor Maximo del egreso es de $ {{cuenta.saldo|puntomil}}
+                            </div>
+                            {% if mensaje %}
                             <div class="alert alert-danger p-10" role="alert">
                                 <b>Mensaje:</b> {{mensaje}}
                             </div>
-                        {% endif %}
-                        <form method="post">
-                            {% csrf_token %}
-                            {{form.as_p}}
-                            <p>
-                                <label for="tag">Seleccione una etiqueta</label>
-                                <select name="tag" class="form-control" id="tag" required>
-                                    <option value="" selected disabled>Seleccionar</option>
-                                    {% for t in tags %}
+                            {% endif %}
+                            <form method="post">
+                                {% csrf_token %}
+                                {{form.as_p}}
+                                <p>
+                                    <label for="tag">Seleccione una etiqueta</label>
+                                    <select name="tag" class="form-control" id="tag" required>
+                                        <option value="" selected disabled>Seleccionar</option>
+                                        {% for t in tags %}
                                         <option value="{{t.id}}">{{t.nombre}}</option>
-                                    {% endfor %}
-                                </select>
-                            </p>
-                            {% if not tags %}
+                                        {% endfor %}
+                                    </select>
+                                </p>
+                                {% if not tags %}
                                 <div class="alert alert-warning" role="alert">
                                     <b>Atención:</b> Aun no has creado una etiqueta, por favor
                                     crea una para registrar un egreso.
@@ -41,13 +42,29 @@
                                         <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-warning">Crear Etiqueta</a>
                                     </div>
                                 </div>
-                            {% endif %}
-                            <!-- </p> -->
-                            <center>
-                                <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
-                            </center>
-                        </form>
+                                {% endif %}
+                                <!-- </p> -->
+                                <center>
+                                    <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
+                                </center>
+                            </form>
+                        </div>
                     </div>
+                </div>
+                <br>
+            </div>
+            <div class="col-sm-12 col-lg-4">
+                <div class="col-sm-12 offset-md-2 col-md-8 offset-lg-1 col-lg-11">
+                    <div class="card">
+                        <div class="py-2 text-center">
+                            <b>Mas Funciones</b>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="{% url 'panel:transferir' cuenta.id %}">Transferir a otra cuenta</a></li>
+
+                        </ul>
+                    </div>
+
                 </div>
             </div>
         </div>

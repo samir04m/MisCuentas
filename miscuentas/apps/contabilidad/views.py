@@ -225,3 +225,32 @@ def listar_prestamos(request):
 def vista_transaccion(request, transaccion_id):
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, cuenta__user=request.user.id)
     return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})
+
+@login_required
+def transferir(request, cuenta_id):
+    mensaje = None
+    cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
+
+    if request.method == 'POST':
+        form = TransaccionForm(request.POST)
+        if form.is_valid():
+            egreso = form.save(commit=False)
+            if egreso.cantidad <= cuenta.saldo:
+                egreso.tipo = 'egreso'
+                egreso.cuenta = cuenta
+
+                etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
+                egreso.etiqueta = etiqueta
+                egreso.save()
+                cuenta.saldo -= egreso.cantidad
+                cuenta.save()
+                return redirect('panel:panel')
+            else:
+                form = TransaccionForm(request.POST)
+                mensaje = "El valor del egreso no puede superar el valor maximo."
+    else:
+        form = TransaccionForm()
+
+    tags = Etiqueta.objects.filter(user=request.user.id)
+    context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
+    return render(request, 'contabilidad/transaccion/transferir_a_cuenta.html', context)
