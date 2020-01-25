@@ -80,8 +80,14 @@ WSGI_APPLICATION = 'miscuentas.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.misCuentas'),
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.misCuentas'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'miscuentas',
+        'USER': 'darkblue',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'POST': 5432
     }
 }
 
