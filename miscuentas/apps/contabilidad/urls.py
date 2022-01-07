@@ -14,7 +14,7 @@ urlpatterns = [
 
     path('listar-prestamos', listar_prestamos, name='listar_prestamos'),
     path('<int:prestamo_id>/vista-prestamo', vista_prestamo, name='vista_prestamo'),
-    path('<int:prestamo_id>/cancelar-prestamo', cancelar_prestamo, name='cancelar_prestamo'),
+    path('<int:prestamo_id>/pagar-prestamo/', pagar_prestamo, name='pagar_prestamo'),
 
     path('crear-etiqueta', crear_etiqueta, name='crear_etiqueta'),
     path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),

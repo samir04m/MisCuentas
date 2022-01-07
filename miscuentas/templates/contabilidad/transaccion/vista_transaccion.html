@@ -6,7 +6,7 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 offset-md-3 col-md-6">
+            <div class="col-sm-12 offset-md-2 col-md-8">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="text-center">Detalles de Transacción</h5>
@@ -17,23 +17,27 @@
                                     <th>Tipo:</th>
                                     <td>{{transaccion.get_tipo_display}}</td>
                                 </tr>
-                                {% if transaccion.tipo == 'egreso' %}
+                                <tr>
+                                    <th>Cuenta:</th>
+                                    <td>{{transaccion.cuenta.nombre}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valor:</th>
+                                    <td>$ {{transaccion.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo anterior:</th>
+                                    <td>$ {{transaccion.saldo_anterior|puntomil}}</td>
+                                </tr>
+                                {% if transaccion.etiqueta %}
                                     <tr>
                                         <th>Etiqueta</th>
                                         <td>{{transaccion.etiqueta.nombre}}</td>
                                     </tr>
                                 {% endif %}
                                 <tr>
-                                    <th>Valor:</th>
-                                    <td>$ {{transaccion.cantidad|puntomil}}</td>
-                                </tr>
-                                <tr>
                                     <th>Información:</th>
                                     <td>{{transaccion.info}}</td>
-                                </tr>
-                                <tr>
-                                    <th>Cuenta:</th>
-                                    <td>{{transaccion.cuenta.nombre}}</td>
                                 </tr>
                                 <tr>
                                     <th>Hora:</th>

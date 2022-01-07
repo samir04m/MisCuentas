@@ -68,6 +68,7 @@ admin.site.register(Etiqueta, EtiquetaAdmin)
 admin.site.register(Persona, PersonaAdmin)
 admin.site.register(Transaccion, TransaccionAdmin)
 admin.site.register(Prestamo, PrestamoAdmin)
+admin.site.register(TransaccionPrestamo)
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

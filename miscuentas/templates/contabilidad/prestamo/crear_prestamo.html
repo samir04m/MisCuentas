@@ -25,8 +25,8 @@
                             {% csrf_token %}
                             <p>
                                 <label for="cuenta">Seleccione una cuenta</label>
-                                <select class="form-control" name="cuenta">
-                                    <option selected disabled>Seleccionar</option>
+                                <select class="form-control" name="cuenta" required>
+                                    <option selected disabled value="">Seleccionar</option>
                                     {% for c in cuentas %}
                                         <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
                                     {% endfor %}

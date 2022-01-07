@@ -9,11 +9,16 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="mb-3 text-center text-light">
-                    <b class="fs-18">Movimientos en {{cuenta.nombre}}</b><br>
+                    <h5 class="">Movimientos en {{cuenta.nombre}}</h5>
                     <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
-                        Nuevo Ingreso  <i class="fas fa-plus"></i></a>
+                        <i class="fas fa-plus"></i> Nuevo Ingreso  
+                    </a>
                     <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
-                        Nuevo Egreso  <i class="fas fa-minus"></i></a>
+                        <i class="fas fa-minus"></i> Nuevo Egreso
+                    </a>
+                    <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-exchange-alt"></i> Hacer Transferencia
+                    </a>
                 </div>
                 <div class="card">
                     <div class="card-body">

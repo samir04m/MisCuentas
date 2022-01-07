@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, request
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import *
@@ -32,6 +32,15 @@ def crear_cuenta(request):
             cuenta = form.save(commit=False)
             cuenta.user = request.user
             cuenta.save()
+
+            transaccion = Transaccion(
+                tipo='ingreso',
+                saldo_anterior=0,
+                cantidad=cuenta.saldo,
+                info='Creación de la cuenta. Definición del saldo inicial.',
+                cuenta=cuenta
+            ).save()
+
             return redirect('panel:panel')
     else:
         form = CuentaForm()
@@ -66,15 +75,16 @@ def crear_egreso(request, cuenta_id):
     if request.method == 'POST':
         form = TransaccionForm(request.POST)
         if form.is_valid():
-            egreso = form.save(commit=False)
-            if egreso.cantidad <= cuenta.saldo:
-                egreso.tipo = 'egreso'
-                egreso.cuenta = cuenta
-
-                etiqueta = Etiqueta.objects.get(id=int(request.POST.get('tag')))
-                egreso.etiqueta = etiqueta
-                egreso.save()
-                cuenta.saldo -= egreso.cantidad
+            transaccion = form.save(commit=False)
+            if transaccion.cantidad <= cuenta.saldo:
+                transaccion.tipo = 'egreso'
+                transaccion.cuenta = cuenta
+                transaccion.saldo_anterior = cuenta.saldo
+                if request.POST.get('tag'):
+                    tag = Etiqueta.objects.get(id=int(request.POST.get('tag')))
+                    transaccion.etiqueta = tag
+                transaccion.save()
+                cuenta.saldo -= transaccion.cantidad
                 cuenta.save()
                 return redirect('panel:panel')
             else:
@@ -83,7 +93,7 @@ def crear_egreso(request, cuenta_id):
     else:
         form = TransaccionForm()
 
-    tags = Etiqueta.objects.filter(user=request.user.id)
+    tags = Etiqueta.objects.filter(user=request.user.id).exclude(nombre='Prestamo').exclude(nombre='Transferencia')
     context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
     return render(request, 'contabilidad/transaccion/crear_egreso.html', context)
 
@@ -94,11 +104,12 @@ def crear_ingreso(request, cuenta_id):
     if request.method == 'POST':
         form = TransaccionForm(request.POST)
         if form.is_valid():
-            ingreso = form.save(commit=False)
-            ingreso.tipo = 'ingreso'
-            ingreso.cuenta = cuenta
-            ingreso.save()
-            cuenta.saldo += ingreso.cantidad
+            transaccion = form.save(commit=False)
+            transaccion.tipo = 'ingreso'
+            transaccion.cuenta = cuenta
+            transaccion.saldo_anterior = cuenta.saldo
+            transaccion.save()
+            cuenta.saldo += transaccion.cantidad
             cuenta.save()
             return redirect('panel:panel')
     else:
@@ -171,12 +182,28 @@ def crear_prestamo(request, persona_id):
             if (prestamo.tipo == 'yopresto' and prestamo.cantidad <= cuenta.saldo) or prestamo.tipo == 'meprestan':
                 prestamo.cuenta = cuenta
                 prestamo.persona = persona
+                prestamo.saldo_pendiente = prestamo.cantidad
                 prestamo.save()
                 if prestamo.tipo == 'yopresto':
                     cuenta.saldo -= prestamo.cantidad
+                    tipoTransaccion = 'egreso'
+                    infoTransaccion = 'Le presté a '
                 elif prestamo.tipo == 'meprestan':
                     cuenta.saldo += prestamo.cantidad
+                    tipoTransaccion = 'ingreso'
+                    infoTransaccion = 'Me prestó '
                 cuenta.save()
+
+                tag = getEtiqueta('Prestamo', request.user)
+                transaccion = Transaccion(
+                    tipo = tipoTransaccion,
+                    saldo_anterior = cuenta.saldo,
+                    cantidad = prestamo.cantidad,
+                    info = infoTransaccion + persona.nombre,
+                    cuenta = cuenta,
+                    etiqueta = tag
+                ).save()
+
                 return redirect('panel:vista_persona', prestamo.persona.id)
             else:
                 form = PrestamoForm(request.POST)
@@ -194,11 +221,53 @@ def vista_prestamo(request, prestamo_id):
     return render(request, 'contabilidad/prestamo/vista_prestamo.html', {"prestamo":prestamo})
 
 @login_required
-def cancelar_prestamo(request, prestamo_id):
+def pagar_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    prestamo.cancelada = True
-    prestamo.save()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+    if request.method == 'POST':
+        monto = int(request.POST.get('monto'))
+        if monto > prestamo.saldo_pendiente: 
+            monto = prestamo.saldo_pendiente
+
+        cuenta = Cuenta.objects.get(id = request.POST.get('cuenta'))
+        if cuenta:
+            prestamo.saldo_pendiente -= monto
+            if prestamo.saldo_pendiente == 0:
+                prestamo.cancelada = True
+            prestamo.save()
+
+            saldo_anterior = cuenta.saldo
+            if prestamo.tipo == 'yopresto':
+                cuenta.saldo += monto
+                tipoTransaccion = 'ingreso'
+                infoTransaccion = " pagó la totalidad del prestamo." if prestamo.cancelada else " pagó una parte del prestamo."
+                infoTransaccion = prestamo.persona.nombre + infoTransaccion
+            elif prestamo.tipo == 'meprestan':
+                cuenta.saldo -= monto
+                tipoTransaccion = 'egreso'
+                infoTransaccion = "Le pagué la totalidad del prestamo a " if prestamo.cancelada else "Le pagué una parte del prestamo a "
+                infoTransaccion += prestamo.persona.nombre
+            cuenta.save()
+
+            tag = getEtiqueta('Prestamo', request.user)
+            transaccion = Transaccion(
+                tipo = tipoTransaccion,
+                saldo_anterior = saldo_anterior,
+                cantidad = monto,
+                info = infoTransaccion,
+                cuenta = cuenta,
+                etiqueta = tag
+            )
+            transaccion.save()
+
+            transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()
+
+        return redirect('panel:vista_prestamo', prestamo_id)
+    else:
+        cuentas = Cuenta.objects.filter(user=request.user)
+        context = {"cuentas": cuentas, "saldo_pendiente": prestamo.saldo_pendiente}
+        return render(request, 'contabilidad/prestamo/pagar_prestamo.html', context)
+
 
 @login_required
 def listar_personas(request):
@@ -236,19 +305,29 @@ def transferir(request, cuenta_id):
         egreso = Transaccion(cantidad=int(request.POST.get('cantidad')))
 
         if egreso.cantidad <= cuenta.saldo:
+            etiqueta = getEtiqueta('Transferencia', request.user)
+
             cuenta_destino = Cuenta.objects.get(id=int(request.POST.get('cuenta_destino')))
             egreso.info = 'Transferencia a '+cuenta_destino.nombre
             egreso.tipo = 'egreso'
             egreso.cuenta = cuenta
-
+            egreso.saldo_anterior = cuenta.saldo
+            egreso.etiqueta = etiqueta
             egreso.save()
+
+            ingreso = Transaccion(
+                tipo = 'ingreso',
+                cantidad = int(egreso.cantidad),
+                saldo_anterior = cuenta_destino.saldo,
+                info = 'Transferencia desde '+cuenta.nombre,
+                cuenta = cuenta_destino,
+                etiqueta = etiqueta
+            )
+            ingreso.save()
+
             cuenta.saldo -= egreso.cantidad
             cuenta.save()
 
-            ingreso = Transaccion(tipo='ingreso', cantidad=egreso.cantidad,
-                                  info='Transferencia desde '+cuenta.nombre,
-                                  cuenta=cuenta_destino)
-            ingreso.save()
             cuenta_destino.saldo += ingreso.cantidad
             cuenta_destino.save()
             return redirect('panel:panel')
@@ -257,3 +336,10 @@ def transferir(request, cuenta_id):
 
     context = {"cuenta":cuenta, "cuentas_destino":cuentas_destino,  "mensaje":mensaje}
     return render(request, 'contabilidad/transaccion/transferir.html', context)
+
+def getEtiqueta(nombre, user):
+    etiqueta = Etiqueta.objects.filter(nombre=nombre).first()
+    if not etiqueta:
+        etiqueta = Etiqueta(nombre=nombre, user=user).save()
+        # print(vars(etiqueta))
+    return etiqueta

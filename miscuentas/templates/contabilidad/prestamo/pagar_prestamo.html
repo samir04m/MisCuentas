@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Pagar prestamo{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        Realizar pago del prestamo
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="monto">Monto a pagar</label>
+                                <input type="number" class="form-control" id="monto" name="monto" placeholder="Ingrese el valor" value="{{ saldo_pendiente }}" required>
+                                <small id="emailHelp" class="form-text text-muted">El saldo pendiente del prestamo es $ {{ saldo_pendiente|puntomil }}</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="cuenta">Seleccione una cuenta</label>
+                                <select class="form-control" name="cuenta" id="cuenta" required>
+                                    <option selected disabled value="">Seleccionar cuenta</option>
+                                    {% for c in cuentas %}
+                                        <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button class="btn btn-primary m-t-20">Confirmar pago</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

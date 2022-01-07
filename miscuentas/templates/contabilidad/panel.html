@@ -22,9 +22,10 @@
                                     <div class="card-body py-2">
                                         <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
                                         Saldo $ {{c.saldo|puntomil}}
-                                        <div class="float-right">
+                                        <div class="float-right pt-1">
                                             <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary rounded-pill">Ingreso</a>
                                             <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger rounded-pill">Egreso</a>
+                                            <a href="{% url 'panel:transferir' c.id %}" class="btn btn-sm btn-warning rounded-pill">Transferir</a>
                                         </div>
                                     </div>
                                 </div>

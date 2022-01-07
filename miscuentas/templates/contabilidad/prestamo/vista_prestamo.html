@@ -6,7 +6,7 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 offset-md-3 col-md-6">
+            <div class="col-sm-12 offset-md-2 col-md-8">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="text-center">Detalles de Prestamo</h5>
@@ -21,8 +21,12 @@
                                     <td>{{prestamo.get_tipo_display}}</td>
                                 </tr>
                                 <tr>
-                                    <th>Valor:</th>
+                                    <th>Valor del prestamo:</th>
                                     <td>$ {{prestamo.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo pendiente:</th>
+                                    <td>$ {{prestamo.saldo_pendiente|puntomil}}</td>
                                 </tr>
                                 <tr>
                                     <th>Información:</th>
@@ -43,11 +47,38 @@
                             {% if prestamo.cancelada %}
                                 <div class="text-secondary fs-14">El PRESTAMO YA FUE CANCELADO</div>
                             {% else %}
-                                <a href="{% url 'panel:cancelar_prestamo' prestamo.id %}" class="btn btn-success">Cancelar Prestamo</a>
+                                <a href="{% url 'panel:pagar_prestamo' prestamo.id %}" class="btn btn-outline-primary">Pagar Prestamo</a>
                             {% endif %}
                         </div>
                     </div>
                 </div>
+                {% if prestamo.transaccionprestamo_set.all %}
+                    <h5 class="text-center mt-4 mb-2 text-light">Historial de pagos</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-responsive-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tp in prestamo.transaccionprestamo_set.all %}
+                                        <tr>
+                                            <td>{{tp.transaccion.fecha}}</td>
+                                            <td>$ {{tp.transaccion.cantidad|puntomil}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' tp.transaccion.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

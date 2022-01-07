@@ -105,3 +105,4 @@ class PrestamoForm(forms.ModelForm):
                 }
             ),
         }
+        

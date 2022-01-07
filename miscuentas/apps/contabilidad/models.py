@@ -46,8 +46,9 @@ class Transaccion(models.Model):
     TIPO_CHOICES = [('ingreso', 'Ingreso'),
                     ('egreso', 'Egreso')]
     tipo = models.CharField('Tipo de transaccion', max_length=30, choices=TIPO_CHOICES)
+    saldo_anterior = models.IntegerField('Saldo anterior')
     cantidad = models.IntegerField('Cantidad')
-    info = models.CharField('Informacion', max_length=100, null=True, blank=True)
+    info = models.CharField('Informacion', max_length=200)
     fecha = models.DateTimeField('Fecha', auto_now=False, auto_now_add=True)
     cuenta = models.ForeignKey(Cuenta, null=False, blank=False, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
@@ -65,8 +66,9 @@ class Prestamo(models.Model):
                     ('meprestan','Me prestan')]
     tipo = models.CharField('Tipo de prestamo', max_length=30, choices=TIPO_CHOICES)
     cantidad = models.IntegerField('Cantidad')
-    info = models.CharField('Informacion', max_length=100, null=True, blank=True)
+    info = models.CharField('Informacion', max_length=200)
     cancelada = models.BooleanField('Cancelada', default=False)
+    saldo_pendiente = models.IntegerField('Saldo pendiente')
     fecha = models.DateTimeField('Fecha', auto_now=False, auto_now_add=True)
     cuenta = models.ForeignKey(Cuenta, null=False, blank=False, on_delete=models.CASCADE)
     persona = models.ForeignKey(Persona, null=False, blank=False, on_delete=models.CASCADE)
@@ -78,3 +80,12 @@ class Prestamo(models.Model):
 
     def __str__(self):
         return self.tipo
+
+class TransaccionPrestamo(models.Model):
+    transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
+    prestamo = models.ForeignKey(Prestamo, null=False, blank=False, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Transaccion del prestamo'
+        verbose_name_plural = 'Transacciones del prestamo'
+        ordering = ['-transaccion__fecha']

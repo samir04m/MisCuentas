@@ -7,7 +7,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 offset-md-2 col-md-8">
+            <div class="col-sm-12 offset-md-1 col-md-10">
                 <div class="card">
                     <div class="card-body">
                         <div class=" text-center">
@@ -28,19 +28,23 @@
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
+                                        <th>Fecha</th>
                                         <th>Tipo</th>
                                         <th>Cantidad</th>
-                                        <th></th>
+                                        <th>Cancelado</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for p in persona.prestamo_set.all %}
                                         <tr class="{{p.cancelada|cancelada_color}}">
+                                            <td>{{p.fecha}}</td>
                                             <td>{{p.get_tipo_display}}</td>
                                             <td>${{p.cantidad|puntomil}}</td>
                                             <td><i class="{{p.cancelada|cancelada_icono}}"></i></td>
-                                            <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
