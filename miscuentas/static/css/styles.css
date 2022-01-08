@@ -16,3 +16,8 @@ main {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#564d8e',GradientType=0 ); /* IE6-9 */
 
 }
+
+:root {
+	--animate-duration: 1000ms;
+	--animate-delay: 0.9s;
+}
