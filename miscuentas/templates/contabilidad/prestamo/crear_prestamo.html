@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 offset-md-3 col-md-6">
-                <div class="card">
+                <div class="card animate__animated animate__fadeInUp">
                     <div class="card-header text-center">
                         Crear un Prestamo
                     </div>
@@ -42,4 +42,16 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#cantidad', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
 {% endblock %}

@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 offset-md-3 col-md-6">
-                <div class="card">
+                <div class="card animate__animated animate__fadeInDown">
                     <div class="card-header text-center">
                         Egreso en {{cuenta.nombre}}
                     </div>
@@ -33,27 +33,34 @@
                                 </select>
                             </p>
                             {% if not tags %}
-                            <div class="alert alert-warning" role="alert">
-                                <b>Atención:</b> Aun no has creado una etiqueta, por favor
-                                crea una para registrar un egreso.
-                                <hr>
-                                <div class="text-center">
-                                    <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-warning">Crear Etiqueta</a>
+                                <div class="alert alert-warning mb-0" role="alert">
+                                    <b>Información:</b> Aun no has creado una etiqueta.
+                                    <a href="{% url 'panel:crear_etiqueta' %}" class="">Crear Etiqueta</a>
                                 </div>
-                            </div>
                             {% endif %}
-                            <!-- </p> -->
                             <center>
-                                <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
+                                <button type="submit" class="btn btn-primary m-t-20">Confirmar egreso</button>
                             </center>
                         </form>
                     </div>
                 </div>
-                <div class="text-center fs-18 mt-4">
+                <div class="text-center fs-18 mt-4 animate__animated animate__fadeInUp">
                     <a href="{% url 'panel:transferir' cuenta.id %}" class="text-white">Transferir a otra cuenta</a>
                 </div>
 
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#cantidad', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
 {% endblock %}

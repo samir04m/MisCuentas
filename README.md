@@ -22,3 +22,10 @@ Ahora en cmd ejecutar:
 ```
 python -m pip install -r requirements.txt
 ```
+Sino instalar manualmente cada paquete:
+```
+pip install Django~=2.2.4
+```
+```
+pip install django-import-export
+``

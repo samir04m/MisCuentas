@@ -16,9 +16,10 @@ class CuentaForm(forms.ModelForm):
             ),
             'saldo': forms.NumberInput(
                 attrs = {
-                    'class':'form-control',
+                    'class':'form-control puntoMiles',
                     'placeholder':'Saldo en cuenta',
-                    'id': 'saldo'
+                    'id': 'saldo',
+                    'type': 'text'
                 }
             ),
         }
@@ -63,14 +64,14 @@ class TransaccionForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Valor o cantidad',
-                    'min':'50',
-                    'id': 'cantidad'
+                    'id': 'cantidad',
+                    'type': 'text'
                 }
             ),
             'info': forms.TextInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Infromacion (opcional)',
+                    'placeholder':'Información de la transacción',
                     'id': 'info'
                 }
             ),
@@ -93,14 +94,14 @@ class PrestamoForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Valor o cantidad',
-                    'min':'50',
-                    'id': 'cantidad'
+                    'id': 'cantidad',
+                    'type': 'text'
                 }
             ),
             'info': forms.TextInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Infromacion (opcional)',
+                    'placeholder':'Infromacion del prestamo',
                     'id': 'info'
                 }
             ),

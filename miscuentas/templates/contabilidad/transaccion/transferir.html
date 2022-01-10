@@ -7,14 +7,11 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 offset-md-3 col-md-6">
-                <div class="card">
+                <div class="card animate__animated animate__fadeInDown">
                     <div class="card-header text-center">
                         Transferencia desde {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-primary p-10" role="alert">
-                            <b>Información:</b> El Maximo que se puede transferir es de ${{cuenta.saldo|puntomil}}
-                        </div>
                         {% if mensaje %}
                             <div class="alert alert-danger p-10" role="alert">
                                 <b>Mensaje:</b> {{mensaje}}
@@ -27,7 +24,7 @@
                                 <select name="cuenta_destino" class="form-control" required>
                                     <option value="" selected disabled>Seleccionar cuenta</option>
                                     {% for cuenta in cuentas_destino %}
-                                    <option value="{{cuenta.id}}">{{cuenta.nombre}}</option>
+                                    <option value="{{cuenta.id}}">{{cuenta.nombre}} - $ {{cuenta.saldo|puntomil}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -42,13 +39,12 @@
                             {% endif %}
 
                             <div class="form-group">
-                                <label for="cantidad">Valor / Cantidad</label>
+                                <label for="cantidad">Cantidad a transferir</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="inputGroupPrepend">$</span>
                                     </div>
-                                    <input type="number" name="cantidad" class="form-control" min=50 max="{{cuenta.saldo}}"
-                                    aria-describedby="cantidadInfo" required >
+                                    <input type="text" id="cantidad" name="cantidad" class="form-control" aria-describedby="cantidadInfo" required >
                                 </div>
                                 <small id="cantidadInfo" class="form-text text-muted">
                                     El valor de la transferencia No puede superar los $ {{cuenta.saldo|puntomil}}
@@ -67,4 +63,16 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#cantidad', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
 {% endblock %}

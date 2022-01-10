@@ -27,7 +27,10 @@ def panel(request):
 @login_required
 def crear_cuenta(request):
     if request.method == 'POST':
+        request.POST._mutable = True
         form = CuentaForm(request.POST)
+        form.data['saldo'] = int(form.data['saldo'].replace('.',''))
+
         if form.is_valid():
             cuenta = form.save(commit=False)
             cuenta.user = request.user
@@ -73,7 +76,10 @@ def crear_egreso(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
+        request.POST._mutable = True
         form = TransaccionForm(request.POST)
+        form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
+
         if form.is_valid():
             transaccion = form.save(commit=False)
             if transaccion.cantidad <= cuenta.saldo:
@@ -102,7 +108,10 @@ def crear_ingreso(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
+        request.POST._mutable = True
         form = TransaccionForm(request.POST)
+        form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
+
         if form.is_valid():
             transaccion = form.save(commit=False)
             transaccion.tipo = 'ingreso'
@@ -174,7 +183,10 @@ def crear_prestamo(request, persona_id):
     persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
 
     if request.method == 'POST':
+        request.POST._mutable = True
         form = PrestamoForm(request.POST)
+        form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
+
         if form.is_valid():
             prestamo = form.save(commit=False)
             cuenta = Cuenta.objects.get(id=int(request.POST.get('cuenta')))
@@ -225,7 +237,7 @@ def pagar_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
 
     if request.method == 'POST':
-        monto = int(request.POST.get('monto'))
+        monto = int(request.POST.get('monto').replace('.',''))
         if monto > prestamo.saldo_pendiente: 
             monto = prestamo.saldo_pendiente
 
@@ -302,7 +314,7 @@ def transferir(request, cuenta_id):
     cuentas_destino = Cuenta.objects.filter(user = request.user.id).exclude(id= cuenta.id)
 
     if request.method == 'POST':
-        egreso = Transaccion(cantidad=int(request.POST.get('cantidad')))
+        egreso = Transaccion( cantidad=int(request.POST.get('cantidad').replace('.','')) )
 
         if egreso.cantidad <= cuenta.saldo:
             etiqueta = getEtiqueta('Transferencia', request.user)
