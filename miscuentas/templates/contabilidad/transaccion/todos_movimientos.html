@@ -30,15 +30,23 @@
                                         <tr class="{{t.tipo|textcolor}}">
                                             <td>
                                                 <span class="d-none d-md-block">
-                                                    {{t.fecha|date:'D, d M Y - h:i A'}}
+                                                    {{t.fecha|date:'D, d/m/y h:iA'}}
                                                 </span>
                                                 <span  class="d-md-none">
                                                     {{t.fecha|date:'d/m/y h:iA'}}
                                                 </span>
                                             </td>
-                                            <td> {{t.cuenta.nombre}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_cuenta' t.cuenta.id %}" class="reset-color-a">{{t.cuenta.nombre}}</a>
+                                            </td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>{{t|sin_etiqueta}}</td>
+                                            <td>
+                                                {% if t.etiqueta.id %}
+                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}">{{t|sin_etiqueta}}</a>
+                                                {% else %}
+                                                    {{t|sin_etiqueta}}
+                                                {% endif %}
+                                            </td>
                                             <td>{{t.info|truncatechars:'20'}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"

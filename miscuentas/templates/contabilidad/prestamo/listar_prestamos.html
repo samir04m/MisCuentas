@@ -12,28 +12,31 @@
                     <table class="table table-responsive-sm" id="miTabla">
                         <thead>
                             <tr>
+                                <th>Fecha</th>
                                 <th>Persona</th>
                                 <th>Tipo</th>
                                 <th>Cantidad</th>
-                                <th>Fecha</th>
+                                <th>Pago</th>
                                 <th>Ver</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for p in prestamos %}
                                 <tr>
-                                    <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.persona.nombre}}</a></td>
-                                    <td>{{p.get_tipo_display}}</td>
-                                    <td>$ {{p.cantidad|puntomil}}</td>
+                                    
                                     <td>
                                         <span class="d-none d-md-block">
-                                            {{p.fecha}}
+                                            {{p.fecha|date:'D, d/m/y h:iA'}}
                                         </span>
                                         <span  class="d-md-none">
-                                            {{p.fecha|date:'H:i d-m-Y'}}
+                                            {{p.fecha|date:'d/m/y h:iA'}}
                                         </span>
                                     </td>
-                                    <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                                    <td><a href="{% url 'panel:vista_persona' p.persona.id %}">{{p.persona.nombre}}</a></td>
+                                    <td>{{p.get_tipo_display}}</td>
+                                    <td>$ {{p.cantidad|puntomil}}</td>
+                                    <td><i class="{{p.cancelada|cancelada_icono}}"></i></td>
+                                    <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary"><i class="far fa-eye"></i></a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -55,7 +58,9 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#miTabla').DataTable();
+            $('#miTabla').DataTable({
+                "aaSorting": []
+            });
         });
     </script>
 {% endblock %}

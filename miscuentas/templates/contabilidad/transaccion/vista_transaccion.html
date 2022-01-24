@@ -15,11 +15,21 @@
                             <tbody>
                                 <tr>
                                     <th>Tipo:</th>
-                                    <td>{{transaccion.get_tipo_display}}</td>
+                                    <td>
+                                        {% if transaccion.tipo == 'egreso' %}
+                                            <a href="{% url 'reporte:egresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% else %}
+                                            <a href="{% url 'reporte:ingresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Cuenta:</th>
-                                    <td>{{transaccion.cuenta.nombre}}</td>
+                                    <td>
+                                        <a href="{% url 'panel:movimientos_cuenta' transaccion.cuenta.id %}">
+                                            {{transaccion.cuenta.nombre}}
+                                        </a>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Valor:</th>
@@ -32,7 +42,11 @@
                                 {% if transaccion.etiqueta %}
                                     <tr>
                                         <th>Etiqueta</th>
-                                        <td>{{transaccion.etiqueta.nombre}}</td>
+                                        <td>
+                                            <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
+                                                {{transaccion.etiqueta.nombre}}
+                                            </a>
+                                        </td>
                                     </tr>
                                 {% endif %}
                                 <tr>

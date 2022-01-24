@@ -38,7 +38,14 @@
                                 <tbody>
                                     {% for p in persona.prestamo_set.all %}
                                         <tr class="{{p.cancelada|cancelada_color}}">
-                                            <td>{{p.fecha}}</td>
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{p.fecha|date:'D, d/m/y h:iA'}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{p.fecha|date:'d/m/y h:iA'}}
+                                                </span>
+                                            </td>
                                             <td>{{p.get_tipo_display}}</td>
                                             <td>${{p.cantidad|puntomil}}</td>
                                             <td><i class="{{p.cancelada|cancelada_icono}}"></i></td>

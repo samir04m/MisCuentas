@@ -79,7 +79,7 @@ class Prestamo(models.Model):
         ordering = ['-fecha']
 
     def __str__(self):
-        return self.tipo
+        return str(self.id)
 
 class TransaccionPrestamo(models.Model):
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)

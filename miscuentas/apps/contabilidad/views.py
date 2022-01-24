@@ -11,12 +11,6 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import *
 
-def home(request):
-    # return render(request, 'index.html')
-    if request.user.is_authenticated:
-        return redirect('panel/')
-    return redirect('accounts/login')
-
 @login_required
 def panel(request):
     cuentas = Cuenta.objects.filter(user = request.user)

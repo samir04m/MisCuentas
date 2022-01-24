@@ -21,3 +21,15 @@ main {
 	--animate-duration: 1000ms;
 	--animate-delay: 0.9s;
 }
+
+.reset-a, .reset-a:hover, .reset-a:visited, .reset-a:focus, .reset-a:active  {
+    text-decoration: none;
+    color: inherit;
+    outline: 0;
+}
+
+.reset-color-a, .reset-color-a:hover, .reset-color-a:visited, .reset-color-a:focus, .reset-color-a:active  {
+    text-decoration-color: none;
+    color: inherit;
+    outline: 0;
+}

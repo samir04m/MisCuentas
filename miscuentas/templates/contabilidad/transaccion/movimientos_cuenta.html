@@ -10,13 +10,13 @@
             <div class="col-sm-12">
                 <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
                     <h5 class="">Movimientos en {{cuenta.nombre}}</h5>
-                    <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
+                    <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
                         <i class="fas fa-plus"></i> Nuevo Ingreso  
                     </a>
-                    <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light">
+                    <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
                         <i class="fas fa-minus"></i> Nuevo Egreso
                     </a>
-                    <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-light">
+                    <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
                         <i class="fas fa-exchange-alt"></i> Hacer Transferencia
                     </a>
                 </div>
@@ -26,29 +26,33 @@
                             <table class="table table-responsive-sm" id="miTabla">
                                 <thead>
                                     <tr>
+                                        <th>Fecha</th>
                                         <th>Valor</th>
                                         <th>Etiqueta</th>
                                         <th>Info</th>
-                                        <th>Fecha</th>
-                                        <th>Hora</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for t in transacciones %}
                                         <tr class="{{t.tipo|textcolor}}">
-                                            <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>{{t|sin_etiqueta}}</td>
-                                            <td>{{t.info|truncatechars:'20'}}</td>
                                             <td>
                                                 <span class="d-none d-md-block">
-                                                    {{t.fecha|date:'D, d M Y'}}
+                                                    {{t.fecha|date:'D, d/m/y h:iA'}}
                                                 </span>
                                                 <span  class="d-md-none">
-                                                    {{t.fecha|date:'D, d M y'}}
+                                                    {{t.fecha|date:'d/m/y h:iA'}}
                                                 </span>
                                             </td>
-                                            <td>{{t.fecha|date:'h:i A'}}</td>
+                                            <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
+                                            <td>
+                                                {% if t.etiqueta.id %}
+                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}">{{t|sin_etiqueta}}</a>
+                                                {% else %}
+                                                    {{t|sin_etiqueta}}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{t.info|truncatechars:'20'}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">

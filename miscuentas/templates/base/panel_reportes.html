@@ -9,9 +9,9 @@
           </a>
               <div class="collapse" id="diario">
                   <div class="p-2 pl-4 row">
-                        <a href="{% url 'reporte:diario_egreso' %}" class="my-2"><i class="fas fa-minus-circle"></i> Reporte de Egresos</a>
+                        <a href="{% url 'reporte:egresos_diarios' %}" class="my-2"><i class="fas fa-minus-circle"></i> Reporte de Egresos</a>
                         <br>
-                        <a href="{% url 'reporte:diario_ingreso' %}" class="my-2"><i class="fas fa-plus-circle"></i> Reporte de Ingresos</a>
+                        <a href="{% url 'reporte:ingresos_diarios' %}" class="my-2"><i class="fas fa-plus-circle"></i> Reporte de Ingresos</a>
                   </div>
 
             </div>
@@ -22,15 +22,15 @@
           </a>
               <div class="collapse" id="mensual">
                   <div class="p-2 pl-4 row">
-                      <a href="{% url 'reporte:mensual_egreso' %}" class="my-2"><i class="fas fa-minus-circle"></i> Reporte de Egresos</a>
+                      <a href="{% url 'reporte:egresos_mensuales' %}" class="my-2"><i class="fas fa-minus-circle"></i> Reporte de Egresos</a>
                       <br>
-                      <a href="{% url 'reporte:mensual_ingreso' %}" class="my-2"><i class="fas fa-plus-circle"></i> Reporte de Ingresos</a>
+                      <a href="{% url 'reporte:ingresos_mensuales' %}" class="my-2"><i class="fas fa-plus-circle"></i> Reporte de Ingresos</a>
                   </div>
 
             </div>
         </li>
         <li class="list-group-item">
-            <a href="{% url 'reporte:etiqueta_egreso' %}">Reporte Etiquetas</a>
+            <a href="{% url 'reporte:egresos_etiqueta' %}">Reporte Etiquetas</a>
         </li>
 
     </ul>

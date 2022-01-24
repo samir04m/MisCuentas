@@ -6,7 +6,7 @@ from django.db.models.functions import TruncMonth, TruncDay
 from django.db.models import Count, Sum
 
 @login_required
-def diario_egreso(request):
+def egresos_diarios(request):
     egresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
             .annotate(day=TruncDay('fecha')).values('day').annotate(nt=Count('id'), total=Sum('cantidad')).order_by() )
 
@@ -17,7 +17,7 @@ def diario_egreso(request):
     return render(request, 'reporte/diario_egreso.html', context)
 
 @login_required
-def diario_ingreso(request):
+def ingresos_diarios(request):
     ingresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='ingreso') \
             .annotate(day=TruncDay('fecha')).values('day').annotate(nt=Count('id'), total=Sum('cantidad')).order_by() )
 
@@ -30,7 +30,7 @@ def diario_ingreso(request):
 
 
 @login_required
-def mensual_egreso(request):
+def egresos_mensuales(request):
     egresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='egreso') \
             .annotate(month=TruncMonth('fecha')).values('month').annotate(nRegistros=Count('id'), total=Sum('cantidad')).order_by() )
 
@@ -41,7 +41,7 @@ def mensual_egreso(request):
     return render(request, 'reporte/mensual_egreso.html', context)
 
 @login_required
-def mensual_ingreso(request):
+def ingresos_mensuales(request):
     ingresos =  reversed( Transaccion.objects.filter(cuenta__user = request.user.id, tipo='ingreso') \
             .annotate(month=TruncMonth('fecha')).values('month').annotate(nRegistros=Count('id'), total=Sum('cantidad')).order_by() )
 
@@ -53,6 +53,6 @@ def mensual_ingreso(request):
 
 
 @login_required
-def etiqueta_egreso(request):
+def egresos_etiqueta(request):
     etiquetas = Etiqueta.objects.filter(user = request.user.id).annotate(nRegistros=Count('id'),total=Sum('transaccion__cantidad'))
     return render(request, 'reporte/etiqueta_egreso.html', {"etiquetas":etiquetas})
