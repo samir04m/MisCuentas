@@ -42,7 +42,7 @@
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
                                             <td>
                                                 {% if t.etiqueta.id %}
-                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}">{{t|sin_etiqueta}}</a>
+                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}" class="reset-color-a">{{t|sin_etiqueta}}</a>
                                                 {% else %}
                                                     {{t|sin_etiqueta}}
                                                 {% endif %}

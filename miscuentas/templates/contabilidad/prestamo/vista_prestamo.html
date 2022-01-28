@@ -38,7 +38,7 @@
                                 </tr>
                                 <tr>
                                     <th>Fecha:</th>
-                                    <td>{{prestamo.fecha}}</td>
+                                    <td>{{prestamo.fecha|date:'l, d F Y h:i A'}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 {% if prestamo.transaccionprestamo_set.all %}
-                    <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Historial de pagos</h5>
+                    <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Registro de pagos</h5>
                     <div class="card animate__animated animate__fadeInUp">
                         <div class="card-body">
                             <table class="table table-responsive-sm mb-0">
@@ -67,7 +67,7 @@
                                 <tbody>
                                     {% for tp in prestamo.transaccionprestamo_set.all %}
                                         <tr>
-                                            <td>{{tp.transaccion.fecha}}</td>
+                                            <td>{{tp.transaccion.fecha|date:'l, d F Y h:i A'}}</td>
                                             <td>$ {{tp.transaccion.cantidad|puntomil}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' tp.transaccion.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>

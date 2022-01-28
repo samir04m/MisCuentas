@@ -19,7 +19,8 @@ class CuentaForm(forms.ModelForm):
                     'class':'form-control puntoMiles',
                     'placeholder':'Saldo en cuenta',
                     'id': 'saldo',
-                    'type': 'text'
+                    'type': 'text',
+                    'autocomplete': 'off'
                 }
             ),
         }
@@ -65,7 +66,8 @@ class TransaccionForm(forms.ModelForm):
                     'class':'form-control',
                     'placeholder':'Valor o cantidad',
                     'id': 'cantidad',
-                    'type': 'text'
+                    'type': 'text',
+                    'autocomplete': 'off'
                 }
             ),
             'info': forms.TextInput(
@@ -95,7 +97,8 @@ class PrestamoForm(forms.ModelForm):
                     'class':'form-control',
                     'placeholder':'Valor o cantidad',
                     'id': 'cantidad',
-                    'type': 'text'
+                    'type': 'text',
+                    'autocomplete': 'off'
                 }
             ),
             'info': forms.TextInput(

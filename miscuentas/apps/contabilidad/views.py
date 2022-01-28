@@ -13,8 +13,8 @@ from .models import *
 
 @login_required
 def panel(request):
-    cuentas = Cuenta.objects.filter(user = request.user)
-    personas = Persona.objects.filter(user = request.user)
+    cuentas = Cuenta.objects.filter(user = request.user).order_by('id')
+    personas = Persona.objects.filter(user = request.user).order_by('id')
     context = {'cuentas':cuentas, 'personas':personas}
     return render(request, 'contabilidad/panel.html', context)
 
@@ -36,7 +36,8 @@ def crear_cuenta(request):
                 cantidad=cuenta.saldo,
                 info='Creación de la cuenta. Definición del saldo inicial.',
                 cuenta=cuenta
-            ).save()
+            )
+            transaccion.save()
 
             return redirect('panel:panel')
     else:
@@ -208,7 +209,8 @@ def crear_prestamo(request, persona_id):
                     info = infoTransaccion + persona.nombre,
                     cuenta = cuenta,
                     etiqueta = tag
-                ).save()
+                )
+                transaccion.save()
 
                 return redirect('panel:vista_persona', prestamo.persona.id)
             else:
@@ -346,6 +348,6 @@ def transferir(request, cuenta_id):
 def getEtiqueta(nombre, user):
     etiqueta = Etiqueta.objects.filter(nombre=nombre).first()
     if not etiqueta:
-        etiqueta = Etiqueta(nombre=nombre, user=user).save()
-        # print(vars(etiqueta))
+        etiqueta = Etiqueta(nombre=nombre, user=user)
+        etiqueta.save()
     return etiqueta

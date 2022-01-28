@@ -8,36 +8,39 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 col-lg-9">
-                <h5 class="text-white text-center mb-3">Report de Egresos por Etiquetas</h5>
+                <h5 class="text-white text-center mb-3">Reporte de Egresos por Etiquetas</h5>
                 <div class="card">
-                  <div class="card-body">
-                      {% if etiquetas %}
-                          <div id="container" style="width:100%; height:400px;"></div>
-                            <br>
-                          <table class="table table-responsive-sm" id="miTabla">
-                              <thead>
-                                  <tr>
-                                      <th>Etiqueta</th>
-                                      <th>N° Registros</th>
-                                      <th>Total</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  {% for e in etiquetas %}
-                                      <tr>
-                                            <td>{{e.nombre}}</td>
+                    <div class="card-body">
+                        {% if egresosPorEtiqueta %}
+                            <table class="table table-responsive-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Etiqueta</th>
+                                        <th>Mes Año</th>
+                                        <th>N° Registros</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, val in egresosPorEtiqueta.items %}
+                                        {% for e in val %}
+                                        <tr>
+                                            {% if forloop.first %}
+                                                <th rowspan="{{val.count}}"> {{key}} </th>
+                                            {% endif %}
+                                            <td> {{e.month|date:'F Y'}}</td>
                                             <td>{{e.nRegistros}}</td>
                                             <td>$ {{e.total|puntomil}}</td>
-                                      </tr>
-                                  {% endfor %}
-                              </tbody>
-                          </table>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
 
-                      {% else %}
-                          <div class="text-center">No hay Reporte disponible</div>
-                      {% endif %}
-
-                  </div>
+                        {% else %}
+                            <div class="text-center">No hay Reporte disponible</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12 col-lg-3">
@@ -50,55 +53,3 @@
     </div>
 
 {% endblock %}
-
-{% block script %}
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-    <script src="{% static 'js/highcharts.js' %}"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                order: []
-            });
-
-            var myChart = Highcharts.chart('container', {
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Egresos Por Etiquetas'
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false,
-                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                        },
-                        showInLegend: true
-                    }
-                },
-                series: [{
-                    name: 'Etiquetas',
-                    colorByPoint: true,
-                    data: [
-                    {% for e in etiquetas %}{
-                        name: '{{e.nombre}}',
-                        y: {{e.total}}
-                    },{% endfor %}
-                    ]
-                }]
-            });
-
-
-        });
-    </script>
-{% endblock %} %}

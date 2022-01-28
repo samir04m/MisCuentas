@@ -44,19 +44,18 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="inputGroupPrepend">$</span>
                                     </div>
-                                    <input type="text" id="cantidad" name="cantidad" class="form-control" aria-describedby="cantidadInfo" required >
+                                    <input type="text" id="cantidad" name="cantidad" class="form-control" 
+                                        aria-describedby="cantidadInfo" autocomplete="off" required >
                                 </div>
                                 <small id="cantidadInfo" class="form-text text-muted">
-                                    El valor de la transferencia No puede superar los $ {{cuenta.saldo|puntomil}}
+                                    El valor de la transferencia no puede superar los $ {{cuenta.saldo|puntomil}}
                                 </small>
 
                             </div>
 
-
-
-                            <center>
-                                <button type="submit" class="btn btn-primary btn-lg m-t-20">Guardar</button>
-                            </center>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary m-t-20">Confirmar</button>
+                            </div>
                         </form>
                     </div>
                 </div>
