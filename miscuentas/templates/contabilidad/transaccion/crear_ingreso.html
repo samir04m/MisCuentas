@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load misTags %}
 
 {% block title %}Ingreso{% endblock %}
 
@@ -6,17 +7,56 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 offset-md-3 col-md-6">
-                <div class="card animate__animated animate__fadeInDown">
+                <div class="card shadow animate__animated animate__fadeInDown">
                     <div class="card-header text-center">
                         Ingreso en {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
-
+                        <div class="alert alert-primary" role="alert">
+                            Saldo actual: ${{cuenta.saldo|puntomil}}
+                        </div>
                         <form method="post">
                             {% csrf_token %}
                             {{form.as_p}}
+                            {% if tags %}
+                                <div class="mb-3">
+                                    <label for="tag">Seleccione una etiqueta</label>
+                                    <select name="tag" class="form-control" id="tag">
+                                        <option value="" selected disabled>Seleccionar</option>
+                                        {% for t in tags %}
+                                        <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary" role="alert">
+                                    No se ha creado ninguna etiqueta todavía.
+                                </div>
+                            {% endif %}
+
+                            <div class="text-right">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseTag" aria-expanded="false" aria-controls="collapseTag">
+                                    Nueva etiqueta
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate">
+                                    Seleccionar fecha
+                                </button>
+                            </div>
+                            <div class="collapse" id="collapseTag">
+                                <div class="pb-2">
+                                    <label for="newTag">Crear nueva etiqueta</label>
+                                    <input type="text" class="form-control" name="newTag" id="newTag" placeholder="Nombre">
+                                </div>
+                            </div>
+                            <div class="collapse" id="collapseDate">
+                                <div class="pb-2">
+                                    <label for="datetime">Fecha</label>
+                                    <input type="text" class="form-control" name="datetime" id="datetime">
+                                </div>
+                            </div>
+                            
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary m-t-20">Confirmar</button>
+                                <button type="submit" class="btn btn-primary m-t-20">Confirmar ingreso</button>
                             </div>
                         </form>
                     </div>
@@ -34,6 +74,12 @@
             digitGroupSeparator: ".",
             decimalCharacter: ",",
             currencySymbol : ''
+        });
+
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
         });
     </script>
 {% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="alert alert-{{color}} animate__animated animate__fadeIn" role="alert">
+                    <div class="text-center">
+                        <b>{{titulo}}</b>
+                    </div>    
+                    <hr>
+                    <p class="text-center">{{mensaje}}</p>
+                    <div class="text-center">
+                        <a href="{{urlCancel}}" class="btn btn-outline-secondary mx-2">Cancelar</a>
+                        <a href="{{urlConfirm}}" class="btn btn-outline-{{color}} mx-2">Aceptar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

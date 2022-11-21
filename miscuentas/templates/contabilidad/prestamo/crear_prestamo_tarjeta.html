@@ -12,10 +12,9 @@
                         Crear un Prestamo
                     </div>
                     <div class="card-body">
-                        <div class="fs-20 m-b-20 text-primary">
-                            <b>Prestamo con {{persona.nombre}}</b>
+                        <div class="fz-16 m-b-20">
+                            Tarjeta de crédito: <b>{{persona.nombre}}</b>
                         </div>
-                        <hr>
                         {% if mensaje %}
                             <div class="alert alert-danger p-10" role="alert">
                                 <b>Mensaje:</b> {{mensaje}}
@@ -23,17 +22,31 @@
                         {% endif %}
                         <form method="post">
                             {% csrf_token %}
-                            <p>
-                                <label for="cuenta">Seleccione una cuenta</label>
-                                <select class="form-control" name="cuenta" required>
-                                    <option selected disabled value="">Seleccionar</option>
-                                    <option value="ninguna">Ninguna</option>
-                                    {% for c in cuentas %}
-                                        <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
-                                    {% endfor %}
+                            <div class="mb-3">
+                                <label for="cantidad" class="form-label">Valor o Cantidad</label>
+                                <input type="text" class="form-control" id="cantidad" name="cantidad" required autocomplete="off">
+                            </div>
+
+                            <div class="mb-3 ">
+                                <label for="cuotas">Número de cuotas</label>
+                                <select class="form-select form-control" for="cuotas" name="cuotas"  aria-label="Select numero cuotas">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
                                 </select>
-                            </p>
-                            {{form.as_p}}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="info" class="form-label">Descripción</label>
+                                <input type="text" class="form-control" id="info" name="info" required>
+                            </div>
 
                             <div class="text-right">
                                 <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">

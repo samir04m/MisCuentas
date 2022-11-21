@@ -48,13 +48,29 @@
                                         aria-describedby="cantidadInfo" autocomplete="off" required >
                                 </div>
                                 <small id="cantidadInfo" class="form-text text-muted">
-                                    El valor de la transferencia no puede superar los $ {{cuenta.saldo|puntomil}}
+                                    El valor maximo de transferencia es ${{cuenta.saldo|puntomil}}
                                 </small>
+                            </div>
 
+                            <div class="form-group">
+                                <label for="info">Información</label>
+                                <textarea class="form-control" id="info" name="info" rows="1" placeholder="Opcional"></textarea>
+                            </div>
+
+                            <div class="text-right">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                    Seleccionar fecha
+                                </button>
+                            </div>
+                            <div class="collapse" id="collapseExample">
+                                <div class="pb-2">
+                                    <label for="datetime">Fecha:</label>
+                                    <input type="text" class="form-control" name="datetime" id="datetime">
+                                </div>
                             </div>
 
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary m-t-20">Confirmar</button>
+                                <button type="submit" class="btn btn-warning m-t-20">Confirmar transferencia</button>
                             </div>
                         </form>
                     </div>
@@ -72,6 +88,12 @@
             digitGroupSeparator: ".",
             decimalCharacter: ",",
             currencySymbol : ''
+        });
+
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
         });
     </script>
 {% endblock %}

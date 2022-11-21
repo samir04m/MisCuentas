@@ -38,9 +38,9 @@
 
 
                 <div class="text-center text-light my-3 animate__animated animate__fadeInDown">
-                    <b class="fs-18">Personas</b>
+                    <b class="fs-18">Personas/Tarjetas</b>
                     <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
-                        Crear Persona  <i class="fas fa-plus"></i></a>
+                        Crear  <i class="fas fa-plus"></i></a>
                 </div>
 
                     {% if personas %}
@@ -48,9 +48,15 @@
                             {% for p in personas %}
                                 <div class="col-sm-12 col-lg-6 py-2">
                                     <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
-                                        <div class="card-body p-2">
+                                        <div class="card-body p-2 pl-3">
                                             <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
-                                                <i class="fas fa-user-circle fa-lg"></i> {{p.nombre}}</a>
+                                                {% if p.isCreditCard %}
+                                                    <i class="far fa-credit-card"></i>
+                                                {% else %}
+                                                    <i class="fas fa-user-circle"></i>
+                                                {% endif %}
+                                                {{p.nombre}}
+                                            </a>
                                             <div class="float-right">
                                                 <a href="{% url 'panel:crear_prestamo' p.id %}"
                                                     class="btn btn-sm btn-primary rounded-pill">Prestar</a>
@@ -61,8 +67,8 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="text-center my-5">
-                            <h5 class="m-30 text-white">No hay Personas</h5>
+                        <div class="text-center my-5 animate__animated animate__fadeInUp">
+                            <h5 class="m-30 text-white">No hay Personas o Tarjetas</h5>
                         </div>
                     {% endif %}
 
@@ -76,3 +82,19 @@
     </div>
 
 {% endblock %}
+
+{% block script %}
+    {% if messages %}
+        <script type="text/javascript">
+            $(function () {
+                Swal.fire({
+                    icon: '{{messages|getMessage:"icon" }}',
+                    title: '{{messages|getMessage }}',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+

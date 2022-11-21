@@ -37,7 +37,7 @@
                                             </td>
                                             <td>{{t.cuenta.nombre}}</td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>{{t.info|truncatechars:'20'}}</td>
+                                            <td>{{t.info|truncatechars:'40'}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">

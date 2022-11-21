@@ -11,33 +11,57 @@
                 <div class="card animate__animated animate__fadeInUp">
                     <div class="card-body">
                         <div class=" text-center">
-                            <b>Información de la Persona</b>
+                            {% if persona.isCreditCard %}
+                                <b>Información de la Tarjeta de crédito</b>
+                            {% else %}
+                                <b>Información de la Persona</b>
+                            {% endif %}
                         </div>
                         <hr>
                         <div class="text-center">
                             <div style="font-size:40px;">
-                                <i class="fas fa-user-circle"></i> {{persona.nombre}}
+                                {% if persona.isCreditCard %}
+                                    <i class="far fa-credit-card"></i>
+                                {% else %}
+                                    <i class="fas fa-user-circle"></i>
+                                {% endif %}
+                                {{persona.nombre}}
                             </div>
                             <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">Crear Prestamo</a>
                         </div>
                         <hr>
-                        Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
+                        <p>
+                            {% if persona.isCreditCard %}
+                                Has realizado {{persona.prestamo_set.count}} prestamos con esta tarjeta. 
+                                Deuda total ${{yoDebo|puntomil}}
+                            {% else %}
+                                Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
+                                {% if persona.prestamo_set.count %}
+                                    <br> En total usted debe ${{yoDebo|puntomil}} y le deben a usted ${{meDeben|puntomil}}.
+                                    {% if diferencia %}
+                                        <br> {{diferenciaMensaje}} ${{diferencia|puntomil}}.
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </p> 
 
                         {% if persona.prestamo_set.all %}
                             <h5 class="text-center mt-3"><b>Registro de Prestamos</b></h5>
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>Fecha</th>
                                         <th>Tipo</th>
                                         <th>Cantidad</th>
-                                        <th>Cancelado</th>
+                                        <th>Pendiente</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for p in persona.prestamo_set.all %}
                                         <tr class="{{p.cancelada|cancelada_color}}">
+                                            <td class="text-center"><i class="{{p.cancelada|cancelada_icono}}"></i></td>
                                             <td>
                                                 <span class="d-none d-md-block">
                                                     {{p.fecha|date:'D, d/m/y h:iA'}}
@@ -47,8 +71,9 @@
                                                 </span>
                                             </td>
                                             <td>{{p.get_tipo_display}}</td>
+                                            
                                             <td>${{p.cantidad|puntomil}}</td>
-                                            <td><i class="{{p.cancelada|cancelada_icono}}"></i></td>
+                                            <td>${{p.saldo_pendiente|puntomil}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
                                             </td>
@@ -62,4 +87,19 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    {% if messages %}
+        <script type="text/javascript">
+            $(function () {
+                Swal.fire({
+                    icon: '{{messages|getMessage:"icon" }}',
+                    title: '{{messages|getMessage }}',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            });
+        </script>
+    {% endif %}
 {% endblock %}

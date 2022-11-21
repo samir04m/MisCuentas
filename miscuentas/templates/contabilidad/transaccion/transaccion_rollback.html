@@ -1,0 +1,31 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Confirmar devolución{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card animate__animated animate__fadeInDown">
+                    <div class="card-header text-center">
+                        Confirma la devolución de la transacción 
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'panel:transaccion_rollback' transaccion.id %}">
+                            {% csrf_token %}
+                            <p>
+                                Deshacer la transacción implica la devolución del monto de dinero de la cuenta partícipe a la cantidad anterior a esta transacción.
+                                <br>
+                                <b>¿Esta seguro de deshacer esta transacción?</b>
+                            </p>
+                            <div class="text-center">
+                                <a href="{% url 'panel:vista_transaccion' transaccion.id %}" class="btn btn-outline-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-outline-danger">Confirmar y deshacer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

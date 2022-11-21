@@ -10,40 +10,35 @@
             <div class="col-sm-12 col-lg-9">
                 <h5 class="text-white text-center mb-3">Reporte Mensual de Ingresos</h5>
                 <div class="card">
-                  <div class="card-body">
-                      {% if ingresos %}
-                          <div id="container" style="width:100%; height:400px;"></div>
+                    <div class="card-body">
+                        {% if ingresos %}
+                            <div id="container" style="width:100%; height:400px;"></div>
                             <br>
-                          <table class="table table-responsive-sm" id="miTabla">
-                              <thead>
-                                  <tr>
-                                      <th>Mes</th>
-                                      <th>N° Egresos</th>
-                                      <th>Total</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  {% for ingreso in ingresos %}
-                                      <tr>
-                                          {% for key, value in ingreso.items %}
-                                              {% if key == 'month' %}
-                                                  <td>{{value|date:'M Y'}}</td>
-                                              {% elif key == 'total' %}
-                                                  <td>$ {{value|puntomil}}</td>
-                                              {% else %}
-                                                  <td>{{value}} ingresos</td>
-                                              {% endif %}
-                                          {% endfor %}
-                                      </tr>
-                                  {% endfor %}
-                              </tbody>
-                          </table>
-
-                      {% else %}
-                          <div class="text-center">No hay Reporte disponible</div>
-                      {% endif %}
-
-                  </div>
+                            <table class="table table-responsive-sm" id="miTabla">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>N° Ingresos</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ingreso in ingresos %}
+                                        <tr>
+                                            <td>{{ingreso.fecha|date:'F Y'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_mes' 'ingreso' ingreso.fecha|date:'m-Y' %}"
+                                                    class="reset-">{{ingreso.nregistros}} ingresos</a>
+                                            </td>
+                                            <td>$ {{ingreso.total|puntomil}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center">No hay Reporte disponible</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12 col-lg-3">
@@ -73,11 +68,11 @@
                     type: 'column'
                 },
                 title: {
-                    text: 'Ingresos de los ultimos 6 meses'
+                    text: 'Ingresos de los ultimos 10 meses'
                 },
                 xAxis: {
                     categories: [
-                    {% for o in chart_ingresos %}"{% for key, value in o.items %}{% if key == 'month' %}{{value|date:'M y'}}{% endif %}{% endfor %}", {% endfor %}
+                        {% for g in grafica %}"{{g.fecha|date:'M Y'}}", {% endfor %}
                     ]
                 },
                 yAxis: {
@@ -89,7 +84,7 @@
                     name: 'Ingreso',
                      color: '#005aad',
                     data: [
-                    {% for o in chart_ingresos %}{% for key, value in o.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
+                        {% for g in grafica %}{{g.total}}, {% endfor %}
                     ]
                 }]
             });

@@ -20,6 +20,12 @@
                                     <th>Tipo de prestamo:</th>
                                     <td>{{prestamo.get_tipo_display}}</td>
                                 </tr>
+                                {% if prestamo.cuenta %}
+                                    <tr>
+                                        <th>Cuenta involucrada:</th>
+                                        <td><a href="{% url 'panel:movimientos_cuenta' prestamo.cuenta.id %}">{{prestamo.cuenta.nombre}}</a></td>
+                                    </tr>
+                                {% endif %}
                                 <tr>
                                     <th>Valor del prestamo:</th>
                                     <td>$ {{prestamo.cantidad|puntomil}}</td>
@@ -47,6 +53,7 @@
                             {% if prestamo.cancelada %}
                                 <div class="text-secondary fs-14">El PRESTAMO YA FUE CANCELADO</div>
                             {% else %}
+                                <a href="{% url 'panel:confirm_eliminar_prestamo' prestamo.id %}" class="btn btn-outline-danger">Eliminar Prestamo</a>
                                 <a href="{% url 'panel:pagar_prestamo' prestamo.id %}" class="btn btn-outline-primary">Pagar Prestamo</a>
                             {% endif %}
                         </div>

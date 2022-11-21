@@ -17,6 +17,7 @@
                             <table class="table table-responsive-sm table-striped" id="miTabla">
                                 <thead>
                                     <tr>
+                                        <th>Fecha</th>
                                         <th>Dia</th>
                                         <th>N° Egresos</th>
                                         <th>Total</th>
@@ -25,15 +26,12 @@
                                 <tbody>
                                     {% for egreso in egresos %}
                                         <tr>
-                                            {% for key, value in egreso.items %}
-                                                {% if key == 'day' %}
-                                                    <td>{{value|date:'D, d M Y'}}</td>
-                                                {% elif key == 'numero' %}
-                                                    <td>{{value}} egresos</td>
-                                                {% elif key == 'total' %}
-                                                    <td>$ {{value|puntomil}}</td>
-                                                {% endif %}
-                                            {% endfor %}
+                                            <td>{{egreso.fecha|date:'Y-m-d'}}</td>
+                                            <td>{{egreso.fecha|date:'l'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_dia' 'egreso' egreso.fecha|date:'d-m-Y' %}" class="reset-">{{egreso.nregistros}} egresos</a>
+                                            </td>
+                                            <td>$ {{egreso.total|puntomil}}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -72,11 +70,11 @@
                     type: 'column'
                 },
                 title: {
-                    text: 'Egresos de los ultimos 7 dias'
+                    text: 'Egresos de los ultimos 10 dias'
                 },
                 xAxis: {
                     categories: [
-                    {% for egreso in chart_egresos %}"{% for key, value in egreso.items %}{% if key == 'day' %}{{value|date:'D d'}}{% endif %}{% endfor %}", {% endfor %}
+                        {% for g in grafica %}"{{g.fecha|date:'D d'}}", {% endfor %}
                     ]
                 },
                 yAxis: {
@@ -88,7 +86,7 @@
                     name: 'Egreso',
                      color: '#ff5d5d',
                     data: [
-                    {% for egreso in chart_egresos %}{% for key, value in egreso.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
+                        {% for g in grafica %}{{g.total}}, {% endfor %}
                     ]
                 }]
             });

@@ -32,6 +32,7 @@ class Etiqueta(models.Model):
 
 class Persona(models.Model):
     nombre = models.CharField('Nombre de la Persona', max_length=90)
+    isCreditCard = models.BooleanField('Es tarjeta de credito?', default=False)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -48,9 +49,9 @@ class Transaccion(models.Model):
     tipo = models.CharField('Tipo de transaccion', max_length=30, choices=TIPO_CHOICES)
     saldo_anterior = models.IntegerField('Saldo anterior')
     cantidad = models.IntegerField('Cantidad')
-    info = models.CharField('Informacion', max_length=200)
-    fecha = models.DateTimeField('Fecha', auto_now=False, auto_now_add=True)
-    cuenta = models.ForeignKey(Cuenta, null=False, blank=False, on_delete=models.CASCADE)
+    info = models.TextField('Informacion', max_length=300)
+    fecha = models.DateTimeField('Fecha')
+    cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
@@ -59,7 +60,8 @@ class Transaccion(models.Model):
         ordering = ['-fecha']
 
     def __str__(self):
-        return self.tipo
+        cuentaNombre = self.cuenta.nombre if self.cuenta else "(no Cuenta)"
+        return "{} - {} {} ${} - {}".format(self.id, self.tipo, cuentaNombre, self.cantidad, self.fecha.strftime("%d/%b/%Y"))
 
 class Prestamo(models.Model):
     TIPO_CHOICES = [('yopresto', 'Yo presto'),
@@ -69,8 +71,8 @@ class Prestamo(models.Model):
     info = models.CharField('Informacion', max_length=200)
     cancelada = models.BooleanField('Cancelada', default=False)
     saldo_pendiente = models.IntegerField('Saldo pendiente')
-    fecha = models.DateTimeField('Fecha', auto_now=False, auto_now_add=True)
-    cuenta = models.ForeignKey(Cuenta, null=False, blank=False, on_delete=models.CASCADE)
+    fecha = models.DateTimeField('Fecha')
+    cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
     persona = models.ForeignKey(Persona, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -79,7 +81,7 @@ class Prestamo(models.Model):
         ordering = ['-fecha']
 
     def __str__(self):
-        return str(self.id)
+        return "{} - {} {} - {}".format(self.id, self.tipo, self.persona.nombre, self.fecha.strftime("%d/%b/%Y"))
 
 class TransaccionPrestamo(models.Model):
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
@@ -89,3 +91,6 @@ class TransaccionPrestamo(models.Model):
         verbose_name = 'Transaccion del prestamo'
         verbose_name_plural = 'Transacciones del prestamo'
         ordering = ['-transaccion__fecha']
+
+    def __str__(self):
+        return "{} - Prestamo {} - Transaccion {} - $ {}".format(self.id, self.prestamo.id, self.transaccion.id, self.transaccion.cantidad)

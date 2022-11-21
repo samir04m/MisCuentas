@@ -9,9 +9,25 @@
             <div class="col-sm-12 offset-md-3 col-md-6">
                 <div class="card animate__animated animate__fadeInUp">
                     <div class="card-header text-center">
-                        Realizar pago del prestamo
+                        Pagar prestamo
                     </div>
                     <div class="card-body">
+                        
+                        <div class="alert alert-primary" role="alert">
+                            <div class="text-center">Información del prestamo</div>
+                            <hr class="my-1">
+                            Persona/Tarjeta: <b>{{prestamo.persona.nombre}}</b> <br>
+                            Tipo de prestamo: <b>{{prestamo.get_tipo_display}}</b> <br>
+                            Cuenta involucrada: 
+                            <b>
+                                {% if prestamo.cuenta %}
+                                    {{prestamo.cuenta.nombre}}
+                                {% else %}
+                                    Ninguna
+                                {% endif %}
+                            </b>
+                        </div>
+
                         <form method="post">
                             {% csrf_token %}
                             <div class="form-group">
@@ -27,6 +43,33 @@
                                         <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
                                     {% endfor %}
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="info">Información</label>
+                                <textarea class="form-control" id="info" name="info" rows="1" placeholder="Opcional"></textarea>
+                            </div>
+                            {% if tags and prestamo.persona.isCreditCard %}
+                                <div class="mb-3">
+                                    <label for="tag">Seleccione una etiqueta</label>
+                                    <select name="tag" class="form-control" id="tag">
+                                        <option value="" selected disabled>Ninguna</option>
+                                        {% for t in tags %}
+                                            <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
+
+                            <div class="text-right">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                    Seleccionar fecha
+                                </button>
+                            </div>
+                            <div class="collapse" id="collapseExample">
+                                <div class="pb-2">
+                                    <label for="datetime">Fecha:</label>
+                                    <input type="text" class="form-control" name="datetime" id="datetime">
+                                </div>
                             </div>
                             
                             <div class="text-center">
@@ -48,6 +91,12 @@
             digitGroupSeparator: ".",
             decimalCharacter: ",",
             currencySymbol : ''
+        });
+
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
         });
     </script>
 {% endblock %}

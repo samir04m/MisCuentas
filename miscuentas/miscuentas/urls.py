@@ -18,6 +18,9 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import logout_then_login
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('apps.contabilidad.urls', 'panel'))),
@@ -25,4 +28,4 @@ urlpatterns = [
     path('reporte/', include(('apps.reporte.urls', 'reporte'))),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', logout_then_login, name='logout'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

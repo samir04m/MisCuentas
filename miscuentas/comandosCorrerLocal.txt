@@ -1,0 +1,32 @@
+heroku login
+
+heroku git:clone -a miscuentas4
+
+python -m venv venv
+
+venv\Scripts\activate
+
+En el archivo requirements comentar el paquete asi #psycopg2==2.8.6
+
+cd miscuentas4dir
+
+python -m pip install -r requirements.txt
+
+Descomentar el paquete psycopg2 quitanto el #
+
+pip freeze
+
+Comentar la configuracion de DB de heroku y descomentar la local con sql lite
+
+python manage.py runserver
+
+-------------------------------
+       Deploy to Heroku
+-------------------------------
+No agregar al Stage el settings.py y el db.misCuentas
+
+git add .
+
+git commit -am "Descripcion del cambio"
+
+git push heroku master

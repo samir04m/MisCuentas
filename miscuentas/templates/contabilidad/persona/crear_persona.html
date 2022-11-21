@@ -8,15 +8,22 @@
             <div class="col-sm-12 offset-md-3 col-md-6">
                 <div class="card animate__animated animate__fadeInUp">
                     <div class="card-header text-center">
-                        Formulario de Persona
+                        Crear persona o tarjeta
                     </div>
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
-                            {{form.as_p}}
-                            <center>
+                            <div class="form-group">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                            <div class="custom-control custom-switch mb-3">
+                                <input type="checkbox" class="custom-control-input" id="isCreditCard" name="isCreditCard">
+                                <label class="custom-control-label" for="isCreditCard">Es tarjeta de crédito?</label>
+                            </div>
+                            <div class="text-center">
                                 <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
-                            </center>
+                            </div>
                         </form>
                     </div>
                 </div>

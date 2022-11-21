@@ -14,6 +14,10 @@
                         <table class="table table-responsive-sm table-borderless">
                             <tbody>
                                 <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{transaccion.fecha|date:'l d F Y - h:i A'}}</td>
+                                </tr>
+                                <tr>
                                     <th>Tipo:</th>
                                     <td>
                                         {% if transaccion.tipo == 'egreso' %}
@@ -51,18 +55,16 @@
                                 {% endif %}
                                 <tr>
                                     <th>Información:</th>
-                                    <td>{{transaccion.info}}</td>
-                                </tr>
-                                <tr>
-                                    <th>Hora:</th>
-                                    <td>{{transaccion.fecha|date:'h:i A'}}</td>
-                                </tr>
-                                <tr>
-                                    <th>Fecha:</th>
-                                    <td>{{transaccion.fecha|date:'l d F Y'}}</td>
-                                </tr>
+                                    <td>{{transaccion.info|linebreaks}}</td>
+                                </tr>                                
                             </tbody>
                         </table>
+                        <div class="text-center">
+                            {% if request.user.is_superuser %}
+                                <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success" target="_blank">Editar</a>
+                            {% endif %}
+                            <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger">Deshacer</a>
+                        </div>
                     </div>
                 </div>
             </div>

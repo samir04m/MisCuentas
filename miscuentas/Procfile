@@ -1,0 +1,1 @@
+web: gunicorn miscuentas.wsgi --log-file -

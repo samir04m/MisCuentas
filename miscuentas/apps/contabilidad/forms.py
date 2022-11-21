@@ -70,11 +70,12 @@ class TransaccionForm(forms.ModelForm):
                     'autocomplete': 'off'
                 }
             ),
-            'info': forms.TextInput(
+            'info': forms.Textarea(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Información de la transacción',
-                    'id': 'info'
+                    'placeholder':'Detalles o información',
+                    'id': 'info',
+                    'rows': 2
                 }
             ),
         }

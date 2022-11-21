@@ -2,26 +2,13 @@
 {% load static %}
 {% load misTags %}
 
-{% block title %}Movimientos en {{cuenta.nombre}}{% endblock %}
+{% block title %} {{tipo}} perido {{periodo}} {% endblock %}
 
 {% block contenido %}
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
-                <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
-                    <h5 class="">Movimientos en {{cuenta.nombre}} <br>
-                        <span class="">Saldo: ${{cuenta.saldo|puntomil}}</span> 
-                    </h5>
-                    <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-plus"></i> Nuevo Ingreso  
-                    </a>
-                    <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-minus"></i> Nuevo Egreso
-                    </a>
-                    <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-exchange-alt"></i> Hacer Transferencia
-                    </a>
-                </div>
+                <h4 class="text-light text-center mb-3 animate__animated animate__fadeInDown">{{tipo}} {{etiqueta}} periodo {{periodo}}</h4>
                 <div class="card animate__animated animate__fadeInUp">
                     <div class="card-body">
                         {% if transacciones %}
@@ -29,8 +16,8 @@
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
+                                        <th>Cuenta</th>
                                         <th>Valor</th>
-                                        <th>Etiqueta</th>
                                         <th>Info</th>
                                         <th>Ver</th>
                                     </tr>
@@ -46,15 +33,9 @@
                                                     {{t.fecha|date:'d/m/y h:iA'}}
                                                 </span>
                                             </td>
+                                            <td>{{t.cuenta.nombre}}</td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>
-                                                {% if t.etiqueta.id %}
-                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}"  class="reset-color-a">{{t|sin_etiqueta}}</a>
-                                                {% else %}
-                                                    {{t|sin_etiqueta}}
-                                                {% endif %}
-                                            </td>
-                                            <td>{{t.info|truncatechars:'35'}}</td>
+                                            <td>{{t.info|truncatechars:'40'}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">
@@ -65,10 +46,9 @@
                                 </tbody>
                             </table>
 
-
                         {% else %}
-                            <div class="fs-18 text-center my-4">
-                                No hay movimientos en esta cuenta.
+                            <div class="fs-18 text-center">
+                                No hay movimientos en esta etiqueta
                             </div>
                         {% endif %}
                     </div>

@@ -2,25 +2,14 @@
 {% load static %}
 {% load misTags %}
 
-{% block title %}Movimientos en {{cuenta.nombre}}{% endblock %}
+{% block title %}Movimientos del dia{% endblock %}
 
 {% block contenido %}
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
                 <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
-                    <h5 class="">Movimientos en {{cuenta.nombre}} <br>
-                        <span class="">Saldo: ${{cuenta.saldo|puntomil}}</span> 
-                    </h5>
-                    <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-plus"></i> Nuevo Ingreso  
-                    </a>
-                    <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-minus"></i> Nuevo Egreso
-                    </a>
-                    <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-exchange-alt"></i> Hacer Transferencia
-                    </a>
+                    <b class="fs-22">{{tipo}} del {{fecha|date:'l d F Y'}}</b>
                 </div>
                 <div class="card animate__animated animate__fadeInUp">
                     <div class="card-body">
@@ -54,7 +43,7 @@
                                                     {{t|sin_etiqueta}}
                                                 {% endif %}
                                             </td>
-                                            <td>{{t.info|truncatechars:'35'}}</td>
+                                            <td>{{t.info|truncatechars:'20'}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">

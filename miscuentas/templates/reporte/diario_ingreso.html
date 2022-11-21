@@ -17,23 +17,21 @@
                           <table class="table table-responsive-sm" id="miTabla">
                               <thead>
                                   <tr>
+                                      <th>Fecha</th>
                                       <th>Dia</th>
-                                      <th>N° Egresos</th>
+                                      <th>N° Ingresos</th>
                                       <th>Total</th>
                                   </tr>
                               </thead>
                               <tbody>
                                   {% for ingreso in ingresos %}
                                       <tr>
-                                          {% for key, value in ingreso.items %}
-                                              {% if key == 'day' %}
-                                                  <td>{{value|date:'D, d M Y'}}</td>
-                                              {% elif key == 'total' %}
-                                                  <td>$ {{value|puntomil}}</td>
-                                              {% else %}
-                                                  <td>{{value}} ingresos</td>
-                                              {% endif %}
-                                          {% endfor %}
+                                        <td>{{ingreso.fecha|date:'Y-m-d'}}</td>
+                                        <td>{{ingreso.fecha|date:'l'}}</td>
+                                        <td>
+                                            <a href="{% url 'panel:movimientos_dia' 'ingreso' ingreso.fecha|date:'d-m-Y' %}" class="reset-">{{ingreso.nregistros}} ingresos</a>
+                                        </td>
+                                        <td>$ {{ingreso.total|puntomil}}</td>
                                       </tr>
                                   {% endfor %}
                               </tbody>
@@ -73,11 +71,11 @@
                     type: 'column'
                 },
                 title: {
-                    text: 'Ingresos de los ultimos 7 dias'
+                    text: 'Ingresos de los ultimos 10 dias'
                 },
                 xAxis: {
                     categories: [
-                    {% for o in chart_ingresos %}"{% for key, value in o.items %}{% if key == 'day' %}{{value|date:'D d'}}{% endif %}{% endfor %}", {% endfor %}
+                        {% for g in grafica %}"{{g.fecha|date:'D d'}}", {% endfor %}
                     ]
                 },
                 yAxis: {
@@ -89,7 +87,7 @@
                     name: 'Ingreso',
                      color: '#00abff',
                     data: [
-                    {% for o in chart_ingresos %}{% for key, value in o.items %}{% if key == 'total' %}{{value}}{% endif %}{% endfor %}, {% endfor %}
+                        {% for g in grafica %}{{g.total}}, {% endfor %}
                     ]
                 }]
             });

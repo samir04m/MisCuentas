@@ -48,3 +48,20 @@ def sin_etiqueta(transaccion):
 @register.filter
 def invertir(querySet):
     return querySet.reverse()
+
+@register.filter
+def getMessage(messages, field = 'message'):
+    for msg in messages:
+        if field == 'message':
+            return msg.message
+        elif field == 'icon':
+            return msg.extra_tags
+
+@register.filter
+def tableClass(tagName, type):
+    if tagName == 'Total periodo':
+        if type == 'egreso':
+            return 'class=table-danger'
+        elif type == 'ingreso':
+            return 'class=table-primary'
+    return ""
