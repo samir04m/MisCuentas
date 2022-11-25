@@ -320,46 +320,57 @@ def pagar_prestamo(request, prestamo_id):
         if monto > prestamo.saldo_pendiente: 
             monto = prestamo.saldo_pendiente
 
-        cuenta = Cuenta.objects.get(id = request.POST.get('cuenta'))
-        if cuenta:
-            prestamo.saldo_pendiente -= monto
-            if prestamo.saldo_pendiente == 0:
-                prestamo.cancelada = True
-            prestamo.save()
+        prestamo.saldo_pendiente -= monto
+        if prestamo.saldo_pendiente == 0:
+            prestamo.cancelada = True
+        prestamo.save()
 
+        cuentaId = int(request.POST.get('cuenta'))
+        if cuentaId:
+            cuenta = Cuenta.objects.get(id = cuentaId)
+        else:
+            cuenta = None
+
+        if cuenta: 
             saldo_anterior = cuenta.saldo
-            if prestamo.tipo == 'yopresto':
-                cuenta.saldo += monto
-                tipoTransaccion = 'ingreso'
-                infoTransaccion = " pagó la totalidad del prestamo." if prestamo.cancelada else " pagó una parte del prestamo. "
-                infoTransaccion = prestamo.persona.nombre + infoTransaccion
-            elif prestamo.tipo == 'meprestan':
-                cuenta.saldo -= monto
-                tipoTransaccion = 'egreso'
-                infoTransaccion = "Le pagué la totalidad del prestamo a " if prestamo.cancelada else "Le pagué una parte del prestamo a "
-                infoTransaccion += prestamo.persona.nombre + ". "
-            cuenta.save()
-            
-            tag = None
-            if prestamo.persona.isCreditCard:
-                if request.POST.get('tag'):
-                    tag = Etiqueta.objects.get(id = request.POST.get('tag'))
-            else:
-                tag = getEtiqueta('Prestamo', request.user)
-            print("=========", tag)
-            infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
-            transaccion = Transaccion(
-                tipo = tipoTransaccion,
-                saldo_anterior = saldo_anterior,
-                cantidad = monto,
-                info = infoTransaccion + infoAdicional,
-                cuenta = cuenta,
-                etiqueta = tag,
-                fecha = getDate(request.POST.get('datetime'))
-            )
-            transaccion.save()
+        else:
+            saldo_anterior = 0
 
-            transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()
+        if prestamo.tipo == 'yopresto':
+            if cuenta:
+                cuenta.saldo += monto
+            tipoTransaccion = 'ingreso'
+            infoTransaccion = " pagó la totalidad del prestamo." if prestamo.cancelada else " pagó una parte del prestamo. "
+            infoTransaccion = prestamo.persona.nombre + infoTransaccion
+        elif prestamo.tipo == 'meprestan':
+            if cuenta:
+                cuenta.saldo -= monto
+            tipoTransaccion = 'egreso'
+            infoTransaccion = "Le pagué la totalidad del prestamo a " if prestamo.cancelada else "Le pagué una parte del prestamo a "
+            infoTransaccion += prestamo.persona.nombre + ". "
+        if cuenta:
+            cuenta.save()
+
+        tag = None
+        if prestamo.persona.isCreditCard:
+            if request.POST.get('tag'):
+                tag = Etiqueta.objects.get(id = request.POST.get('tag'))
+        else:
+            tag = getEtiqueta('Prestamo', request.user)
+        print("=========", tag)
+        infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
+        transaccion = Transaccion(
+            tipo = tipoTransaccion,
+            saldo_anterior = saldo_anterior,
+            cantidad = monto,
+            info = infoTransaccion + infoAdicional,
+            cuenta = cuenta,
+            etiqueta = tag,
+            fecha = getDate(request.POST.get('datetime'))
+        )
+        transaccion.save()
+
+        transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()
 
         return redirect('panel:vista_prestamo', prestamo_id)
     else:
@@ -462,7 +473,7 @@ def listar_prestamos(request):
 
 @login_required
 def vista_transaccion(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cuenta__user=request.user.id)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id)
     return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})
 
 @login_required
@@ -513,7 +524,7 @@ def transferir(request, cuenta_id):
 
 @login_required
 def transaccion_rollback(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cuenta__user=request.user.id)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id)
     if request.method == 'POST':
         ok = True
         if transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Transferencia':
@@ -535,31 +546,34 @@ def transaccion_rollback(request, transaccion_id):
             ok = rollbackTransaction(request, transaccion)
         if ok:
             messages.success(request, 'Se ha deshecho la transacción', extra_tags='success')
-            return redirect('panel:panel')
         else:
-            return redirect('panel:vista_mensaje')
+            messages.error(request, 'No fue posible deshacer la transacción', extra_tags='error')
+        return redirect('panel:panel')
     else:
         return render(request, 'contabilidad/transaccion/transaccion_rollback.html', {"transaccion":transaccion})
 
 def rollbackTransaction(request, transaccion):
     sw = False
-    cuenta = get_object_or_404(Cuenta, id=transaccion.cuenta.id)
-    if transaccion.tipo == 'ingreso':
-        if cuenta.saldo - transaccion.cantidad >= 0:
-            cuenta.saldo = cuenta.saldo - transaccion.cantidad
+    if transaccion.cuenta:
+        cuenta = Cuenta.objects.get(id=transaccion.cuenta.id)
+        if transaccion.tipo == 'ingreso':
+            if cuenta.saldo - transaccion.cantidad >= 0:
+                cuenta.saldo = cuenta.saldo - transaccion.cantidad
+                sw = True
+            else:
+                request.session['color'] = "danger"
+                request.session['titulo'] = "No es posible deshacer"
+                request.session['mensaje'] = "No es posible deshacer la transacción porque el monto actual de la cuenta no lo permite."
+                request.session['url'] = "/transaccion/"+str(transaccion.id)
+        elif transaccion.tipo == 'egreso':
+            cuenta.saldo = cuenta.saldo + transaccion.cantidad
             sw = True
-        else:
-            request.session['color'] = "danger"
-            request.session['titulo'] = "No es posible deshacer"
-            request.session['mensaje'] = "No es posible deshacer la transacción porque el monto actual de la cuenta no lo permite."
-            request.session['url'] = "/transaccion/"+str(transaccion.id)
-    elif transaccion.tipo == 'egreso':
-        cuenta.saldo = cuenta.saldo + transaccion.cantidad
+        
+        if sw:
+            cuenta.save()
+            transaccion.delete()
+    else:
         sw = True
-    
-    if sw:
-        cuenta.save()
-        transaccion.delete()
     return sw
 
 @login_required

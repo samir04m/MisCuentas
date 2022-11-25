@@ -28,16 +28,20 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Cuenta:</th>
-                                    <td>
-                                        <a href="{% url 'panel:movimientos_cuenta' transaccion.cuenta.id %}">
-                                            {{transaccion.cuenta.nombre}}
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <th>Valor:</th>
                                     <td>$ {{transaccion.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cuenta:</th>
+                                    <td>
+                                        {% if transaccion.cuenta %}
+                                            <a href="{% url 'panel:movimientos_cuenta' transaccion.cuenta.id %}">
+                                                {{transaccion.cuenta.nombre}}
+                                            </a>
+                                        {% else %}
+                                            Ninguna
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Saldo anterior:</th>

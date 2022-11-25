@@ -39,6 +39,7 @@
                                 <label for="cuenta">Seleccione una cuenta</label>
                                 <select class="form-control" name="cuenta" id="cuenta" required>
                                     <option selected disabled value="">Seleccionar cuenta</option>
+                                    <option value="0">Ninguna</option>
                                     {% for c in cuentas %}
                                         <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
                                     {% endfor %}
