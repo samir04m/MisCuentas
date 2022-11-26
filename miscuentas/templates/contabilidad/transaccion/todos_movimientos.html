@@ -37,7 +37,11 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="{% url 'panel:movimientos_cuenta' t.cuenta.id %}" class="reset-color-a">{{t.cuenta.nombre}}</a>
+                                                {% if t.cuenta %}
+                                                    <a href="{% url 'panel:movimientos_cuenta' t.cuenta.id %}" class="reset-color-a">{{t.cuenta.nombre}}</a>
+                                                {% else %}
+                                                    -
+                                                {% endif %}
                                             </td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
                                             <td>

@@ -39,7 +39,7 @@
                                                 {{transaccion.cuenta.nombre}}
                                             </a>
                                         {% else %}
-                                            Ninguna
+                                            -
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -47,16 +47,18 @@
                                     <th>Saldo anterior:</th>
                                     <td>$ {{transaccion.saldo_anterior|puntomil}}</td>
                                 </tr>
-                                {% if transaccion.etiqueta %}
-                                    <tr>
-                                        <th>Etiqueta</th>
-                                        <td>
-                                            <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
-                                                {{transaccion.etiqueta.nombre}}
-                                            </a>
+                                <tr>
+                                    <th>Etiqueta</th>
+                                    <td>
+                                            {% if transaccion.etiqueta %}
+                                                <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
+                                                    {{transaccion.etiqueta.nombre}}
+                                                </a>
+                                            {% else %}
+                                                -
+                                            {% endif %}
                                         </td>
                                     </tr>
-                                {% endif %}
                                 <tr>
                                     <th>Información:</th>
                                     <td>{{transaccion.info|linebreaks}}</td>

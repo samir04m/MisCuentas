@@ -53,6 +53,7 @@ class Transaccion(models.Model):
     fecha = models.DateTimeField('Fecha')
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Transaccion'

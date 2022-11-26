@@ -38,17 +38,6 @@ def crear_cuenta(request):
             cuenta = form.save(commit=False)
             cuenta.user = request.user
             cuenta.save()
-
-            # transaccion = Transaccion(
-            #     tipo='ingreso',
-            #     saldo_anterior=0,
-            #     cantidad=cuenta.saldo,
-            #     info='Creación de la cuenta. Definición del saldo inicial.',
-            #     cuenta=cuenta,
-            #     fecha = datetime.now()
-            # )
-            # transaccion.save()
-
             return redirect('panel:panel')
     else:
         form = CuentaForm()
@@ -115,6 +104,8 @@ def crear_egreso(request, cuenta_id):
                 transaccion.cuenta = cuenta
                 transaccion.saldo_anterior = cuenta.saldo
                 transaccion.fecha = getDate(request.POST.get('datetime'))
+                transaccion.user = request.user
+
                 if request.POST.get('newTag'):
                     newTag = request.POST.get('newTag')
                     if newTag:
@@ -153,6 +144,8 @@ def crear_ingreso(request, cuenta_id):
             transaccion.cuenta = cuenta
             transaccion.saldo_anterior = cuenta.saldo
             transaccion.fecha = getDate(request.POST.get('datetime'))
+            transaccion.user = request.user
+
             if request.POST.get('newTag'):
                 newTag = request.POST.get('newTag')
                 if newTag:
@@ -182,7 +175,7 @@ def movimientos_cuenta(request, cuenta_id):
 
 @login_required
 def todos_movimientos(request):
-    transacciones = Transaccion.objects.filter(cuenta__user = request.user.id)
+    transacciones = Transaccion.objects.filter(user = request.user)
     return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transacciones":transacciones})
 
 @login_required
@@ -293,7 +286,8 @@ def crear_prestamo(request, persona_id):
                         info = infoTransaccion + persona.nombre,
                         cuenta = cuenta,
                         etiqueta = tag,
-                        fecha = fecha
+                        fecha = fecha,
+                        user = request.user
                     )
                     cuenta.save()
                     transaccion.save()
@@ -346,7 +340,7 @@ def pagar_prestamo(request, prestamo_id):
             if cuenta:
                 cuenta.saldo -= monto
             tipoTransaccion = 'egreso'
-            infoTransaccion = "Le pagué la totalidad del prestamo a " if prestamo.cancelada else "Le pagué una parte del prestamo a "
+            infoTransaccion = "Pagué la totalidad del prestamo con " if prestamo.cancelada else "Pagué parte del prestamo con "
             infoTransaccion += prestamo.persona.nombre + ". "
         if cuenta:
             cuenta.save()
@@ -357,7 +351,7 @@ def pagar_prestamo(request, prestamo_id):
                 tag = Etiqueta.objects.get(id = request.POST.get('tag'))
         else:
             tag = getEtiqueta('Prestamo', request.user)
-        print("=========", tag)
+
         infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
         transaccion = Transaccion(
             tipo = tipoTransaccion,
@@ -366,7 +360,8 @@ def pagar_prestamo(request, prestamo_id):
             info = infoTransaccion + infoAdicional,
             cuenta = cuenta,
             etiqueta = tag,
-            fecha = getDate(request.POST.get('datetime'))
+            fecha = getDate(request.POST.get('datetime')),
+            user = request.user
         )
         transaccion.save()
 
@@ -416,6 +411,13 @@ def eliminar_prestamo(request, prestamo_id):
                 transaccionPartePago = tp.transaccion
                 eliminarTransaccion(transaccionPartePago)
             eliminarTransaccion(transaccion)
+    else:
+        tps = TransaccionPrestamo.objects.filter(prestamo=prestamo)
+        for tp in tps:
+            transaccion = tp.transaccion
+            transaccion.delete()
+            tp.delete()
+
     prestamo.delete()
     messages.success(request, 'Se ha eliminado el prestamo', extra_tags='success')
     return redirect("panel:vista_persona", personaId)
@@ -473,7 +475,7 @@ def listar_prestamos(request):
 
 @login_required
 def vista_transaccion(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
     return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})
 
 @login_required
@@ -497,6 +499,7 @@ def transferir(request, cuenta_id):
             egreso.saldo_anterior = cuenta.saldo
             egreso.etiqueta = etiqueta
             egreso.fecha = fecha
+            egreso.user = request.user
             egreso.save()
 
             ingreso = Transaccion(
@@ -506,7 +509,8 @@ def transferir(request, cuenta_id):
                 info = 'Transferencia desde ' + cuenta.nombre + info,
                 cuenta = cuenta_destino,
                 etiqueta = etiqueta,
-                fecha = fecha
+                fecha = fecha,
+                user = request.user
             )
             ingreso.save()
 
@@ -524,7 +528,7 @@ def transferir(request, cuenta_id):
 
 @login_required
 def transaccion_rollback(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
     if request.method == 'POST':
         ok = True
         if transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Transferencia':
@@ -532,15 +536,24 @@ def transaccion_rollback(request, transaccion_id):
             transaccion2 = Transaccion.objects.filter(fecha=transaccion.fecha, tipo=tipoContrario, cantidad=transaccion.cantidad).first()
             if transaccion2:
                 ok = rollbackTransaction(request, transaccion2)
-        elif transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Prestamo':
-            tp = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
-            if tp:
-                prestamo = tp.prestamo
-                prestamo.saldo_pendiente += transaccion.cantidad
-                if prestamo.saldo_pendiente > 0:
-                    prestamo.cancelada = False 
-                prestamo.save()
-                tp.delete()
+        # elif transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Prestamo':
+        #     tp = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
+        #     if tp:
+        #         prestamo = tp.prestamo
+        #         prestamo.saldo_pendiente += transaccion.cantidad
+        #         if prestamo.saldo_pendiente > 0:
+        #             prestamo.cancelada = False 
+        #         prestamo.save()
+        #         tp.delete()
+        
+        transaccionPrestamo = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
+        if transaccionPrestamo:
+            prestamo = transaccionPrestamo.prestamo
+            prestamo.saldo_pendiente += transaccion.cantidad
+            if prestamo.saldo_pendiente > 0:
+                prestamo.cancelada = False 
+            prestamo.save()
+            transaccionPrestamo.delete()
 
         if ok:
             ok = rollbackTransaction(request, transaccion)
@@ -555,16 +568,11 @@ def transaccion_rollback(request, transaccion_id):
 def rollbackTransaction(request, transaccion):
     sw = False
     if transaccion.cuenta:
-        cuenta = Cuenta.objects.get(id=transaccion.cuenta.id)
+        cuenta = transaccion.cuenta
         if transaccion.tipo == 'ingreso':
             if cuenta.saldo - transaccion.cantidad >= 0:
                 cuenta.saldo = cuenta.saldo - transaccion.cantidad
                 sw = True
-            else:
-                request.session['color'] = "danger"
-                request.session['titulo'] = "No es posible deshacer"
-                request.session['mensaje'] = "No es posible deshacer la transacción porque el monto actual de la cuenta no lo permite."
-                request.session['url'] = "/transaccion/"+str(transaccion.id)
         elif transaccion.tipo == 'egreso':
             cuenta.saldo = cuenta.saldo + transaccion.cantidad
             sw = True
@@ -573,6 +581,7 @@ def rollbackTransaction(request, transaccion):
             cuenta.save()
             transaccion.delete()
     else:
+        transaccion.delete()
         sw = True
     return sw
 
@@ -596,7 +605,7 @@ def movimientos_dia(request, tipo, fecha):
     year = date[2]
     fecha2 = datetime(int(year), int(month), int(day))
     tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
-    transacciones = Transaccion.objects.filter(cuenta__user=request.user.id, tipo=tipo, fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
+    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
 
     context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2}
     return render(request, 'contabilidad/transaccion/movimientos_dia.html', context)

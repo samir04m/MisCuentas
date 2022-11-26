@@ -14,7 +14,7 @@ class TableData:
 @login_required
 def egresos_diarios(request):
     egresos = (
-        Transaccion.objects.filter(cuenta__user=request.user.id, tipo='egreso').exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
+        Transaccion.objects.filter(user=request.user, tipo='egreso').exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
         .annotate(day=TruncDay('fecha'))
         .values('day')
         .annotate(numero=Count('id'), total=Sum('cantidad'))

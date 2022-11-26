@@ -19,6 +19,7 @@
                                     <tr>
                                         <th>Fecha</th>
                                         <th>Valor</th>
+                                        <th>Cuenta</th>
                                         <th>Etiqueta</th>
                                         <th>Info</th>
                                         <th>Ver</th>
@@ -36,6 +37,13 @@
                                                 </span>
                                             </td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
+                                            <td>
+                                                {% if t.cuenta %}
+                                                    <a href="{% url 'panel:movimientos_cuenta' t.cuenta.id %}" class="reset-color-a">{{t.cuenta.nombre}}</a>
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
                                             <td>
                                                 {% if t.etiqueta.id %}
                                                     <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}"  class="reset-color-a">{{t|sin_etiqueta}}</a>

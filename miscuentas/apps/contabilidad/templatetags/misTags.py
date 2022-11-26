@@ -41,7 +41,7 @@ def cancelada_color(cancelada):
 @register.filter
 def sin_etiqueta(transaccion):
     if not transaccion.etiqueta:
-        return "- - - - - -"
+        return "-"
     else: 
         return transaccion.etiqueta
 

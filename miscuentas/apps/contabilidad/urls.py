@@ -1,6 +1,7 @@
 from django.urls import path, include
 from django.contrib.auth.decorators import login_required
 from .views import *
+from .viewsHelpers import *
 
 urlpatterns = [
     path('', panel, name='panel'),
@@ -38,4 +39,5 @@ urlpatterns = [
     path('transaccion-rollback/<int:transaccion_id>/', transaccion_rollback, name='transaccion_rollback'),
 
     path('mensaje/', vista_mensaje, name='vista_mensaje'),
+    path('relacionarUsuarioConTransaccion/', relacionarUsuarioConTransaccion, name='relacionarUsuarioConTransaccion'),
 ]
