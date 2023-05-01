@@ -1,0 +1,42 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Pagos recurrentes{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h4 class="text-center animate__animated animate__fadeInDown">Pagos recurrentes</h4>
+                <div class="card animate__animated animate__fadeInUp">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:spotify' %}" onclick="return confirm('¿Desea realizar el pago de Spotify?')">Spotify</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="offset-lg-1 col-lg-3 animate__animated animate__fadeInRight">
+                <br>
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% if messages %}
+        <script type="text/javascript">
+            $(function () {
+                Swal.fire({
+                    icon: '{{messages|getMessage:"icon" }}',
+                    title: '{{messages|getMessage }}',
+                    showConfirmButton: true,
+                    // timer: 3000
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}

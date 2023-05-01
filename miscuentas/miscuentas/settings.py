@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'apps.contabilidad',
     'apps.usuario',
     'apps.reporte',
+    'apps.pagos',
     'import_export',
 ]
 
