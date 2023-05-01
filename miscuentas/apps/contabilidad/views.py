@@ -450,14 +450,14 @@ def listar_prestamos(request):
         meDeben = meDeben['saldo_pendiente__sum'] if meDeben['saldo_pendiente__sum'] else 0
         saldoRestante = saldoTotal
         pagandoPrestamosMeQueda = 0
-        pagandoPrestamosMensaje = "Saldados todos los prestamos, "
+        pagandoPrestamosMensaje = "Pagados todos los prestamos "
         pagandoPrestamosMeQueda = meDeben-yoDebo    
         if pagandoPrestamosMeQueda >= 0:
             saldoRestante += pagandoPrestamosMeQueda
-            pagandoPrestamosMensaje += "usted recuperaria"
+            pagandoPrestamosMensaje += " recuperaria"
         elif pagandoPrestamosMeQueda < 0:
             saldoRestante -= abs(pagandoPrestamosMeQueda)
-            pagandoPrestamosMensaje += "usted tendria que pagar"
+            pagandoPrestamosMensaje += " tendria que pagar"
         context = {
             'prestamos':prestamos,
             'saldoTotal':saldoTotal,

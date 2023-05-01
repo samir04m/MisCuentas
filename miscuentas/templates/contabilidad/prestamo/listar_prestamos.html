@@ -6,22 +6,22 @@
 
 {% block contenido %}
     <div class="container">
-        <h5 class="text-center text-light mb-3 animate__animated animate__fadeInDown">Listado de prestamos</h5>
-        <div class="card animate__animated animate__fadeInUp">
+        <h5 class="text-center text-light mb-3 animate__animated animate__fadeInDown">Prestamos</h5>
+        <div class="card animate__animated animate__fadeIn">
             <div class="card-body">
                 {% if prestamos %}
                     <p>
-                        Actualmente usted tiene en sus cuentas un total de ${{saldoTotal|puntomil}} <br>
-                        En total usted debe ${{yoDebo|puntomil}} y le deben a usted ${{meDeben|puntomil}} <br>
+                        Saldo total en cuentas ${{saldoTotal|puntomil}} <br>
+                        Actualmente debe ${{yoDebo|puntomil}} y a usted le deben ${{meDeben|puntomil}} <br>
                         {{pagandoPrestamosMensaje}} ${{pagandoPrestamosMeQueda|puntomil}} <br>
-                        Es decir, pagados todos sus prestamos usted quedaria con ${{saldoRestante|puntomil}}
+                        Cancelados todos los prestamos su saldo seria de ${{saldoRestante|puntomil}}
                     </p>
                     
                     <table class="table table-responsive-sm" id="miTabla">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Persona</th>
+                                <th>Personas/Tarjeta</th>
                                 <th>Tipo</th>
                                 <th>Valor</th>
                                 <th>Por pagar</th>

@@ -96,8 +96,8 @@ class PrestamoForm(forms.ModelForm):
             'cantidad': forms.NumberInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Valor o cantidad',
-                    'id': 'cantidad',
+                    'placeholder':'Valor',
+                    'id': 'Valor',
                     'type': 'text',
                     'autocomplete': 'off'
                 }
