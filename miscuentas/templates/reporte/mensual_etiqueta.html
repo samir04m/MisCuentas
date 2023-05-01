@@ -7,7 +7,7 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 col-lg-9">
+            <div class="col-sm-12 col-lg-9 animate__animated animate__fadeIn">
                 <h4 class="text-center text-light mb-3">Reporte por etiquetas - {{nombreMes}} del {{year}}</h4>
                 <div class="card mb-3">
                     <div class="card-body py-2">
@@ -91,13 +91,22 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if resumen %}
+                <div class="card mt-4">
+                    <div class="card-body pt-1">
+                        <h5 class="text-center my-2">Resumen del mes</h5>
+                        {{ resumen.mensajeDiferencia }} ${{ resumen.diferencia|puntomil }} <br>
+                        Gastó el {{ resumen.porcentaje }}% de los ingresos
+                    </div>
+                </div>
+                {% endif %}
 
             </div>
             <div class="col-sm-12 col-lg-3">
                 <br>
                 {% include 'base/panel_enlaces.html' %}
                 <br>
-                {% include 'base/panel_reportes.html' %}
+                {% include 'base/panel_reportes.html' %}                
             </div>
         </div>
     </div>

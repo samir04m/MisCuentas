@@ -16,14 +16,13 @@ from django.db.models import Sum
 from datetime import datetime
 from .forms import *
 from .models import *
+from .myFuncs import *
 import math
 
 @login_required
 def panel(request):
     cuentas = Cuenta.objects.filter(user = request.user).order_by('id')
     personas = Persona.objects.filter(user = request.user).order_by('id')
-    # alert = generateDictFromSessionVariables(request, ['title','text','icon'])
-    # context = {'cuentas':cuentas, 'personas':personas, 'alert':alert}
     context = {'cuentas':cuentas, 'personas':personas}
     return render(request, 'contabilidad/panel.html', context)
 
@@ -89,7 +88,6 @@ def vista_persona(request, persona_id):
 @login_required
 def crear_egreso(request, cuenta_id):
     mensaje = None
-    # cuenta = Cuenta.objects.get(id=cuenta_id)
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
@@ -98,7 +96,8 @@ def crear_egreso(request, cuenta_id):
         form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
 
         if form.is_valid():
-            transaccion = form.save(commit=False)      
+            transaccion = form.save(commit=False)
+            transaccion.cantidad = validarMiles(transaccion.cantidad)
             if transaccion.cantidad <= cuenta.saldo:
                 transaccion.tipo = 'egreso'
                 transaccion.cuenta = cuenta
@@ -140,6 +139,7 @@ def crear_ingreso(request, cuenta_id):
 
         if form.is_valid():
             transaccion = form.save(commit=False)
+            transaccion.cantidad = validarMiles(transaccion.cantidad)
             transaccion.tipo = 'ingreso'
             transaccion.cuenta = cuenta
             transaccion.saldo_anterior = cuenta.saldo
@@ -224,6 +224,7 @@ def crear_prestamo(request, persona_id):
     if persona.isCreditCard:
         if request.method == 'POST':
             cantidad = int(request.POST.get('cantidad').replace('.',''))
+            cantidad = validarMiles(cantidad)
             info = request.POST.get('info').capitalize()+". " if request.POST.get('info') else ""
             cuotas = int(request.POST.get('cuotas'))
             valorCuotas = (format(math.trunc(cantidad/cuotas), ',d'))
@@ -250,6 +251,7 @@ def crear_prestamo(request, persona_id):
 
             if form.is_valid():
                 prestamo = form.save(commit=False)
+                prestamo.cantidad = validarMiles(prestamo.cantidad)
                 saldo_anterior = 0
                 cuenta = None
                 if request.POST.get('cuenta') != 'ninguna':
@@ -486,7 +488,7 @@ def transferir(request, cuenta_id):
 
     if request.method == 'POST':
         egreso = Transaccion( cantidad=int(request.POST.get('cantidad').replace('.','')) )
-
+        egreso.cantidad = validarMiles(egreso.cantidad)
         if egreso.cantidad <= cuenta.saldo:
             fecha = getDate(request.POST.get('datetime'))
             etiqueta = getEtiqueta('Transferencia', request.user)
@@ -628,28 +630,6 @@ def getEtiqueta(nombre, user):
         etiqueta = Etiqueta(nombre=nombre, user=user)
         etiqueta.save()
     return etiqueta
-
-def getDate(inputDate):
-    now = datetime.now()
-    if inputDate:
-        grupos = inputDate.split(" ")
-        fecha = grupos[0].split("/")
-        hora = grupos[1].split(":")
-        hour = getHour24(hora[0], grupos[2])
-        date = datetime(int(fecha[2]), int(fecha[1]), int(fecha[0]), hour, int(hora[1]), now.second)
-        return date
-    else:
-        return now
-
-def getHour24(hour, xm):
-    if xm == "AM" and hour == "12":
-        return 0
-    elif xm == "AM":
-        return int(hour)
-    elif xm == "PM" and hour == "12":
-        return int(hour)
-    else:
-        return int(hour) + 12
 
 def generateDictFromSessionVariables(request, variables):
     dict = {}

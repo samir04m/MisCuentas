@@ -211,6 +211,13 @@ def egresos_etiqueta(request, month, year):
     ingresos = Transaccion.objects.filter(cuenta__user=request.user, tipo='ingreso', fecha__month=mes, fecha__year=anio).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
     ingresosPorEtiqueta = createListTagData(ingresos)
 
+    if egresosPorEtiqueta and ingresosPorEtiqueta:
+        totalEgresos = egresosPorEtiqueta[-1]
+        totalIngresos = ingresosPorEtiqueta[-1]
+        resumen = obtenerResumen(totalIngresos.total, totalEgresos.total)
+    else:
+        resumen = None
+
     context = {
         'egresosPorEtiqueta' : egresosPorEtiqueta,
         'ingresosPorEtiqueta' : ingresosPorEtiqueta,
@@ -220,5 +227,26 @@ def egresos_etiqueta(request, month, year):
         'periodo' : convertMonthToString(mes)+'-'+str(anio),
         'selectMonth' : createSelectOption('month', mes),
         'selectYear' : createSelectOption('year', anio),
+        'resumen': resumen
     }
     return render(request, 'reporte/mensual_etiqueta.html', context)
+
+
+def obtenerResumen(totalIngresos, totalEgresos):
+    diferencia = totalIngresos - totalEgresos
+    porcentaje = (totalEgresos * 100) / totalIngresos
+    if totalIngresos > totalEgresos:
+        mensajeDiferencia = 'Este mes se ahorró '
+    else:
+        diferencia = diferencia * -1
+        mensajeDiferencia = 'No se ahorró y se gastó de más '
+
+    return {
+        'diferencia': diferencia,
+        'porcentaje': truncate(porcentaje, 2),
+        'mensajeDiferencia': mensajeDiferencia
+    }
+
+def truncate(number: float, max_decimals: int) -> float:
+    int_part, dec_part = str(number).split(".")
+    return float(".".join((int_part, dec_part[:max_decimals])))
