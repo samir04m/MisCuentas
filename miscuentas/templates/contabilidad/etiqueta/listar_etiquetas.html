@@ -5,7 +5,7 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 offset-md-3 col-md-6">
+            <div class="offset-lg-1 col-lg-6">
                 <div class="m-b-20 text-center text-light animate__animated animate__fadeInDown">
                     <b class="fs-18">Mis Etiquetas</b>
                     <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-sm btn-outline-light">
@@ -14,7 +14,7 @@
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
                         {% if etiquetas %}
-                        <table class="table table-responsive-sm">
+                        <table class="table table-sm table-responsive-sm">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -29,13 +29,18 @@
                                         <td><a href="{% url 'panel:movimientos_etiqueta' e.id %}">{{e.nombre}}</a></td>
                                         <td class="text-center">{{e.transaccion_set.count}}</td>
                                         <td>
-                                            <a href="{% url 'panel:editar_etiqueta' e.id %}" class="btn btn-sm btn-success">
-                                            <i class="far fa-edit"></i></a>
+                                            <a href="{% url 'panel:editar_etiqueta' e.id %}" class="btn btn-sm btn-outline-success">
+                                            <i class="fal fa-edit"></i></a>
                                         </td>
                                         <td>
                                             {% if e.transaccion_set.count == 0 %}
-                                            <a href="{% url 'panel:eliminar_etiqueta' e.id %}" class="btn btn-sm btn-danger">
-                                                <i class="far fa-trash-alt"></i></a>
+                                                <a href="{% url 'panel:eliminar_etiqueta' e.id %}" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fal fa-trash-alt"></i>
+                                                </a>
+                                            {% else %}
+                                                <a href="#" class="btn btn-sm btn-outline-secondary disabled">
+                                                    <i class="fal fa-trash-alt"></i>
+                                                </a>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -47,6 +52,11 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+            <div class="offset-lg-2 col-lg-3 pt-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
             </div>
         </div>
     </div>

@@ -5,25 +5,17 @@
 
 {% block contenido %}
 
-    <div class="container">
+    <div class="container pt-2">
         <div class="row">
-            <div class="col-sm-12 offset-md-1 col-md-10">
+            <div class="col-lg-9">
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
-                        <div class=" text-center">
-                            {% if persona.isCreditCard %}
-                                <b>Información de la Tarjeta de crédito</b>
-                            {% else %}
-                                <b>Información de la Persona</b>
-                            {% endif %}
-                        </div>
-                        <hr>
                         <div class="text-center">
                             <div style="font-size:40px;">
                                 {% if persona.isCreditCard %}
-                                    <i class="far fa-credit-card"></i>
+                                    <i class="fal fa-credit-card"></i>
                                 {% else %}
-                                    <i class="fas fa-user-circle"></i>
+                                    <i class="fal fa-user-circle"></i>
                                 {% endif %}
                                 {{persona.nombre}}
                             </div>
@@ -46,7 +38,7 @@
                         </p> 
 
                         {% if persona.prestamo_set.all %}
-                            <h5 class="text-center mt-3"><b>Registro de Prestamos</b></h5>
+                            <h5 class="text-center mt-3"><b>Prestamos</b></h5>
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
@@ -75,7 +67,9 @@
                                             <td>${{p.cantidad|puntomil}}</td>
                                             <td>${{p.saldo_pendiente|puntomil}}</td>
                                             <td>
-                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
+                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fal fa-external-link"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -84,6 +78,11 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+            <div class="col-lg-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
             </div>
         </div>
     </div>

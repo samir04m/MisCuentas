@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-blue">
     <div class="container">
 
-        <a class="navbar-brand" href="{% url 'panel:panel' %}"><i class="fas fa-chart-line"></i> Mis Cuentas</a>
+        <a class="navbar-brand" href="{% url 'panel:panel' %}"><i class="far fa-chart-line"></i> Mis Cuentas</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,12 +11,12 @@
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'panel:panel' %}">
-                            <i class="far fa-chart-bar"></i> Panel <span class="sr-only">(current)</span></a>
+                            <i class="fal fa-chart-bar"></i> Panel <span class="sr-only">(current)</span></a>
                     </li>
                     {% if request.user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'pagos:listado' %}">
-                            <i class="fas fa-money-check-alt"></i> Pagos <span class="sr-only">(current)</span></a>
+                            <i class="fal fa-money-check-alt"></i> Pagos <span class="sr-only">(current)</span></a>
                     </li>
                     {% endif %}
                     <li class="nav-item dropdown">
@@ -25,21 +25,20 @@
                             <i class="far fa-user"></i> {{ request.user.username }}</a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="{% url 'panel:todos_movimientos' %}">
-                                <i class="fas fa-money-check-alt"></i> Movimientos</a>
+                                <i class="fal fa-list-alt"></i> Movimientos</a>
                             <a class="dropdown-item" href="{% url 'panel:listar_etiquetas' %}">
-                                <i class="fas fa-tags"></i> Etiquetas</a>
+                                <i class="fal fa-tags"></i> Etiquetas</a>
                             <a class="dropdown-item" href="{% url 'panel:listar_personas' %}">
-                                <i class="fas fa-users"></i> Personas</a>
+                                <i class="fal fa-users"></i> Personas</a>
                             <a class="dropdown-item" href="{% url 'panel:listar_prestamos' %}">
-                                <i class="far fa-handshake"></i> Prestamos</a>
+                                <i class="fal fa-handshake"></i> Prestamos</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Salir</a>
+                            <a class="dropdown-item" href="{% url 'logout' %}">
+                                <i class="fal fa-sign-out-alt"></i> Salir
+                            </a>
                         </div>
                     </li>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'panel:panel' %}">Inicio <span class="sr-only">(current)</span></a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Login <span class="sr-only">(current)</span></a>
                     </li>

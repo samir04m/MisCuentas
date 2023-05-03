@@ -9,7 +9,7 @@
             <div class="col-sm-12 offset-md-2 col-md-8">
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
-                        <h5 class="text-center">Detalles de Prestamo</h5>
+                        <h5 class="text-center">Detalles del Prestamo</h5>
                         <table class="table table-borderless table-responsive-sm">
                             <tbody>
                                 <tr>
@@ -22,7 +22,7 @@
                                 </tr>
                                 {% if prestamo.cuenta %}
                                     <tr>
-                                        <th>Cuenta involucrada:</th>
+                                        <th>Cuenta relacionada:</th>
                                         <td><a href="{% url 'panel:movimientos_cuenta' prestamo.cuenta.id %}">{{prestamo.cuenta.nombre}}</a></td>
                                     </tr>
                                 {% endif %}
@@ -49,14 +49,18 @@
                             </tbody>
                         </table>
                         <hr>
-                        <div class="text-center">
-                            {% if prestamo.cancelada %}
+                        {% if prestamo.cancelada %}
+                            <div class="text-center">
                                 <div class="text-secondary fs-14">El PRESTAMO YA FUE CANCELADO</div>
-                            {% else %}
-                                <a href="{% url 'panel:confirm_eliminar_prestamo' prestamo.id %}" class="btn btn-outline-danger">Eliminar Prestamo</a>
-                                <a href="{% url 'panel:pagar_prestamo' prestamo.id %}" class="btn btn-outline-primary">Pagar Prestamo</a>
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'panel:confirm_eliminar_prestamo' prestamo.id %}" class="btn btn-outline-danger mr-3">
+                                <i class="fal fa-trash"></i>  Eliminar
+                            </a>
+                            <a href="{% url 'panel:pagar_prestamo' prestamo.id %}" class="btn btn-outline-primary float-right">
+                                Registrar Pago <i class="fal fa-money-check-edit-alt"></i>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
                 {% if prestamo.transaccionprestamo_set.all %}

@@ -52,7 +52,11 @@
                                             No
                                         {% endif %}
                                     </td>
-                                    <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary"><i class="far fa-eye"></i></a></td>
+                                    <td>
+                                        <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fal fa-external-link"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
