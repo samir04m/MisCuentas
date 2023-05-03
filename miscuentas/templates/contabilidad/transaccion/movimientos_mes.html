@@ -9,12 +9,12 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
-                    <b class="fs-22">{{tipo}} de {{fecha|date:'F Y'}}</b>
+                    <b class="fs-22">{{tipo}} Mes de {{fecha|date:'F Y'}}</b>
                 </div>
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
                         {% if transacciones %}
-                            <table class="table table-responsive-sm" id="miTabla">
+                            <table class="table table-sm table-responsive-sm" id="miTabla">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
@@ -47,7 +47,7 @@
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-external-link-alt"></i></a>
+                                                <i class="fal fa-external-link"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}

@@ -11,12 +11,14 @@
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'panel:panel' %}">
-                            <i class="fal fa-chart-bar"></i> Panel <span class="sr-only">(current)</span></a>
+                            <i class="fal fa-chart-bar"></i> Panel <span class="sr-only">(current)</span>
+                        </a>
                     </li>
                     {% if request.user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'pagos:listado' %}">
-                            <i class="fal fa-money-check-alt"></i> Pagos <span class="sr-only">(current)</span></a>
+                            <i class="fal fa-wallet"></i> Pagos <span class="sr-only">(current)</span>
+                        </a>
                     </li>
                     {% endif %}
                     <li class="nav-item dropdown">

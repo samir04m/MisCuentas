@@ -8,30 +8,31 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
-                <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
-                    <h5 class="">Movimientos en {{cuenta.nombre}} <br>
-                        <span class="">Saldo: ${{cuenta.saldo|puntomil}}</span> 
-                    </h5>
-                    <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-plus"></i> Nuevo Ingreso  
-                    </a>
-                    <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-minus"></i> Nuevo Egreso
-                    </a>
-                    <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-light my-1">
-                        <i class="fas fa-exchange-alt"></i> Hacer Transferencia
-                    </a>
-                </div>
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
+                        <div class="mb-3 text-center animate__animated animate__fadeInDown">
+                            <h5 class="">
+                                Movimientos en {{cuenta.nombre}} | <span class="">Saldo: ${{cuenta.saldo|puntomil}}</span> 
+                            </h5>
+                            <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-primary my-1">
+                                <i class="fas fa-plus"></i> Crear Ingreso  
+                            </a>
+                            <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-danger my-1">
+                                <i class="fas fa-minus"></i> Crear Egreso
+                            </a>
+                            <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-warning my-1">
+                                <i class="fas fa-exchange-alt"></i> Hacer Transferencia
+                            </a>
+                        </div>
+                        <hr>
                         {% if transacciones %}
-                            <table class="table table-responsive-sm" id="miTabla">
+                            <table class="table table-sm table-responsive-sm" id="miTabla">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
                                         <th>Valor</th>
                                         <th>Etiqueta</th>
-                                        <th>Info</th>
+                                        <th>Información</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
@@ -58,7 +59,7 @@
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-external-link-alt"></i></a>
+                                                <i class="fal fa-external-link"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}

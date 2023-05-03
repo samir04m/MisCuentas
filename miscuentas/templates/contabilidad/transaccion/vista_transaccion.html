@@ -67,9 +67,11 @@
                         </table>
                         <div class="text-center">
                             {% if request.user.is_superuser %}
-                                <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success" target="_blank">Editar</a>
+                                <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success mr-3" target="_blank"><i class="fal fa-edit"></i> Editar</a>
                             {% endif %}
-                            <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger">Deshacer</a>
+                            <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger">
+                                Deshacer <i class="fal fa-undo"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
