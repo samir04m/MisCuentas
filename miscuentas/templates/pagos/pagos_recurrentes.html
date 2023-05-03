@@ -7,11 +7,17 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
-                <h4 class="text-center animate__animated animate__fadeInDown">Pagos recurrentes</h4>
+                <h4 class="text-center text-white animate__animated animate__fadeInDown">Pagos recurrentes</h4>
                 <div class="card animate__animated animate__fadeInUp">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            <a href="{% url 'pagos:spotify' %}" onclick="return confirm('¿Desea realizar el pago de Spotify?')">Spotify</a>
+                            <a href="{% url 'pagos:hbomax' %}" onclick="return confirm('¿Desea realizar el pago de HBO Max?')">HBO Max</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:internet' %}" onclick="return confirm('¿Desea realizar el pago del Internet?')">Internet</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:cuotamoto' %}" onclick="return confirm('¿Desea realizar el pago de Cuota moto?')">Cuota moto</a>
                         </li>
                     </ul>
                 </div>

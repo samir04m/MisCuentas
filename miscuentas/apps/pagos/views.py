@@ -9,12 +9,14 @@ def pagos_recurrentes(request):
     return render(request, 'pagos/pagos_recurrentes.html')
 
 @login_required
-def pago_spotify(request):
-    cuenta = Cuenta.objects.filter(nombre='Nequi', user=request.user).first()
-    persona = Persona.objects.filter(nombre='Jorge Ivan', user=request.user).first()
-    error = ''
+def pago_hbomax(request):
+    nombreCuenta = 'Nequi'
+    nombrePersona = 'Jorge Ivan'
     cantidad = 25000/2
-    info = 'Pago Spotify'
+    info = 'Pago HBO Max'
+    cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
+    persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
+    error = ''
     if cuenta and persona:
         try:
             transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, 'Gasto mensual', request.user)
@@ -23,9 +25,63 @@ def pago_spotify(request):
             error = 'No se pudo realizar el pago debido a un error'
     else:
         if not cuenta:
-            error += 'No existe cuenta Nequi. '
+            error += f"No existe cuenta {nombreCuenta}. "
         if not persona:
-            error += 'No existe Jorge Ivan. '
+            error += f'No existe la persona {nombrePersona}. '
+    
+    if error:
+        messages.error(request, error, extra_tags='error')
+    else:
+        messages.success(request, 'Pago exitoso', extra_tags='success')    
+
+    return redirect('pagos:listado')
+
+@login_required
+def pago_cuotamoto(request):
+    nombreCuenta = 'Bancolombia'
+    nombrePersona = 'Andy'
+    cantidad = 303000
+    info = 'Pago cuota moto'
+    cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
+    persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
+    error = ''
+    if cuenta and persona:
+        try:
+            prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
+        except Exception as ex:
+            error = 'No se pudo realizar el pago debido a un error'
+    else:
+        if not cuenta:
+            error += f"No existe cuenta {nombreCuenta}. "
+        if not persona:
+            error += f'No existe la persona {nombrePersona}. '
+    
+    if error:
+        messages.error(request, error, extra_tags='error')
+    else:
+        messages.success(request, 'Pago exitoso', extra_tags='success')
+
+    return redirect('pagos:listado')
+
+@login_required
+def pago_internet(request):
+    nombreCuenta = 'Bancolombia'
+    nombrePersona = 'Andy'
+    info = 'Pago HBO Max'
+    cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
+    persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
+    error = ''
+    if cuenta and persona:
+        try:
+            transaccionEgreso = crearTransaccion('egreso', cuenta, 55000, info, 'Gasto mensual', request.user)
+            prestamo = crearPrestamo('yopresto', 50000, info, cuenta, persona)
+        except Exception as ex:
+            error = 'No se pudo realizar el pago debido a un error'
+    else:
+        if not cuenta:
+            error += f"No existe cuenta {nombreCuenta}. "
+        if not persona:
+            error += f'No existe la persona {nombrePersona}. '
     
     if error:
         messages.error(request, error, extra_tags='error')
