@@ -19,6 +19,7 @@ class Cuenta(models.Model):
 
 class Etiqueta(models.Model):
     nombre = models.CharField('Nombre de la Etiqueta', max_length=50)
+    tipo = models.IntegerField(default=1)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -32,7 +33,6 @@ class Etiqueta(models.Model):
 
 class Persona(models.Model):
     nombre = models.CharField('Nombre de la Persona', max_length=90)
-    isCreditCard = models.BooleanField('Es tarjeta de credito?', default=False)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -95,3 +95,34 @@ class TransaccionPrestamo(models.Model):
 
     def __str__(self):
         return "{} - Prestamo {} - Transaccion {} - $ {}".format(self.id, self.prestamo.id, self.transaccion.id, self.transaccion.cantidad)
+
+class CreditCard(models.Model):
+    nombre = models.CharField(max_length=90)
+    cupo = models.IntegerField()
+    cupoDisponible = models.IntegerField()
+    diaCorte = models.IntegerField('Dia fecha de corte')
+    diaLimitePago = models.IntegerField('Dia fecha limite de pago')
+    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Credit card'
+        verbose_name_plural = 'Credit cards'
+        ordering = ['nombre']
+
+    def __str__(self):
+        return self.nombre
+
+class TransaccionCredito(models.Model):
+    creditCard = models.ForeignKey(CreditCard, null=False, blank=False, on_delete=models.CASCADE)
+    transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
+    etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
+    cuotas = models.IntegerField('Número de cuotas', default=1)
+    fechaLimitePago = models.DateTimeField('Fecha limite de pago', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Transacción con credit card'
+        verbose_name_plural = 'Transacciones con credit card'
+        ordering = ['id']
+
+    def __str__(self):
+        return "{} {} {}".format(self.creditCard.nombre, self.transaccion.cantidad, self.transaccion.fecha)

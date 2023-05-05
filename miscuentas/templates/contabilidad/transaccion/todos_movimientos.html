@@ -63,8 +63,9 @@
                             </table>
 
                         {% else %}
-                            <div class="fs-18 text-center">
-                                No hay movimientos.
+                            <div class="fs-18 text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
+                                No se han registrado transacciones
                             </div>
                         {% endif %}
                     </div>
@@ -86,4 +87,4 @@
             });
         });
     </script>
-{% endblock %} %}
+{% endblock %}

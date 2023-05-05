@@ -9,9 +9,9 @@
             <div class="col-sm-12 col-md-6 col-lg-8">
 
                 <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
-                    <b class="fs-18">Mis cuentas</b>
+                    <b class="fs-22">Cuentas</b>
                     <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-sm btn-outline-light">
-                        Crear  <i class="fas fa-plus"></i></a>
+                        Crear  <i class="fal fa-plus"></i></a>
                 </div>
 
                 {% if  cuentas%}
@@ -33,14 +33,16 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <h5 class="text-light text-center my-5">No hay cuentas</h5>
+                    <p class="text-center my-5 pb-5 color-gray"> 
+                        No has creado cuentas todavía <i class="fal fa-smile"></i>
+                    </p>
                 {% endif %}
 
 
                 <div class="text-center text-light my-3 animate__animated animate__fadeInDown">
-                    <b class="fs-18">Personas/Tarjetas</b>
+                    <b class="fs-22">Personas</b>
                     <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
-                        Crear  <i class="fas fa-plus"></i></a>
+                        Crear  <i class="fal fa-plus"></i></a>
                 </div>
 
                     {% if personas %}
@@ -67,9 +69,9 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="text-center my-5 animate__animated animate__fadeInUp">
-                            <h5 class="m-30 text-white">No hay Personas o Tarjetas</h5>
-                        </div>
+                        <p class="text-center my-5 pb-5 color-gray"> 
+                            No has creado personas todavía <i class="fal fa-smile"></i>
+                        </p>
                     {% endif %}
 
             </div>

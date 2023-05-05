@@ -7,9 +7,10 @@
         <div class="row">
             <div class="offset-lg-1 col-lg-6">
                 <div class="m-b-20 text-center text-light animate__animated animate__fadeInDown">
-                    <b class="fs-18">Personas/Tarjetas</b>
+                    <b class="fs-18">Personas</b>
                     <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
-                        Crear  <i class="fas fa-plus"></i></a>
+                        Crear  <i class="fal fa-plus"></i>
+                    </a>
                 </div>
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
@@ -48,8 +49,9 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            <div class="fs-18 text-center py-3">
-                                No hay registro de personas.
+                            <div class="fs-18 text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
+                                No hay personas registradas
                             </div>
                         {% endif %}
                     </div>
