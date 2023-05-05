@@ -70,12 +70,32 @@ class TransaccionPrestamoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('id','transaccion','prestamo',)
     resource_class = TransaccionPrestamoResource
 
+class CreditCardResource(resources.ModelResource):
+    class Meta:
+        model = CreditCard
+
+class CreditCardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    search_fields = ['nombre']
+    list_display = ('id','nombre','cupo','cupoDisponible')
+    resource_class = CreditCardResource
+
+class TransaccionCreditoResource(resources.ModelResource):
+    class Meta:
+        model = TransaccionCredito
+
+class TransaccionCreditoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    # search_fields = ['creditCard_nombre']
+    list_display = ('id',)
+    resource_class = TransaccionCreditoResource
+
 admin.site.register(Cuenta, CuentaAdmin)
 admin.site.register(Etiqueta, EtiquetaAdmin)
 admin.site.register(Persona, PersonaAdmin)
 admin.site.register(Transaccion, TransaccionAdmin)
 admin.site.register(Prestamo, PrestamoAdmin)
 admin.site.register(TransaccionPrestamo, TransaccionPrestamoAdmin)
+admin.site.register(CreditCard, CreditCardAdmin)
+admin.site.register(TransaccionCredito, TransaccionCreditoAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

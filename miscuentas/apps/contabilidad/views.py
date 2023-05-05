@@ -17,6 +17,7 @@ from datetime import datetime
 from .forms import *
 from .models import *
 from .myFuncs import *
+from .viewsPrestamo import *
 import math
 
 @login_required
@@ -37,6 +38,7 @@ def crear_cuenta(request):
             cuenta = form.save(commit=False)
             cuenta.user = request.user
             cuenta.save()
+            messages.success(request, 'Cuenta creada exitosamente', extra_tags='success')
             return redirect('panel:panel')
     else:
         form = CuentaForm()
@@ -46,15 +48,13 @@ def crear_cuenta(request):
 @login_required
 def crear_persona(request):
     if request.method == 'POST':
-        isCreditCard = True if request.POST.get('isCreditCard') else False
         persona = Persona(
             nombre = request.POST.get('nombre').capitalize(),
-            isCreditCard = isCreditCard,
             user = request.user
         )
         persona.save()
+        messages.success(request, 'Persona creada exitosamente', extra_tags='success')
         return redirect('panel:panel')
-
     return render(request, 'contabilidad/persona/crear_persona.html')
 
 @login_required
@@ -217,214 +217,6 @@ class EliminarEtiqueta(DeleteView):
     success_url = reverse_lazy('panel:listar_etiquetas')
 
 @login_required
-def crear_prestamo(request, persona_id):
-    mensaje = None
-    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
-
-    if persona.isCreditCard:
-        if request.method == 'POST':
-            cantidad = int(request.POST.get('cantidad').replace('.',''))
-            cantidad = validarMiles(cantidad)
-            info = request.POST.get('info').capitalize()+". " if request.POST.get('info') else ""
-            cuotas = int(request.POST.get('cuotas'))
-            valorCuotas = (format(math.trunc(cantidad/cuotas), ',d'))
-            valorCuotas = valorCuotas.replace(',', '.')
-            info += "Diferido a {} cuotas de $ {}".format(cuotas, valorCuotas)
-
-            prestamo = Prestamo(
-                tipo = 'meprestan',
-                cantidad = cantidad,
-                info = info,
-                saldo_pendiente = cantidad,
-                fecha = getDate(request.POST.get('datetime')),
-                persona = persona
-            )
-            prestamo.save()
-            return redirect("panel:vista_persona", persona.id)
-
-        return render(request, 'contabilidad/prestamo/crear_prestamo_tarjeta.html', {"persona":persona})
-    else:
-        if request.method == 'POST':
-            request.POST._mutable = True
-            form = PrestamoForm(request.POST)
-            form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
-
-            if form.is_valid():
-                prestamo = form.save(commit=False)
-                prestamo.cantidad = validarMiles(prestamo.cantidad)
-                saldo_anterior = 0
-                cuenta = None
-                if request.POST.get('cuenta') != 'ninguna':
-                    cuenta = Cuenta.objects.get(id=int(request.POST.get('cuenta')))
-                    if (prestamo.tipo == 'yopresto' and prestamo.cantidad <= cuenta.saldo) or prestamo.tipo == 'meprestan':
-                        saldo_anterior = cuenta.saldo
-                        prestamo.cuenta = cuenta
-                    else:
-                        form = PrestamoForm(request.POST)
-                        mensaje = "El valor del prestamo no puede superar el saldo en cuenta."
-
-                fecha = getDate(request.POST.get('datetime'))
-                prestamo.persona = persona
-                prestamo.saldo_pendiente = prestamo.cantidad
-                prestamo.fecha = fecha
-                prestamo.save()
-                if prestamo.tipo == 'yopresto':
-                    if cuenta: 
-                        cuenta.saldo -= prestamo.cantidad
-                    tipoTransaccion = 'egreso'
-                    infoTransaccion = 'Le presté a '
-                elif prestamo.tipo == 'meprestan':
-                    if cuenta: 
-                        cuenta.saldo += prestamo.cantidad
-                    tipoTransaccion = 'ingreso'
-                    infoTransaccion = 'Me prestó '                    
-
-                if cuenta:
-                    tag = getEtiqueta('Prestamo', request.user)
-                    transaccion = Transaccion(
-                        tipo = tipoTransaccion,
-                        saldo_anterior = saldo_anterior,
-                        cantidad = prestamo.cantidad,
-                        info = infoTransaccion + persona.nombre,
-                        cuenta = cuenta,
-                        etiqueta = tag,
-                        fecha = fecha,
-                        user = request.user
-                    )
-                    cuenta.save()
-                    transaccion.save()
-
-                return redirect('panel:vista_persona', prestamo.persona.id)                    
-        else:
-            form = PrestamoForm()
-
-        cuentas = Cuenta.objects.filter(user=request.user.id)
-        context = {"form": form, "cuentas":cuentas, "persona":persona, "mensaje":mensaje}
-        return render(request, 'contabilidad/prestamo/crear_prestamo.html', context)
-
-@login_required
-def vista_prestamo(request, prestamo_id):
-    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    return render(request, 'contabilidad/prestamo/vista_prestamo.html', {"prestamo":prestamo})
-
-@login_required
-def pagar_prestamo(request, prestamo_id):
-    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-
-    if request.method == 'POST':
-        monto = int(request.POST.get('monto').replace('.',''))
-        if monto > prestamo.saldo_pendiente: 
-            monto = prestamo.saldo_pendiente
-
-        prestamo.saldo_pendiente -= monto
-        if prestamo.saldo_pendiente == 0:
-            prestamo.cancelada = True
-        prestamo.save()
-
-        cuentaId = int(request.POST.get('cuenta'))
-        if cuentaId:
-            cuenta = Cuenta.objects.get(id = cuentaId)
-        else:
-            cuenta = None
-
-        if cuenta: 
-            saldo_anterior = cuenta.saldo
-        else:
-            saldo_anterior = 0
-
-        if prestamo.tipo == 'yopresto':
-            if cuenta:
-                cuenta.saldo += monto
-            tipoTransaccion = 'ingreso'
-            infoTransaccion = " pagó la totalidad del prestamo." if prestamo.cancelada else " pagó una parte del prestamo. "
-            infoTransaccion = prestamo.persona.nombre + infoTransaccion
-        elif prestamo.tipo == 'meprestan':
-            if cuenta:
-                cuenta.saldo -= monto
-            tipoTransaccion = 'egreso'
-            infoTransaccion = "Pagué la totalidad del prestamo con " if prestamo.cancelada else "Pagué parte del prestamo con "
-            infoTransaccion += prestamo.persona.nombre + ". "
-        if cuenta:
-            cuenta.save()
-
-        tag = None
-        if prestamo.persona.isCreditCard:
-            if request.POST.get('tag'):
-                tag = Etiqueta.objects.get(id = request.POST.get('tag'))
-        else:
-            tag = getEtiqueta('Prestamo', request.user)
-
-        infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
-        transaccion = Transaccion(
-            tipo = tipoTransaccion,
-            saldo_anterior = saldo_anterior,
-            cantidad = monto,
-            info = infoTransaccion + infoAdicional,
-            cuenta = cuenta,
-            etiqueta = tag,
-            fecha = getDate(request.POST.get('datetime')),
-            user = request.user
-        )
-        transaccion.save()
-
-        transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()
-
-        return redirect('panel:vista_prestamo', prestamo_id)
-    else:
-        cuentas = Cuenta.objects.filter(user=request.user)
-        tags = Etiqueta.objects.filter(user=request.user).exclude(nombre='Prestamo').exclude(nombre='Transferencia')
-        context = {
-            "prestamo":prestamo, 
-            "cuentas": cuentas, 
-            "saldo_pendiente": prestamo.saldo_pendiente,
-            "tags": tags
-        }
-        return render(request, 'contabilidad/prestamo/pagar_prestamo.html', context)
-
-def confirm_eliminar_prestamo(request, prestamo_id):
-    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    data = {
-        "titulo": "Confirmar eliminación de prestamo",
-        "mensaje": "¿Esta seguro de eliminar el prestamo?",
-        "urlCancel": "/prestamo/"+str(prestamo_id),
-        "urlConfirm": "/eliminar-prestamo/"+str(prestamo_id),
-        "color": "danger"
-    }
-    return mensaje_confirmacion(request, data)
-
-def eliminarTransaccion(transaccion):
-    cuenta = transaccion.cuenta
-    if cuenta:
-        if transaccion.tipo == 'ingreso':
-            cuenta.saldo -= transaccion.cantidad
-        else:
-            cuenta.saldo += transaccion.cantidad
-        cuenta.save()
-    transaccion.delete()
-
-@login_required
-def eliminar_prestamo(request, prestamo_id):
-    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    personaId = prestamo.persona.id
-    if prestamo.cuenta:
-        transaccion = Transaccion.objects.get(cuenta=prestamo.cuenta, fecha=prestamo.fecha)
-        if transaccion:
-            for tp in prestamo.transaccionprestamo_set.all():
-                transaccionPartePago = tp.transaccion
-                eliminarTransaccion(transaccionPartePago)
-            eliminarTransaccion(transaccion)
-    else:
-        tps = TransaccionPrestamo.objects.filter(prestamo=prestamo)
-        for tp in tps:
-            transaccion = tp.transaccion
-            transaccion.delete()
-            tp.delete()
-
-    prestamo.delete()
-    messages.success(request, 'Se ha eliminado el prestamo', extra_tags='success')
-    return redirect("panel:vista_persona", personaId)
-
-@login_required
 def listar_personas(request):
     personas = Persona.objects.filter(user = request.user.id)
     return render(request, 'contabilidad/persona/listar_personas.html', {"personas":personas})
@@ -439,41 +231,6 @@ class EliminarPersona(DeleteView):
     model = Persona
     template_name = 'contabilidad/persona/persona_confirm_delete.html'
     success_url = reverse_lazy('panel:listar_personas')
-
-@login_required
-def listar_prestamos(request):
-    prestamos = Prestamo.objects.filter(persona__user = request.user.id)
-    if prestamos:
-        saldoTotal = Cuenta.objects.filter(user=request.user).aggregate(Sum('saldo'))
-        yoDebo = Prestamo.objects.filter(persona__user=request.user.id, tipo='meprestan', cancelada=False).aggregate(Sum('saldo_pendiente'))
-        meDeben = Prestamo.objects.filter(persona__user=request.user.id, tipo='yopresto', cancelada=False).aggregate(Sum('saldo_pendiente'))
-        saldoTotal = saldoTotal['saldo__sum']
-        yoDebo = yoDebo['saldo_pendiente__sum'] if yoDebo['saldo_pendiente__sum'] else 0
-        meDeben = meDeben['saldo_pendiente__sum'] if meDeben['saldo_pendiente__sum'] else 0
-        saldoRestante = saldoTotal
-        pagandoPrestamosMeQueda = 0
-        pagandoPrestamosMensaje = "Pagados todos los prestamos "
-        pagandoPrestamosMeQueda = meDeben-yoDebo    
-        if pagandoPrestamosMeQueda >= 0:
-            saldoRestante += pagandoPrestamosMeQueda
-            pagandoPrestamosMensaje += " recuperaria"
-        elif pagandoPrestamosMeQueda < 0:
-            saldoRestante -= abs(pagandoPrestamosMeQueda)
-            pagandoPrestamosMensaje += " tendria que pagar"
-        context = {
-            'prestamos':prestamos,
-            'saldoTotal':saldoTotal,
-            'yoDebo': yoDebo,
-            'meDeben': meDeben,
-            'pagandoPrestamosMensaje': pagandoPrestamosMensaje,
-            'pagandoPrestamosMeQueda': abs(pagandoPrestamosMeQueda),
-            'saldoRestante': saldoRestante,
-        }
-    else:
-        context = {
-            'prestamos':prestamos
-        }
-    return render(request, 'contabilidad/prestamo/listar_prestamos.html', context)
 
 @login_required
 def vista_transaccion(request, transaccion_id):
@@ -598,6 +355,17 @@ def vista_mensaje(request):
 @login_required
 def mensaje_confirmacion(request, context):
     return render(request, 'contabilidad/mensaje_confirmacion.html', context)
+
+def confirm_eliminar_prestamo(request, prestamo_id):
+    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
+    data = {
+        "titulo": "Confirmar eliminación de prestamo",
+        "mensaje": "¿Esta seguro de eliminar el prestamo?",
+        "urlCancel": "/prestamo/"+str(prestamo_id),
+        "urlConfirm": "/eliminar-prestamo/"+str(prestamo_id),
+        "color": "danger"
+    }
+    return mensaje_confirmacion(request, data)
 
 @login_required
 def movimientos_dia(request, tipo, fecha):

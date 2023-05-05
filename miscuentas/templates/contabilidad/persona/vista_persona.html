@@ -12,31 +12,22 @@
                     <div class="card-body">
                         <div class="text-center">
                             <div style="font-size:40px;">
-                                {% if persona.isCreditCard %}
-                                    <i class="fal fa-credit-card"></i>
-                                {% else %}
-                                    <i class="fal fa-user-circle"></i>
-                                {% endif %}
-                                {{persona.nombre}}
+                                <i class="fas fa-user-circle"></i> {{persona.nombre}}
                             </div>
-                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">Crear Prestamo</a>
+                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">
+                                Crear Prestamo <i class="fal fa-plus"></i>
+                            </a>
                         </div>
                         <hr>
                         <p>
-                            {% if persona.isCreditCard %}
-                                Has realizado {{persona.prestamo_set.count}} prestamos con esta tarjeta. 
-                                Deuda total ${{yoDebo|puntomil}}
-                            {% else %}
-                                Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
-                                {% if persona.prestamo_set.count %}
-                                    <br> En total usted debe ${{yoDebo|puntomil}} y le deben a usted ${{meDeben|puntomil}}.
-                                    {% if diferencia %}
-                                        <br> {{diferenciaMensaje}} ${{diferencia|puntomil}}.
-                                    {% endif %}
+                            Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
+                            {% if persona.prestamo_set.count %}
+                                <br> En total usted debe ${{yoDebo|puntomil}} y le deben a usted ${{meDeben|puntomil}}.
+                                {% if diferencia %}
+                                    <br> {{diferenciaMensaje}} ${{diferencia|puntomil}}.
                                 {% endif %}
                             {% endif %}
-                        </p> 
-
+                        </p>
                         {% if persona.prestamo_set.all %}
                             <h5 class="text-center mt-3"><b>Prestamos</b></h5>
                             <table class="table table-responsive-sm">
@@ -95,8 +86,8 @@
                 Swal.fire({
                     icon: '{{messages|getMessage:"icon" }}',
                     title: '{{messages|getMessage }}',
-                    showConfirmButton: false,
-                    timer: 2000
+                    showConfirmButton: true,
+                    // timer: 3000
                 });
             });
         </script>
