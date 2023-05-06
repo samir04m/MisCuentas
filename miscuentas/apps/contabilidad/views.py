@@ -21,13 +21,19 @@ from .viewsPrestamo import *
 from .viewsPersona import *
 from .viewsEtiqueta import *
 from .viewsMovimientos import *
+from .viewsCreditCard import *
 import math
 
 @login_required
 def panel(request):
     cuentas = Cuenta.objects.filter(user = request.user).order_by('id')
     personas = Persona.objects.filter(user = request.user).order_by('id')
-    context = {'cuentas':cuentas, 'personas':personas}
+    creditCards = CreditCard.objects.filter(user = request.user).order_by('id')
+    context = {
+        "cuentas":cuentas,
+        "personas":personas, 
+        "creditCards":creditCards
+    }
     return render(request, 'contabilidad/panel.html', context)
 
 @login_required

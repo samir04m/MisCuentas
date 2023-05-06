@@ -40,4 +40,7 @@ urlpatterns = [
 
     path('mensaje/', vista_mensaje, name='vista_mensaje'),
     path('relacionarUsuarioConTransaccion/', relacionarUsuarioConTransaccion, name='relacionarUsuarioConTransaccion'),
+
+    path('crear-creditCard/', crear_creditCard, name='crear_creditCard'),
+    path('creditCard/<int:creditCard_id>/', vista_creditCard, name='vista_creditCard'),
 ]

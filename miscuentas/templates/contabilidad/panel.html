@@ -13,8 +13,7 @@
                     <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-sm btn-outline-light">
                         Crear  <i class="fal fa-plus"></i></a>
                 </div>
-
-                {% if  cuentas%}
+                {% if  cuentas %}
                     <div class="row">
                         {% for c in cuentas %}
                             <div class="col-sm-12 col-lg-6 my-2">
@@ -39,40 +38,64 @@
                 {% endif %}
 
 
+                <div class="my-3 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-22">Tarjetas de Crédito</b>
+                    <a href="{% url 'panel:crear_creditCard' %}" class="btn btn-sm btn-outline-light">
+                        Crear  <i class="fal fa-plus"></i></a>
+                </div>
+                {% if  creditCards %}
+                    <div class="row">
+                        {% for cc in creditCards %}
+                            <div class="col-sm-12 col-lg-6 py-2">
+                                <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
+                                    <div class="card-body p-2 pl-3">
+                                        <a href="{% url 'panel:vista_creditCard' cc.id %}" class="fs-20">
+                                            <i class="far fa-credit-card"></i> {{cc.nombre}}
+                                        </a>
+                                        <div class="float-right">
+                                            <a href="{% url 'panel:vista_creditCard' cc.id %}"
+                                                class="btn btn-sm btn-primary rounded-pill">Compra</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center my-5 pb-5 color-gray"> 
+                        No has creado tarjetas todavía <i class="fal fa-smile"></i>
+                    </p>
+                {% endif %}
+
+
                 <div class="text-center text-light my-3 animate__animated animate__fadeInDown">
                     <b class="fs-22">Personas</b>
                     <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
                         Crear  <i class="fal fa-plus"></i></a>
                 </div>
-
-                    {% if personas %}
-                        <div class="row">
-                            {% for p in personas %}
-                                <div class="col-sm-12 col-lg-6 py-2">
-                                    <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
-                                        <div class="card-body p-2 pl-3">
-                                            <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
-                                                {% if p.isCreditCard %}
-                                                    <i class="far fa-credit-card"></i>
-                                                {% else %}
-                                                    <i class="fas fa-user-circle"></i>
-                                                {% endif %}
-                                                {{p.nombre}}
-                                            </a>
-                                            <div class="float-right">
-                                                <a href="{% url 'panel:crear_prestamo' p.id %}"
-                                                    class="btn btn-sm btn-primary rounded-pill">Prestar</a>
-                                            </div>
+                {% if personas %}
+                    <div class="row">
+                        {% for p in personas %}
+                            <div class="col-sm-12 col-lg-6 py-2">
+                                <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
+                                    <div class="card-body p-2 pl-3">
+                                        <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
+                                            <i class="fas fa-user-circle"></i> {{p.nombre}}
+                                        </a>
+                                        <div class="float-right">
+                                            <a href="{% url 'panel:crear_prestamo' p.id %}"
+                                                class="btn btn-sm btn-primary rounded-pill">Prestar</a>
                                         </div>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-center my-5 pb-5 color-gray"> 
-                            No has creado personas todavía <i class="fal fa-smile"></i>
-                        </p>
-                    {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center my-5 pb-5 color-gray"> 
+                        No has creado personas todavía <i class="fal fa-smile"></i>
+                    </p>
+                {% endif %}
 
             </div>
             <div class="col-sm-12 offset-md-1 col-md-5 offset-lg-1 col-lg-3 mt-3">

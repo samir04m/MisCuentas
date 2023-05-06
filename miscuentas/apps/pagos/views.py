@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from apps.contabilidad.models import *
-from .myFuncs import *
+from apps.contabilidad.myFuncs import *
 
 @login_required
 def pagos_recurrentes(request):
@@ -22,6 +22,7 @@ def pago_hbomax(request):
             transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, 'Gasto mensual', request.user)
             prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
         except Exception as ex:
+            print(ex)
             error = 'No se pudo realizar el pago debido a un error'
     else:
         if not cuenta:
@@ -67,7 +68,7 @@ def pago_cuotamoto(request):
 def pago_internet(request):
     nombreCuenta = 'Bancolombia'
     nombrePersona = 'Andy'
-    info = 'Pago HBO Max'
+    info = 'Pago Internet'
     cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
     persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
     error = ''

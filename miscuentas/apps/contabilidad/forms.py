@@ -113,4 +113,42 @@ class PrestamoForm(forms.ModelForm):
                 }
             ),
         }
-        
+
+class CreditCardForm(forms.ModelForm):
+    class Meta:
+        model = CreditCard
+        fields = ['nombre','cupo','diaCorte','diaLimitePago']
+
+        widgets = {
+            'nombre': forms.TextInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Nombre de la tarjeta',
+                    'id': 'nombre'
+                }
+            ),
+            'cupo': forms.NumberInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Cupo de la tarjeta',
+                    'id': 'cupo',
+                    'type': 'number'
+                }
+            ),
+            'diaCorte': forms.NumberInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Dia de corte',
+                    'id': 'diaCorte',
+                    'type': 'number'
+                }
+            ),
+            'diaLimitePago': forms.NumberInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Dia limite de pago',
+                    'id': 'diaLimitePago',
+                    'type': 'number'
+                }
+            ),
+        }
