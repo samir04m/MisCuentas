@@ -18,6 +18,9 @@ from .forms import *
 from .models import *
 from .myFuncs import *
 from .viewsPrestamo import *
+from .viewsPersona import *
+from .viewsEtiqueta import *
+from .viewsMovimientos import *
 import math
 
 @login_required
@@ -44,46 +47,6 @@ def crear_cuenta(request):
         form = CuentaForm()
 
     return render(request, 'contabilidad/cuenta/crear_cuenta.html', {"form": form})
-
-@login_required
-def crear_persona(request):
-    if request.method == 'POST':
-        persona = Persona(
-            nombre = request.POST.get('nombre').capitalize(),
-            user = request.user
-        )
-        persona.save()
-        messages.success(request, 'Persona creada exitosamente', extra_tags='success')
-        return redirect('panel:panel')
-    return render(request, 'contabilidad/persona/crear_persona.html')
-
-@login_required
-def vista_persona(request, persona_id):
-    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
-    prestamos = Prestamo.objects.filter(persona=persona, cancelada=False)
-    yoDebo = 0
-    meDeben = 0
-    for p in prestamos:
-        if p.tipo == 'meprestan': 
-            yoDebo += p.saldo_pendiente
-        elif p.tipo == 'yopresto':
-            meDeben += p.saldo_pendiente
-
-    diferencia = meDeben-yoDebo if (yoDebo > 0 and meDeben > 0) else 0
-    diferenciaMensaje = ""
-    if diferencia > 0: 
-        diferenciaMensaje = "Finalmente a usted le deben"
-    elif diferencia < 0:
-        diferenciaMensaje = "Finalmente usted debe"
-    
-    context = {
-        "persona": persona, 
-        "yoDebo": yoDebo,
-        "meDeben": meDeben,
-        "diferencia": abs(diferencia),
-        "diferenciaMensaje": diferenciaMensaje,
-    }
-    return render(request, 'contabilidad/persona/vista_persona.html', context)
 
 @login_required
 def crear_egreso(request, cuenta_id):
@@ -165,72 +128,6 @@ def crear_ingreso(request, cuenta_id):
     tags = Etiqueta.objects.filter(user=request.user.id).exclude(nombre='Prestamo')
     context = {"form": form, "cuenta":cuenta, "tags":tags}
     return render(request, 'contabilidad/transaccion/crear_ingreso.html', context)
-
-@login_required
-def movimientos_cuenta(request, cuenta_id):
-    cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
-    transacciones = Transaccion.objects.filter(cuenta=cuenta.id).order_by('-fecha')
-    context =  {"transacciones": transacciones, "cuenta":cuenta}
-    return render(request, 'contabilidad/transaccion/movimientos_cuenta.html', context)
-
-@login_required
-def todos_movimientos(request):
-    transacciones = Transaccion.objects.filter(user = request.user)
-    return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transacciones":transacciones})
-
-@login_required
-def movimientos_etiqueta(request, etiqueta_id):
-    etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
-    transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
-
-    context =  {"transacciones": transacciones, "etiqueta":etiqueta}
-    return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
-
-@login_required
-def crear_etiqueta(request):
-    if request.method == 'POST':
-        form = EtiquetaForm(request.POST)
-        if form.is_valid():
-            etiqueta = form.save(commit=False)
-            etiqueta.user = request.user
-            etiqueta.save()
-            return redirect('panel:listar_etiquetas')
-    else:
-        form = EtiquetaForm()
-
-    return render(request, 'contabilidad/etiqueta/crear_etiqueta.html', {"form": form})
-
-@login_required
-def listar_etiquetas(request):
-    etiquetas = Etiqueta.objects.filter(user = request.user.id).order_by('nombre')
-    return render(request, 'contabilidad/etiqueta/listar_etiquetas.html', {"etiquetas":etiquetas})
-
-class EditarEtiqueta(UpdateView):
-    model = Etiqueta
-    form_class = EtiquetaForm
-    template_name = 'contabilidad/etiqueta/crear_etiqueta.html'
-    success_url = reverse_lazy('panel:listar_etiquetas')
-
-class EliminarEtiqueta(DeleteView):
-    model = Etiqueta
-    template_name = 'contabilidad/etiqueta/etiqueta_confirm_delete.html'
-    success_url = reverse_lazy('panel:listar_etiquetas')
-
-@login_required
-def listar_personas(request):
-    personas = Persona.objects.filter(user = request.user.id)
-    return render(request, 'contabilidad/persona/listar_personas.html', {"personas":personas})
-
-class EditarPersona(UpdateView):
-    model = Persona
-    form_class = PersonaForm
-    template_name = 'contabilidad/persona/crear_persona.html'
-    success_url = reverse_lazy('panel:listar_personas')
-
-class EliminarPersona(DeleteView):
-    model = Persona
-    template_name = 'contabilidad/persona/persona_confirm_delete.html'
-    success_url = reverse_lazy('panel:listar_personas')
 
 @login_required
 def vista_transaccion(request, transaccion_id):
@@ -366,77 +263,3 @@ def confirm_eliminar_prestamo(request, prestamo_id):
         "color": "danger"
     }
     return mensaje_confirmacion(request, data)
-
-@login_required
-def movimientos_dia(request, tipo, fecha):
-    date = fecha.split("-")
-    day = date[0]
-    month = date[1]
-    year = date[2]
-    fecha2 = datetime(int(year), int(month), int(day))
-    tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
-    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
-
-    context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2}
-    return render(request, 'contabilidad/transaccion/movimientos_dia.html', context)
-
-@login_required
-def movimientos_mes(request, tipo, fecha):
-    date = fecha.split("-")
-    month = date[0]
-    year = date[1]
-    fecha2 = datetime(int(year), int(month), 1)
-    tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
-    transacciones = Transaccion.objects.filter(cuenta__user=request.user.id, tipo=tipo, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
-
-    context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2}
-    return render(request, 'contabilidad/transaccion/movimientos_mes.html', context)
-
-def getEtiqueta(nombre, user):
-    etiqueta = Etiqueta.objects.filter(nombre=nombre, user=user).first()
-    if not etiqueta:
-        etiqueta = Etiqueta(nombre=nombre, user=user)
-        etiqueta.save()
-    return etiqueta
-
-def generateDictFromSessionVariables(request, variables):
-    dict = {}
-    cont = 0
-    for var in variables:
-        if var in request.session:
-            dict[var] = request.session[var]
-            del request.session[var]
-        else:
-            dict[var] = ""
-            cont += 1
-    if len(variables) == cont:
-        dict = None
-    return dict
-
-def movimientos_etiqueta_mes(request, etiqueta_id, tipo, periodo):
-    etiqueta_id = int(etiqueta_id)
-    date = periodo.split("-")
-    month = int(date[0])
-    year = int(date[1])
-    # strTag = ''
-    if etiqueta_id > 0:
-        tag = Etiqueta.objects.get(id=etiqueta_id)
-        strTag = " con etiqueta \"{}\" ".format(tag.nombre)
-        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=tag, fecha__month=month, fecha__year=year)
-    elif etiqueta_id == 0:
-        strTag = "sin etiqueta"
-        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=None, fecha__month=month, fecha__year=year)
-    elif etiqueta_id == -1:
-        strTag = "del"
-        transacciones = Transaccion.objects.filter(tipo=tipo, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Prestamo').exclude(etiqueta__nombre='Transferencia')
-
-    strTipo = 'Egresos' if tipo == 'egreso' else 'Ingresos'
-    
-    context = {
-        'tipo': strTipo,
-        'etiqueta': strTag,
-        'periodo': periodo,
-        'transacciones': transacciones,
-
-    }
-    return render(request, 'contabilidad/etiqueta/movimientos_etiqueta_mes.html', context)

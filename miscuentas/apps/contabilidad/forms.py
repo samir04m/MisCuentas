@@ -35,7 +35,8 @@ class PersonaForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Nombre de la cuenta',
-                    'id': 'nombre'
+                    'id': 'nombre',
+                    'autocomplete': 'off'
                 }
             ),
         }
@@ -50,7 +51,8 @@ class EtiquetaForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Nombre de la etiqueta',
-                    'id': 'nombre'
+                    'id': 'nombre',
+                    'autocomplete': 'off'
                 }
             ),
         }

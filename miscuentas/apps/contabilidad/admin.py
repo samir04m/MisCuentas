@@ -32,7 +32,7 @@ class EtiquetaResource(resources.ModelResource):
 
 class EtiquetaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','nombre','user__username']
-    list_display = ('id','nombre', 'user',)
+    list_display = ('id','nombre', 'tipo', 'user',)
     resource_class = EtiquetaResource
 
 class PersonaResource(resources.ModelResource):

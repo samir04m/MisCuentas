@@ -96,3 +96,17 @@ def validarMiles(cantidad) -> int:
         return cantidad * 1000
     else:
         return cantidad
+
+def generateDictFromSessionVariables(request, variables):
+    dict = {}
+    cont = 0
+    for var in variables:
+        if var in request.session:
+            dict[var] = request.session[var]
+            del request.session[var]
+        else:
+            dict[var] = ""
+            cont += 1
+    if len(variables) == cont:
+        dict = None
+    return dict
