@@ -1,0 +1,88 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}{{creditCard.nombre}}{% endblock %}
+
+{% block contenido %}
+    <div class="container pt-2">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h4>
+                                <i class="fal fa-credit-card"></i> {{creditCard.nombre}}
+                                <a href="{% url 'panel:crear_prestamo' creditCard.id %}" class="btn btn-sm btn-outline-primary m-l-10">
+                                    Registrar compra <i class="fal fa-plus"></i>
+                                </a>
+                            </h4>
+                        </div>
+                        <!-- <hr> -->
+                        <p>
+                            hola
+                        </p>
+                        <!-- {% if persona.prestamo_set.all %}
+                            <h5 class="text-center mt-3"><b>Prestamos</b></h5>
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Fecha</th>
+                                        <th>Tipo</th>
+                                        <th>Cantidad</th>
+                                        <th>Pendiente</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in persona.prestamo_set.all %}
+                                        <tr class="{{p.cancelada|cancelada_color}}">
+                                            <td class="text-center"><i class="{{p.cancelada|cancelada_icono}}"></i></td>
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{p.fecha|date:'D, d/m/y h:iA'}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{p.fecha|date:'d/m/y h:iA'}}
+                                                </span>
+                                            </td>
+                                            <td>{{p.get_tipo_display}}</td>
+                                            
+                                            <td>${{p.cantidad|puntomil}}</td>
+                                            <td>${{p.saldo_pendiente|puntomil}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fal fa-external-link"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %} -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% if messages %}
+        <script type="text/javascript">
+            $(function () {
+                Swal.fire({
+                    icon: '{{messages|getMessage:"icon" }}',
+                    title: '{{messages|getMessage }}',
+                    showConfirmButton: true,
+                    // timer: 3000
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}

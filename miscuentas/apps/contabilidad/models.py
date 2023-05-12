@@ -99,9 +99,6 @@ class TransaccionPrestamo(models.Model):
 class CreditCard(models.Model):
     nombre = models.CharField(max_length=90)
     cupo = models.IntegerField()
-    cupoDisponible = models.IntegerField()
-    diaCorte = models.IntegerField('Dia fecha de corte')
-    diaLimitePago = models.IntegerField('Dia fecha limite de pago')
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -117,7 +114,7 @@ class TransaccionCredito(models.Model):
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
     cuotas = models.IntegerField('Número de cuotas', default=1)
-    fechaLimitePago = models.DateTimeField('Fecha limite de pago', null=True, blank=True)
+    fechaPago = models.DateTimeField('Fecha en que se realizo el pago', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Transacción con credit card'

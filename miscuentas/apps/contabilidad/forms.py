@@ -117,7 +117,7 @@ class PrestamoForm(forms.ModelForm):
 class CreditCardForm(forms.ModelForm):
     class Meta:
         model = CreditCard
-        fields = ['nombre','cupo','diaCorte','diaLimitePago']
+        fields = ['nombre','cupo']
 
         widgets = {
             'nombre': forms.TextInput(
@@ -129,26 +129,11 @@ class CreditCardForm(forms.ModelForm):
             ),
             'cupo': forms.NumberInput(
                 attrs = {
-                    'class':'form-control',
+                    'class':'form-control puntoMiles',
                     'placeholder':'Cupo de la tarjeta',
                     'id': 'cupo',
-                    'type': 'number'
+                    'type': 'text',
+                    'autocomplete': 'off'
                 }
-            ),
-            'diaCorte': forms.NumberInput(
-                attrs = {
-                    'class':'form-control',
-                    'placeholder':'Dia de corte',
-                    'id': 'diaCorte',
-                    'type': 'number'
-                }
-            ),
-            'diaLimitePago': forms.NumberInput(
-                attrs = {
-                    'class':'form-control',
-                    'placeholder':'Dia limite de pago',
-                    'id': 'diaLimitePago',
-                    'type': 'number'
-                }
-            ),
+            )
         }

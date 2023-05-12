@@ -76,7 +76,7 @@ class CreditCardResource(resources.ModelResource):
 
 class CreditCardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['nombre']
-    list_display = ('id','nombre','cupo','cupoDisponible')
+    list_display = ('id','nombre','cupo')
     resource_class = CreditCardResource
 
 class TransaccionCreditoResource(resources.ModelResource):

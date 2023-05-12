@@ -10,10 +10,11 @@ from .myFuncs import *
 @login_required
 def crear_creditCard(request):
     if request.method == 'POST':
+        request.POST._mutable = True
         form = CreditCardForm(request.POST)
+        form.data['cupo'] = int(form.data['cupo'].replace('.',''))
         if form.is_valid():
             creditCard = form.save(commit=False)
-            creditCard.cupoDisponible = creditCard.cupo
             creditCard.user = request.user
             try:
                 creditCard.save()
@@ -30,4 +31,4 @@ def crear_creditCard(request):
 @login_required
 def vista_creditCard(request, creditCard_id):
     creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
-    pass
+    return render(request, 'contabilidad/creditCard/vista_creditCard.html', {"creditCard": creditCard})
