@@ -7,19 +7,21 @@
     <div class="container pt-2">
         <div class="row">
             <div class="col-lg-9">
-                <div class="card animate__animated animate__fadeIn">
+                <div class="card animate__animated animate__fadeIn mb-3">
                     <div class="card-body">
                         <div class="text-center">
-                            <h4>
+                            <h3>
                                 <i class="fal fa-credit-card"></i> {{creditCard.nombre}}
-                                <a href="{% url 'panel:crear_prestamo' creditCard.id %}" class="btn btn-sm btn-outline-primary m-l-10">
-                                    Registrar compra <i class="fal fa-plus"></i>
-                                </a>
-                            </h4>
+                            </h3>
+                            <a href="{% url 'panel:compra_creditCard' creditCard.id %}" class="btn btn-sm btn-outline-primary m-l-10">
+                                Registrar compra <i class="fal fa-plus"></i>
+                            </a>
                         </div>
                         <!-- <hr> -->
                         <p>
-                            hola
+                            Cupo total: ${{creditCard.cupo|puntomil}} <br>
+                            Cupo disponible: ${{creditCard.cupoDisponible|puntomil}} <br>
+                            Deuda actual: ${{deudaActual|puntomil}} 
                         </p>
                         <!-- {% if persona.prestamo_set.all %}
                             <h5 class="text-center mt-3"><b>Prestamos</b></h5>

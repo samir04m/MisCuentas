@@ -99,6 +99,9 @@ class TransaccionPrestamo(models.Model):
 class CreditCard(models.Model):
     nombre = models.CharField(max_length=90)
     cupo = models.IntegerField()
+    cupoDisponible = models.IntegerField('Cupo disponible')
+    diaCorte = models.IntegerField('Dia de corte')
+    diaPago = models.IntegerField('Dia limite de pago')
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -109,17 +112,32 @@ class CreditCard(models.Model):
     def __str__(self):
         return self.nombre
 
-class TransaccionCredito(models.Model):
+class CompraCredito(models.Model):
     creditCard = models.ForeignKey(CreditCard, null=False, blank=False, on_delete=models.CASCADE)
-    transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
+    valor = models.IntegerField('Valor de la compra')
     cuotas = models.IntegerField('Número de cuotas', default=1)
-    fechaPago = models.DateTimeField('Fecha en que se realizo el pago', null=True, blank=True)
+    info = models.TextField('Informacion', max_length=300)
+    cancelada = models.BooleanField('Cancelada', default=False)
+    fecha = models.DateTimeField('Fecha')
 
     class Meta:
-        verbose_name = 'Transacción con credit card'
-        verbose_name_plural = 'Transacciones con credit card'
+        verbose_name = 'Compra a credito'
+        verbose_name_plural = 'Compras a credito'
         ordering = ['id']
 
     def __str__(self):
-        return "{} {} {}".format(self.creditCard.nombre, self.transaccion.cantidad, self.transaccion.fecha)
+        return "{} {} {}".format(self.creditCard.nombre, self.valor, self.fecha)
+
+class TransaccionPagoCredito(models.Model):
+    compraCredito = models.ForeignKey(CompraCredito, null=False, blank=False, on_delete=models.CASCADE)
+    transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
+    pagoRealizado = models.BooleanField('Cancelada', default=False)
+
+    class Meta:
+        verbose_name = 'Transacción pago credito'
+        verbose_name_plural = 'Transacciones pago credito'
+        ordering = ['id']
+
+    def __str__(self):
+        return "{} {} {}".format(self.creditCard.nombre, self.transaccion.saldo, self.transaccion.fecha)

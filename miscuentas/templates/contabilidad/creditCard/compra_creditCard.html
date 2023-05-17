@@ -1,0 +1,46 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Compra con {{creditCard.nombre}}{% endblock %}
+
+{% block contenido %}
+    <div class="container pt-2">
+        <div class="row">
+            <div class="offset-lg-3 col-lg-6">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">
+                            Compra con {{creditCard.nombre}}
+                        </h5>
+                        <hr>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="valor">Valor de la compra:</label>
+                                <input type="text" id="valor" class="form-control" autocomplete="off" placeholder="$" required >
+                            </div>
+
+                            <div class="text-center">
+                                <button class="btn btn-outline-primary m-t-20">
+                                    Confirmar Pago <i class="fal fa-chevron-double-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#valor', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
+{% endblock %}

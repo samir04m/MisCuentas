@@ -1,6 +1,8 @@
 from datetime import datetime
 from .models import *
 
+TAGNAMECREDITTRANSACTIONS = 'Sin Pagar'
+
 def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, user:User, fecha=datetime.now()):
     saldo_anterior = 0
     if cuenta:
@@ -54,8 +56,11 @@ def getEtiqueta(nombre, user):
 
 def getTipoEtiqueta(nombre) -> int:
     tipo2 = ['Prestamo', 'Transferencia']
+    tipo3 = [TAGNAMECREDITTRANSACTIONS]
     if nombre in tipo2:
         return 2
+    elif nombre in tipo3:
+        return 3
     else:
         return 1
 

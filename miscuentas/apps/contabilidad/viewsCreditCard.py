@@ -15,6 +15,7 @@ def crear_creditCard(request):
         form.data['cupo'] = int(form.data['cupo'].replace('.',''))
         if form.is_valid():
             creditCard = form.save(commit=False)
+            creditCard.cupoDisponible = creditCard.cupo
             creditCard.user = request.user
             try:
                 creditCard.save()
@@ -31,4 +32,20 @@ def crear_creditCard(request):
 @login_required
 def vista_creditCard(request, creditCard_id):
     creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
-    return render(request, 'contabilidad/creditCard/vista_creditCard.html', {"creditCard": creditCard})
+    deudaActual = 0
+    context = {
+        "creditCard": creditCard,
+        "deudaActual": deudaActual
+    }
+    return render(request, 'contabilidad/creditCard/vista_creditCard.html', context)
+
+@login_required
+def compra_creditCard(request, creditCard_id):
+    creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
+    if request.method == 'POST':
+        valor = int(form.data['valor'].replace('.',''))
+        # try:
+        #     transaccion = crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, '', request.user):
+    else:
+        return render(request, 'contabilidad/creditCard/compra_creditCard.html', {"creditCard": creditCard})
+        
