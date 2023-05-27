@@ -93,8 +93,7 @@ def crear_egreso(request, cuenta_id):
     else:
         form = TransaccionForm()
 
-    tags = Etiqueta.objects.filter(user=request.user.id).exclude(nombre='Prestamo').exclude(nombre='Transferencia')
-    context = {"form": form, "cuenta":cuenta, "tags":tags, "mensaje":mensaje}
+    context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request), "mensaje":mensaje}
     return render(request, 'contabilidad/transaccion/crear_egreso.html', context)
 
 @login_required
@@ -131,8 +130,7 @@ def crear_ingreso(request, cuenta_id):
     else:
         form = TransaccionForm()
 
-    tags = Etiqueta.objects.filter(user=request.user.id).exclude(nombre='Prestamo')
-    context = {"form": form, "cuenta":cuenta, "tags":tags}
+    context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request)}
     return render(request, 'contabilidad/transaccion/crear_ingreso.html', context)
 
 @login_required

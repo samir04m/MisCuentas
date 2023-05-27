@@ -15,9 +15,55 @@
                         <hr>
                         <form method="post">
                             {% csrf_token %}
-                            <div class="form-group">
-                                <label for="valor">Valor de la compra:</label>
-                                <input type="text" id="valor" class="form-control" autocomplete="off" placeholder="$" required >
+                            <div class="row">
+                                <div class="form-group col-lg-8">
+                                    <label for="valor">Valor</label>
+                                    <input type="text" id="valor" name="valor" class="form-control" autocomplete="off" placeholder="$" required >
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label for="cuotas">Cuotas</label>
+                                    <input type="number" id="cuotas" name="cuotas" class="form-control" min="1" max="24" value="1" required >
+                                </div>
+                                <div class="form-group col-lg-12">
+                                    <label for="info">Descripción</label>
+                                    <textarea name="info" id="info" rows="3" class="form-control" required></textarea>
+                                </div>
+                            </div>
+                            {% if tags %}
+                                <div class="mb-3">
+                                    <label for="tag">Etiqueta</label>
+                                    <select name="tag" class="form-control" id="tag">
+                                        <option value="" selected disabled></option>
+                                        {% for t in tags %}
+                                            <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary" role="alert">
+                                    No hay etiquetas
+                                </div>
+                            {% endif %}
+
+                            <div class="text-right">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseTag" aria-expanded="false" aria-controls="collapseTag">
+                                    Nueva etiqueta
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate">
+                                    Seleccionar fecha
+                                </button>
+                            </div>
+                            <div class="collapse" id="collapseTag">
+                                <div class="pb-2">
+                                    <label for="newTag">Crear nueva etiqueta</label>
+                                    <input type="text" class="form-control" name="newTag" id="newTag" placeholder="Nombre">
+                                </div>
+                            </div>
+                            <div class="collapse" id="collapseDate">
+                                <div class="pb-2">
+                                    <label for="datetime">Fecha</label>
+                                    <input type="text" class="form-control" name="datetime" id="datetime">
+                                </div>
                             </div>
 
                             <div class="text-center">

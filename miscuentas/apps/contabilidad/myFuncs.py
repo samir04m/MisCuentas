@@ -1,9 +1,10 @@
 from datetime import datetime
+from datetime import timedelta
 from .models import *
 
-TAGNAMECREDITTRANSACTIONS = 'Sin Pagar'
+CREDITPURCHASETAG = 'Por Pagar'
 
-def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, user:User, fecha=datetime.now()):
+def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, fecha=datetime.now()):
     saldo_anterior = 0
     if cuenta:
         saldo_anterior = cuenta.saldo
@@ -22,9 +23,10 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, user:User, fecha=
         cantidad=cantidad,
         info=info,
         fecha=fecha,
+        estado=estado,
         cuenta=cuenta,
-        etiqueta=getEtiqueta(tag, user),
-        user=user
+        etiqueta=getEtiqueta(tag, cuenta.user),
+        user=cuenta.user
     )
     transaccion.save()
     return transaccion
@@ -32,9 +34,9 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, user:User, fecha=
 def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona):
     fecha = datetime.now()
     if tipo == 'yopresto':
-        crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', persona.user, fecha)
+        crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
     if tipo == 'meprestan':
-        crearTransaccion('ingreso', cuenta, cantidad, info, 'Prestamo', persona.user, fecha)
+        crearTransaccion('ingreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
     prestamo = Prestamo(
         tipo=tipo,
         cantidad=cantidad,
@@ -47,16 +49,71 @@ def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona):
     prestamo.save()
     return prestamo
 
+def crearCompraCredito(creditCard:CreditCard, etiquetaId:int, valor:int, cuotas:int, info, fecha=datetime.now()):
+    compra = CompraCredito(
+        creditCard = creditCard,
+        etiqueta = getEtiquetaById(etiquetaId),
+        valor = valor,
+        cuotas = cuotas,
+        info = info,
+        deuda = valor,
+        fecha = fecha
+    )
+    compra.save()
+    creditCard.cupoDisponible = creditCard.cupoDisponible - valor
+    creditCard.save()
+    crearTransaccionesProgramadas(compra)
+    return compra
+
+def crearTransaccionesProgramadas(compraCredito:CompraCredito):
+    for i in range(compraCredito.cuotas):
+        nCuota = i+1
+        transaccion = Transaccion(
+            tipo='egreso',
+            saldo_anterior=0,
+            cantidad=round(compraCredito.valor/compraCredito.cuotas),
+            info='Pago cuota {} - tarjeta {}'.format(nCuota, compraCredito.creditCard.nombre),
+            fecha=getFechaPagoCuota(compraCredito, nCuota),
+            estado=0,
+            etiqueta=compraCredito.etiqueta,
+            user=compraCredito.creditCard.user
+        )
+        transaccion.save()
+        transaccionCredito = TransaccionPagoCredito(
+            compraCredito = compraCredito,
+            transaccion = transaccion
+        )
+        transaccionCredito.save()
+
+def getFechaPagoCuota(compra:CompraCredito, cuota):
+    fechaCompra = compra.fecha
+    sumarMes = cuota - 1
+    if fechaCompra.day >= compra.creditCard.diaPago:
+        sumarMes = sumarMes + 1
+    if fechaCompra.day > compra.creditCard.diaCorte:
+        sumarMes = sumarMes + 1
+    return datetime(fechaCompra.year, fechaCompra.month+sumarMes, compra.creditCard.diaPago, fechaCompra.hour, fechaCompra.minute, fechaCompra.second)
+
 def getEtiqueta(nombre, user):
-    etiqueta = Etiqueta.objects.filter(nombre=nombre, user=user).first()
-    if not etiqueta:
-        etiqueta = Etiqueta(nombre=nombre, tipo=getTipoEtiqueta(nombre), user=user)
-        etiqueta.save()
-    return etiqueta
+    if nombre:
+        etiqueta = Etiqueta.objects.filter(nombre=nombre, user=user).first()
+        if not etiqueta:
+            etiqueta = Etiqueta(nombre=nombre, tipo=getTipoEtiqueta(nombre), user=user)
+            etiqueta.save()
+        return etiqueta
+    return None
+
+def getEtiquetaById(id):
+    if id:
+        return Etiqueta.objects.get(id=id)
+    return None
+
+def getSelectEtiquetas(request):
+    return Etiqueta.objects.filter(user=request.user, tipo=1)
 
 def getTipoEtiqueta(nombre) -> int:
     tipo2 = ['Prestamo', 'Transferencia']
-    tipo3 = [TAGNAMECREDITTRANSACTIONS]
+    tipo3 = [CREDITPURCHASETAG]
     if nombre in tipo2:
         return 2
     elif nombre in tipo3:

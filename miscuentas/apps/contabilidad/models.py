@@ -51,6 +51,7 @@ class Transaccion(models.Model):
     cantidad = models.IntegerField('Cantidad')
     info = models.TextField('Informacion', max_length=300)
     fecha = models.DateTimeField('Fecha')
+    estado = models.IntegerField('Estado', default=1) # 0 programada, 1 realizada
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
@@ -101,7 +102,7 @@ class CreditCard(models.Model):
     cupo = models.IntegerField()
     cupoDisponible = models.IntegerField('Cupo disponible')
     diaCorte = models.IntegerField('Dia de corte')
-    diaPago = models.IntegerField('Dia limite de pago')
+    diaPago = models.IntegerField('Dia de pago')
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -118,13 +119,14 @@ class CompraCredito(models.Model):
     valor = models.IntegerField('Valor de la compra')
     cuotas = models.IntegerField('Número de cuotas', default=1)
     info = models.TextField('Informacion', max_length=300)
+    deuda = models.IntegerField()
     cancelada = models.BooleanField('Cancelada', default=False)
     fecha = models.DateTimeField('Fecha')
 
     class Meta:
         verbose_name = 'Compra a credito'
         verbose_name_plural = 'Compras a credito'
-        ordering = ['id']
+        ordering = ['-fecha']
 
     def __str__(self):
         return "{} {} {}".format(self.creditCard.nombre, self.valor, self.fecha)
@@ -132,7 +134,6 @@ class CompraCredito(models.Model):
 class TransaccionPagoCredito(models.Model):
     compraCredito = models.ForeignKey(CompraCredito, null=False, blank=False, on_delete=models.CASCADE)
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
-    pagoRealizado = models.BooleanField('Cancelada', default=False)
 
     class Meta:
         verbose_name = 'Transacción pago credito'
@@ -140,4 +141,16 @@ class TransaccionPagoCredito(models.Model):
         ordering = ['id']
 
     def __str__(self):
-        return "{} {} {}".format(self.creditCard.nombre, self.transaccion.saldo, self.transaccion.fecha)
+        return "{} - {} | ({})Transaccion".format(self.compraCredito.id, self.compraCredito.creditCard.nombre, self.transaccion.id)
+
+class UserSetting(models.Model):
+    key = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = 'Ajuste de usuario'
+        verbose_name_plural = 'Ajustes del usuario'
+        ordering = ['id']
+
+    def __str__(self):
+        return "{} {} {}".format(self.key, self.value, self.user)

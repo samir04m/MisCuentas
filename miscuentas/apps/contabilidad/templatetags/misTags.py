@@ -65,3 +65,18 @@ def tableClass(tagName, type):
         elif type == 'ingreso':
             return 'class=table-primary'
     return ""
+
+@register.filter
+def estadoTransaccion(estado):
+    if estado == 0:
+        return 'Pediente de pago'
+    elif estado == 1:
+        return 'Pago realizado'
+    else:
+        return ''
+
+@register.filter
+def colorEstadoTransaccion(estado):
+    if estado == 1:
+        return 'table-secondary'
+    return ''

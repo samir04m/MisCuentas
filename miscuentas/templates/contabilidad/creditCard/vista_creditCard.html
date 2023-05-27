@@ -7,7 +7,7 @@
     <div class="container pt-2">
         <div class="row">
             <div class="col-lg-9">
-                <div class="card animate__animated animate__fadeIn mb-3">
+                <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
                         <div class="text-center">
                             <h3>
@@ -17,43 +17,52 @@
                                 Registrar compra <i class="fal fa-plus"></i>
                             </a>
                         </div>
-                        <!-- <hr> -->
                         <p>
                             Cupo total: ${{creditCard.cupo|puntomil}} <br>
                             Cupo disponible: ${{creditCard.cupoDisponible|puntomil}} <br>
                             Deuda actual: ${{deudaActual|puntomil}} 
                         </p>
-                        <!-- {% if persona.prestamo_set.all %}
-                            <h5 class="text-center mt-3"><b>Prestamos</b></h5>
+                        <hr>
+                        <h5 class="text-center my-3">
+                            Compras realizadas
+                        </h5>
+                        {% if creditCard.compracredito_set.all %}
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
                                         <th></th>
                                         <th>Fecha</th>
-                                        <th>Tipo</th>
-                                        <th>Cantidad</th>
-                                        <th>Pendiente</th>
+                                        <th>Valor</th>
+                                        <th>Deuda</th>
+                                        <th>Etiqueta</th>
                                         <th>Ver</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for p in persona.prestamo_set.all %}
-                                        <tr class="{{p.cancelada|cancelada_color}}">
-                                            <td class="text-center"><i class="{{p.cancelada|cancelada_icono}}"></i></td>
+                                    {% for compra in creditCard.compracredito_set.all %}
+                                        <tr class="{{compra.cancelada|cancelada_color}}">
+                                            <td class="text-center">
+                                                <i class="{{compra.cancelada|cancelada_icono}}"></i>
+                                            </td>
                                             <td>
                                                 <span class="d-none d-md-block">
-                                                    {{p.fecha|date:'D, d/m/y h:iA'}}
+                                                    {{compra.fecha|date:'D, d/m/y h:iA'}}
                                                 </span>
                                                 <span  class="d-md-none">
-                                                    {{p.fecha|date:'d/m/y h:iA'}}
+                                                    {{compra.fecha|date:'d/m/y h:iA'}}
                                                 </span>
                                             </td>
-                                            <td>{{p.get_tipo_display}}</td>
-                                            
-                                            <td>${{p.cantidad|puntomil}}</td>
-                                            <td>${{p.saldo_pendiente|puntomil}}</td>
                                             <td>
-                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">
+                                                ${{compra.valor|puntomil}}
+                                            </td>
+                                            <td>
+                                                ${{compra.deuda|puntomil}}
+                                            </td>
+                                            <td>
+                                                {{compra.etiqueta}}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_compra' compra.id %}" class="btn btn-sm btn-outline-primary">
                                                     <i class="fal fa-external-link"></i>
                                                 </a>
                                             </td>
@@ -61,7 +70,12 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        {% endif %} -->
+                        {% else %}
+                            <div class="text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-2x"></i> <br>
+                                No se han registrado compras
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
