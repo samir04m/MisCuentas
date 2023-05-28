@@ -11,6 +11,13 @@
                     <div class="card-body">
                         <h5 class="text-center">Detalles de la Transacción</h5>
                         <hr>
+                        {% if transaccion.estado == 0 %}
+                            <div class="alert alert-primary" role="alert">
+                                <h4 class="alert-heading">Esta es una transacción programada!</h4>
+                                <p class="mb-0">Lo que significa que no ha sido debitada o pagada todavia</p>
+                            </div>
+                        {% endif %}
+
                         <table class="table table-responsive-sm table-borderless">
                             <tbody>
                                 <tr>
@@ -62,7 +69,18 @@
                                 <tr>
                                     <th>Información:</th>
                                     <td>{{transaccion.info|linebreaks}}</td>
-                                </tr>                                
+                                </tr>
+                                {% if transaccion.transaccionpagocredito_set.first %}
+                                    <tr>
+                                        <th>Compra a crédito</th>
+                                        <td>
+                                            <a href="{% url 'panel:vista_compra' transaccion.transaccionpagocredito_set.first.compraCredito.id %}">
+                                                {{transaccion.transaccionpagocredito_set.first.compraCredito.creditCard}}
+                                                {{transaccion.transaccionpagocredito_set.first.compraCredito.fecha|date:'d/m/y'}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                         <div class="text-center">

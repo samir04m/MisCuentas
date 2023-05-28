@@ -11,6 +11,12 @@
                     <div class="card-body">
                         <h5 class="text-center">Detalles de la compra</h5>
                         <hr>
+                        {% if compra.cancelada %}
+                            <div class="alert alert-success" role="alert">
+                                <h4 class="alert-heading">Compra pagada!</h4>
+                                <p class="mb-0">Ya se pagaron todas las cuotas de esta compra.</p>
+                            </div>
+                        {% endif %}
                         <table class="table table-responsive-sm table-borderless">
                             <tbody>
                                 <tr>

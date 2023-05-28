@@ -88,5 +88,10 @@
             decimalCharacter: ",",
             currencySymbol : ''
         });
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
+        });
     </script>
 {% endblock %}

@@ -50,7 +50,7 @@ class TransaccionResource(resources.ModelResource):
 
 class TransaccionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','tipo','cuenta__nombre','etiqueta__nombre']
-    list_display = ('id','cuenta','tipo','cantidad','etiqueta','fecha',)
+    list_display = ('id','cuenta','tipo','cantidad','etiqueta','fecha','estado',)
     resource_class = TransaccionResource
 
 class PrestamoResource(resources.ModelResource):
@@ -59,7 +59,7 @@ class PrestamoResource(resources.ModelResource):
 
 class PrestamoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','tipo','cuenta__nombre','persona__nombre']
-    list_display = ('id','cuenta','tipo','cantidad','saldo_pendiente','persona','cancelada','fecha')
+    list_display = ('id','cuenta','tipo','cantidad','saldo_pendiente','persona','cancelada','fecha',)
     resource_class = PrestamoResource
 
 class TransaccionPrestamoResource(resources.ModelResource):

@@ -136,6 +136,7 @@ def crear_ingreso(request, cuenta_id):
 @login_required
 def vista_transaccion(request, transaccion_id):
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
+    print(dir(transaccion))
     return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})
 
 @login_required
