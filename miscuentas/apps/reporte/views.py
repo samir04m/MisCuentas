@@ -163,7 +163,7 @@ def createListTagData(transacciones):
                 noTag = TagData('Sin Etiqueta', 0)
                 noTag.sumar(transaccion.cantidad)
                 listTagData.append(noTag)
-        elif transaccion.etiqueta.nombre != 'Prestamo' and transaccion.etiqueta.nombre != 'Transferencia':
+        elif transaccion.etiqueta.tipo != 2:
             td = getTagData(listTagData, transaccion.etiqueta.nombre)
             if td:
                 td.sumar(transaccion.cantidad)
@@ -206,9 +206,9 @@ def egresos_etiqueta(request, month, year):
     mes = datetime.today().month if month < 1 or month > 12 else month
     anio = datetime.today().year if year < 1998 or year > 2098 else year
 
-    egresos = Transaccion.objects.filter(cuenta__user=request.user, tipo='egreso', fecha__month=mes, fecha__year=anio).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
+    egresos = Transaccion.objects.filter(user=request.user, tipo='egreso', estado=1, fecha__month=mes, fecha__year=anio)
     egresosPorEtiqueta = createListTagData(egresos)
-    ingresos = Transaccion.objects.filter(cuenta__user=request.user, tipo='ingreso', fecha__month=mes, fecha__year=anio).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
+    ingresos = Transaccion.objects.filter(user=request.user, tipo='ingreso', estado=1, fecha__month=mes, fecha__year=anio)
     ingresosPorEtiqueta = createListTagData(ingresos)
 
     if egresosPorEtiqueta and ingresosPorEtiqueta:

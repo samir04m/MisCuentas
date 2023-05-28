@@ -2,8 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from .models import *
 
-CREDITPURCHASETAG = 'Por Pagar'
-
 def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, fecha=datetime.now()):
     saldo_anterior = 0
     if cuenta:
@@ -71,7 +69,7 @@ def crearTransaccionesProgramadas(compraCredito:CompraCredito):
         transaccion = Transaccion(
             tipo='egreso',
             saldo_anterior=0,
-            cantidad=round(compraCredito.valor/compraCredito.cuotas),
+            cantidad=getValorCuota(compraCredito, nCuota),
             info='Pago cuota {} - tarjeta {}'.format(nCuota, compraCredito.creditCard.nombre),
             fecha=getFechaPagoCuota(compraCredito, nCuota),
             estado=0,
@@ -84,6 +82,14 @@ def crearTransaccionesProgramadas(compraCredito:CompraCredito):
             transaccion = transaccion
         )
         transaccionCredito.save()
+
+def getValorCuota(compraCredito:CompraCredito, nCuota):
+    if nCuota == compraCredito.cuotas:
+        sumaValorCuotas = round(compraCredito.valor/compraCredito.cuotas) * compraCredito.cuotas
+        compensacion = compraCredito.valor - sumaValorCuotas
+        return round(compraCredito.valor/compraCredito.cuotas) + compensacion
+    else:
+        return round(compraCredito.valor/compraCredito.cuotas)
 
 def getFechaPagoCuota(compra:CompraCredito, cuota):
     fechaCompra = compra.fecha
@@ -113,11 +119,8 @@ def getSelectEtiquetas(request):
 
 def getTipoEtiqueta(nombre) -> int:
     tipo2 = ['Prestamo', 'Transferencia']
-    tipo3 = [CREDITPURCHASETAG]
     if nombre in tipo2:
         return 2
-    elif nombre in tipo3:
-        return 3
     else:
         return 1
 

@@ -112,8 +112,8 @@
         <div class="modal-body">
             <form action="{% url 'panel:pagar_tarjeta' creditCard.id %}" method="POST">
                 {% csrf_token %}
-                <input type="number" name="deudaMes" id="deudaMes" value="{{deudaMes}}">
-                <input type="number" name="deudaTotal" id="deudaTotal" value="{{deudaTotal}}">
+                <input type="number" name="deudaMes" id="deudaMes" value="{{deudaMes}}" class="d-none">
+                <input type="number" name="deudaTotal" id="deudaTotal" value="{{deudaTotal}}" class="d-none">
 
                 <div class="form-group">
                     <label for="cuenta">Seleccione una cuenta para realizar el pago</label>
