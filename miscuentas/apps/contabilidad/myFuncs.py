@@ -94,10 +94,12 @@ def getValorCuota(compraCredito:CompraCredito, nCuota):
 def getFechaPagoCuota(compra:CompraCredito, cuota):
     fechaCompra = compra.fecha
     sumarMes = cuota - 1
-    if fechaCompra.day >= compra.creditCard.diaPago:
-        sumarMes = sumarMes + 1
     if fechaCompra.day > compra.creditCard.diaCorte:
         sumarMes = sumarMes + 1
+    # if fechaCompra.day >= compra.creditCard.diaPago:
+    #     sumarMes = sumarMes + 1
+    # if fechaCompra.day > compra.creditCard.diaCorte:
+    #     sumarMes = sumarMes + 1
     return datetime(fechaCompra.year, fechaCompra.month+sumarMes, compra.creditCard.diaPago, fechaCompra.hour, fechaCompra.minute, fechaCompra.second)
 
 def getEtiqueta(nombre, user):

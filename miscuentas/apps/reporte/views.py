@@ -206,9 +206,9 @@ def egresos_etiqueta(request, month, year):
     mes = datetime.today().month if month < 1 or month > 12 else month
     anio = datetime.today().year if year < 1998 or year > 2098 else year
 
-    egresos = Transaccion.objects.filter(user=request.user, tipo='egreso', estado=1, fecha__month=mes, fecha__year=anio)
+    egresos = Transaccion.objects.filter(user=request.user, tipo='egreso', estado=1, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
     egresosPorEtiqueta = createListTagData(egresos)
-    ingresos = Transaccion.objects.filter(user=request.user, tipo='ingreso', estado=1, fecha__month=mes, fecha__year=anio)
+    ingresos = Transaccion.objects.filter(user=request.user, tipo='ingreso', estado=1, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
     ingresosPorEtiqueta = createListTagData(ingresos)
 
     if egresosPorEtiqueta and ingresosPorEtiqueta:

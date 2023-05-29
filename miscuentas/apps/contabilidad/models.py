@@ -142,15 +142,3 @@ class TransaccionPagoCredito(models.Model):
 
     def __str__(self):
         return "{} - {} | ({})Transaccion".format(self.compraCredito.id, self.compraCredito.creditCard.nombre, self.transaccion.id)
-
-class UserSetting(models.Model):
-    key = models.CharField(max_length=100)
-    value = models.CharField(max_length=100)
-    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
-    class Meta:
-        verbose_name = 'Ajuste de usuario'
-        verbose_name_plural = 'Ajustes del usuario'
-        ordering = ['id']
-
-    def __str__(self):
-        return "{} {} {}".format(self.key, self.value, self.user)
