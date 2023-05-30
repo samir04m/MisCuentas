@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import request
+from django.db.models import Sum
 from .models import *
 from .forms import *
 from .myFuncs import *

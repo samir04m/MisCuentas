@@ -30,7 +30,7 @@
                                     <button type="button" class="btn btn-outline-info my-1" data-toggle="modal" data-target="#staticBackdrop">
                                         Pagar tarjeta
                                     </button> <br>
-                                    Pago del mes: ${{deudaMes|puntomil}}
+                                    Pago mínimo: ${{deudaMes|puntomil}}
                                 {% endif %}
                             </div>
                         </div>
@@ -127,18 +127,18 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="tipoPago" id="tipoPago1" value="2" checked>
                         <label class="form-check-label" for="tipoPago1">
-                            Pagar deuda del mes ${{deudaMes|puntomil}}
+                            Pago mínimo ${{deudaMes|puntomil}}
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="tipoPago" id="tipoPago2" value="1">
                         <label class="form-check-label" for="tipoPago2">
-                            Pagar deuda completa ${{deudaTotal|puntomil}} 
+                            Pagar total ${{deudaTotal|puntomil}} 
                         </label>
                     </div>
                 </div>
                 <div class="text-center">
-                    <button class="btn btn-primary">Realizar Pago</button>
+                    <button class="btn btn-outline-primary">Realizar Pago</button>
                 </div>
             </form>
         </div>
