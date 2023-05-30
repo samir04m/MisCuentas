@@ -1,3 +1,3 @@
-jQuery(function($) {
-    $('#DEMO').autoNumeric('init');   
-});
+// $(document).ready(function() {
+//     $('.selectConBuscador').select2();
+// });
