@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import request
+from django.db import transaction
 from .models import *
 from .forms import *
 from .myFuncs import *
@@ -43,27 +44,31 @@ def vista_creditCard(request, creditCard_id):
     }
     return render(request, 'contabilidad/creditCard/vista_creditCard.html', context)
 
-def getProximosPagos(creditCard:CreditCard):
-    fecha = datetime.now()
-    month = int(fecha.month)
-    year = int(fecha.year)
-    proximosPagos = []
-    for i in range(24):
-        month += 1
-        if month == 13:
-            month = 1
-            year += 1
-        fechaConsulta = datetime(year, month, creditCard.diaPago)
-        pagoMes = getPagoMes(creditCard, fechaConsulta)
-        if pagoMes > 0 :
-            item = PagoMes(fechaConsulta.strftime("%d/%m/%Y"), pagoMes)
-            proximosPagos.append(item)
+@login_required
+def pagar_tarjeta(request, tarjeta_id):
+    creditCard = get_object_or_404(CreditCard, id=tarjeta_id)
+    if request.method == 'POST':
+        cuenta = Cuenta.objects.get( id = int(request.POST.get('cuenta')) )
+        tipoPago = int(request.POST.get('tipoPago'))
+        if tipoPago == 1:
+            deudaAPagar = int(request.POST.get('deudaTotal'))
+        elif tipoPago == 2:
+            deudaAPagar = int(request.POST.get('deudaMes'))
+        if deudaAPagar <= 0:
+            messages.error(request, 'La deuda a pagar debe ser mayor a cero', extra_tags='error')
+        elif cuenta.saldo < deudaAPagar:
+            messages.error(request, 'La cuenta seleccionada no tiene el saldo suficiente para pagar la deuda', extra_tags='error')
         else:
-            break
-    return proximosPagos
+            try:
+                pagarDeuda(creditCard, cuenta, tipoPago)
+                messages.success(request, 'Pago realizado', extra_tags='success')
+            except Exception as ex:
+                print("----- Exception -----", ex)
+                messages.error(request, 'Ocurrió un error al realizar el pago', extra_tags='error')
+    return redirect('panel:vista_creditCard', tarjeta_id)
 
 @login_required
-def compra_creditCard(request, creditCard_id):
+def crear_compra(request, creditCard_id):
     creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
     if request.method == 'POST':
         valor = validarMiles(int(request.POST.get('valor').replace('.','')))
@@ -92,27 +97,24 @@ def vista_compra(request, compra_id):
     return render(request, 'contabilidad/creditCard/vista_compraCredito.html', {"compra":compra})
 
 @login_required
-def pagar_tarjeta(request, tarjeta_id):
-    creditCard = get_object_or_404(CreditCard, id=tarjeta_id)
-    if request.method == 'POST':
-        cuenta = Cuenta.objects.get( id = int(request.POST.get('cuenta')) )
-        tipoPago = int(request.POST.get('tipoPago'))
-        if tipoPago == 1:
-            deudaAPagar = int(request.POST.get('deudaTotal'))
-        elif tipoPago == 2:
-            deudaAPagar = int(request.POST.get('deudaMes'))
-        if deudaAPagar <= 0:
-            messages.error(request, 'La deuda a pagar debe ser mayor a cero', extra_tags='error')
-        elif cuenta.saldo < deudaAPagar:
-            messages.error(request, 'La cuenta seleccionada no tiene el saldo suficiente para pagar la deuda', extra_tags='error')
-        else:
-            try:
-                pagarDeuda(creditCard, cuenta, tipoPago)
-                messages.success(request, 'Pago realizado', extra_tags='success')
-            except Exception as ex:
-                print("----- Exception -----", ex)
-                messages.error(request, 'Ocurrió un error al realizar el pago', extra_tags='error')
-    return redirect('panel:vista_creditCard', tarjeta_id)
+def eliminar_compra(request, compra_id):
+    compra = get_object_or_404(CompraCredito, id=compra_id)
+    creditCard = compra.creditCard
+    try:
+        with transaction.atomic():
+            for transaccionCompra in compra.transaccionpagocredito_set.all():
+                transaccion = transaccionCompra.transaccion
+                transaccion.delete()
+                transaccionCompra.delete()
+            creditCard.cupoDisponible += compra.valor
+            creditCard.save()
+            compra.delete()
+        messages.success(request, 'Compra eliminada', extra_tags='success')
+    except Exception as ex:
+        print("----- Exception -----", ex)
+        messages.error(request, 'Ocurrio un error', extra_tags='error')
+
+    return redirect('panel:vista_creditCard', creditCard.id)
 
 def pagarDeuda(creditCard:CreditCard, cuenta:Cuenta, tipoPago:int):
     comprasPendientes = CompraCredito.objects.filter(creditCard=creditCard, cancelada=False)
@@ -165,3 +167,22 @@ class PagoMes:
     def __init__(self, fecha:str, pagoMes:int):
         self.fecha = fecha
         self.pagoMes = pagoMes    
+
+def getProximosPagos(creditCard:CreditCard):
+    fecha = datetime.now()
+    month = int(fecha.month)
+    year = int(fecha.year)
+    proximosPagos = []
+    for i in range(24):
+        month += 1
+        if month == 13:
+            month = 1
+            year += 1
+        fechaConsulta = datetime(year, month, creditCard.diaPago)
+        pagoMes = getPagoMes(creditCard, fechaConsulta)
+        if pagoMes > 0 :
+            item = PagoMes(fechaConsulta.strftime("%d/%m/%Y"), pagoMes)
+            proximosPagos.append(item)
+        else:
+            break
+    return proximosPagos
