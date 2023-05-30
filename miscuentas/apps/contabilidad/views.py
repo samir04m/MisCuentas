@@ -14,6 +14,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
 from datetime import datetime
+import math
+from apps.usuario.models import UserSetting
+from apps.usuario.views import getUserSetting, setUserSetting
+
 from .forms import *
 from .models import *
 from .myFuncs import *
@@ -22,7 +26,6 @@ from .viewsPersona import *
 from .viewsEtiqueta import *
 from .viewsMovimientos import *
 from .viewsCreditCard import *
-import math
 
 @login_required
 def panel(request):
@@ -32,7 +35,8 @@ def panel(request):
     context = {
         "cuentas":cuentas,
         "personas":personas, 
-        "creditCards":creditCards
+        "creditCards":creditCards,
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
     }
     return render(request, 'contabilidad/panel.html', context)
 

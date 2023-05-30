@@ -24,6 +24,16 @@ def incluirTransaccionesProgramadas(request):
     url_anterior = request.META.get('HTTP_REFERER')
     return redirect(url_anterior)
 
+@login_required
+def mostrarSaldoCuentas(request):
+    value = getUserSetting('MostrarSaldoCuentas', request.user)
+    if value != None:
+        newValue = 1 if value == 0 else 0
+        setUserSetting('MostrarSaldoCuentas', newValue, request.user)
+    else:
+        setUserSetting('MostrarSaldoCuentas', 1, request.user)
+    return redirect(request.META.get('HTTP_REFERER'))
+
 def confirm_registro(request):
     return render(request, 'registration/confirm_registro.html')
 

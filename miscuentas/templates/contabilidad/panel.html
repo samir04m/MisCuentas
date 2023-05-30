@@ -9,6 +9,13 @@
             <div class="col-sm-12 col-md-6 col-lg-8">
 
                 <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
+                    <a href="{% url 'user:mostrarSaldoCuentas' %}" class="text-light">
+                        {% if mostrarSaldoCuentas %}
+                            <i class="far fa-eye-slash"></i>
+                        {% else %}
+                            <i class="far fa-eye"></i>
+                        {% endif %}
+                    </a>
                     <b class="fs-22">Cuentas</b>
                     <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-sm btn-outline-light">
                         Crear  <i class="fal fa-plus"></i></a>
@@ -20,7 +27,9 @@
                                 <div class="card clearfix bg-white animate__animated animate__zoomIn" >
                                     <div class="card-body py-2">
                                         <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
-                                        Saldo $ {{c.saldo|puntomil}}
+                                        {% if mostrarSaldoCuentas %}
+                                            Saldo $ {{c.saldo|puntomil}}
+                                        {% endif %}
                                         <div class="float-right pt-1">
                                             <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary rounded-pill">Ingreso</a>
                                             <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger rounded-pill">Egreso</a>

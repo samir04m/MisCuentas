@@ -6,4 +6,5 @@ urlpatterns = [
     path('registro-exitoso/', confirm_registro, name='confirm_registro'),
 
     path('incluirTransaccionesProgramadas/', incluirTransaccionesProgramadas, name='incluirTransaccionesProgramadas'),
+    path('mostrarSaldoCuentas/', mostrarSaldoCuentas, name='mostrarSaldoCuentas'),
 ]
