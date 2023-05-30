@@ -38,9 +38,29 @@ def vista_creditCard(request, creditCard_id):
         "creditCard": creditCard,
         "deudaTotal": deudaTotal,
         "cuentas": cuentas,
-        "deudaMes": getPagoMes(creditCard)
+        "deudaMes": getPagoMes(creditCard),
+        "proximosPagos": getProximosPagos(creditCard)
     }
     return render(request, 'contabilidad/creditCard/vista_creditCard.html', context)
+
+def getProximosPagos(creditCard:CreditCard):
+    fecha = datetime.now()
+    month = int(fecha.month)
+    year = int(fecha.year)
+    proximosPagos = []
+    for i in range(24):
+        month += 1
+        if month == 13:
+            month = 1
+            year += 1
+        fechaConsulta = datetime(year, month, creditCard.diaPago)
+        pagoMes = getPagoMes(creditCard, fechaConsulta)
+        if pagoMes > 0 :
+            item = PagoMes(fechaConsulta.strftime("%d/%m/%Y"), pagoMes)
+            proximosPagos.append(item)
+        else:
+            break
+    return proximosPagos
 
 @login_required
 def compra_creditCard(request, creditCard_id):
@@ -130,15 +150,18 @@ def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta):
     cuenta.save()
     transaccion.save()
 
-def getPagoMes(creditCard:CreditCard):
+def getPagoMes(creditCard:CreditCard, fecha=datetime.now()):
     comprasPendientes = CompraCredito.objects.filter(creditCard=creditCard, cancelada=False)
     sumaDeuda = 0
     for compra in comprasPendientes:
         for transaccionCompra in compra.transaccionpagocredito_set.all():
             transaccion = transaccionCompra.transaccion
-            fecha = datetime.now()
             if transaccion.fecha.year == fecha.year and transaccion.fecha.month == fecha.month:
                 if transaccion.estado == 0:
                     sumaDeuda += transaccion.cantidad
     return sumaDeuda
-    
+
+class PagoMes:
+    def __init__(self, fecha:str, pagoMes:int):
+        self.fecha = fecha
+        self.pagoMes = pagoMes    

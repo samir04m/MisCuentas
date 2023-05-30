@@ -11,7 +11,7 @@ from .myFuncs import *
 
 @login_required
 def todos_movimientos(request):
-    transacciones = Transaccion.objects.filter(user = request.user)
+    transacciones = Transaccion.objects.filter(user=request.user, estado=1)
     return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transacciones":transacciones})
 
 @login_required
@@ -49,7 +49,7 @@ def movimientos_mes(request, tipo, fecha):
 @login_required
 def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
-    transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id).order_by('-fecha')
+    transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id, estado=1).order_by('-fecha')
 
     context =  {"transacciones": transacciones, "etiqueta":etiqueta}
     return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
@@ -63,13 +63,13 @@ def movimientos_etiqueta_mes(request, etiqueta_id, tipo, periodo):
     if etiqueta_id > 0:
         tag = Etiqueta.objects.get(id=etiqueta_id)
         strTag = " con etiqueta \"{}\" ".format(tag.nombre)
-        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=tag, fecha__month=month, fecha__year=year)
+        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=tag, estado=1, fecha__month=month, fecha__year=year)
     elif etiqueta_id == 0:
         strTag = "sin etiqueta"
-        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=None, fecha__month=month, fecha__year=year)
+        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=None, estado=1, fecha__month=month, fecha__year=year)
     elif etiqueta_id == -1:
         strTag = "del"
-        transacciones = Transaccion.objects.filter(tipo=tipo, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Prestamo').exclude(etiqueta__nombre='Transferencia')
+        transacciones = Transaccion.objects.filter(tipo=tipo, estado=1, fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
 
     strTipo = 'Egresos' if tipo == 'egreso' else 'Ingresos'
     

@@ -12,6 +12,9 @@
                         <div class="text-center">
                             <h3>
                                 <i class="fal fa-credit-card"></i> {{creditCard.nombre}}
+                                <button type="button" class="btn btn-outline-primary rounded-circle px-2 py-0" data-toggle="modal" data-target="#modalInfo">
+                                    <i class="fal fa-info"></i>
+                                </button>
                             </h3>
                             <a href="{% url 'panel:compra_creditCard' creditCard.id %}" class="btn btn-sm btn-outline-primary m-l-10">
                                 Registrar compra <i class="fal fa-plus"></i>
@@ -99,7 +102,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal Realizar Pago -->
     <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -147,6 +150,46 @@
         </div>
         </div>
     </div>
+    </div>
+
+    <!-- Modal Información -->
+    <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalInfoLabel">Información de la tarjeta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Dia de corte: {{creditCard.diaCorte}}
+                    <span class="float-right">Dia de pago: {{creditCard.diaPago}}</span> 
+                </p>
+                <h6 class="text-center">Próximos pagos</h6>
+                {% if proximosPagos %}
+                    <table class="table table-responsive-sm table-borderless">
+                        <tbody>
+                            {% for pagoMes in proximosPagos %}
+                                <tr>
+                                    <th>{{pagoMes.fecha}}</th>
+                                    <td>${{pagoMes.pagoMes|puntomil}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center text-muted">
+                        No hay pagos en los siguentes meses
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        </div>
     </div>
 
 {% endblock %}
