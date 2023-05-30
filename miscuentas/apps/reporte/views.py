@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth, TruncDay
 from django.db.models import Count, Sum
 from datetime import datetime
+from apps.usuario.models import UserSetting
+from apps.usuario.views import getUserSetting, setUserSetting
 
 class TableData:
     def __init__(self, fecha, nregistros, total):
@@ -201,15 +203,21 @@ def createSelectOption(selectName, selectedOption):
         
     return selectOptions
 
+def getTransaccionesDelMes(tipo, user, mes, anio, incluirTP):
+    if incluirTP:
+        return Transaccion.objects.filter(user=user, tipo=tipo, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
+    else:
+        return Transaccion.objects.filter(user=user, tipo=tipo, estado=1, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
+
 @login_required
 def egresos_etiqueta(request, month, year):
     mes = datetime.today().month if month < 1 or month > 12 else month
     anio = datetime.today().year if year < 1998 or year > 2098 else year
+    mensajeIncluirTP = getMensajeIncluirTransaccionesProgramadas(request.user)
+    incluirTP = getUserSetting('IncluirTransaccionesProgramadas', request.user)
 
-    egresos = Transaccion.objects.filter(user=request.user, tipo='egreso', estado=1, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
-    egresosPorEtiqueta = createListTagData(egresos)
-    ingresos = Transaccion.objects.filter(user=request.user, tipo='ingreso', estado=1, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
-    ingresosPorEtiqueta = createListTagData(ingresos)
+    egresosPorEtiqueta = createListTagData(getTransaccionesDelMes('egreso', request.user, mes, anio, incluirTP))
+    ingresosPorEtiqueta = createListTagData(getTransaccionesDelMes('ingreso', request.user, mes, anio, incluirTP))
 
     if egresosPorEtiqueta and ingresosPorEtiqueta:
         totalEgresos = egresosPorEtiqueta[-1]
@@ -227,7 +235,8 @@ def egresos_etiqueta(request, month, year):
         'periodo' : convertMonthToString(mes)+'-'+str(anio),
         'selectMonth' : createSelectOption('month', mes),
         'selectYear' : createSelectOption('year', anio),
-        'resumen': resumen
+        'resumen': resumen,
+        'mensajeIncluirTP': mensajeIncluirTP
     }
     return render(request, 'reporte/mensual_etiqueta.html', context)
 
@@ -246,6 +255,17 @@ def obtenerResumen(totalIngresos, totalEgresos):
         'porcentaje': truncate(porcentaje, 2),
         'mensajeDiferencia': mensajeDiferencia
     }
+
+def getMensajeIncluirTransaccionesProgramadas(user:User):
+    value = getUserSetting('IncluirTransaccionesProgramadas', user)
+    if value == None:
+        value = 0
+        setUserSetting('IncluirTransaccionesProgramadas', value, user)
+    if value == 0:
+        return 'Incluir transacciones programadas en el informe'
+    elif value == 1:
+        return 'No incluir transacciones programadas en el informe'
+
 
 def truncate(number: float, max_decimals: int) -> float:
     int_part, dec_part = str(number).split(".")

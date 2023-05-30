@@ -8,15 +8,6 @@ from .models import *
 
 from django.contrib.auth.models import User
 
-class UserResource(resources.ModelResource):
-    class Meta:
-        model = User
-
-class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    search_fields = ['username','email','first_name','last_name']
-    list_display = ('username','email','is_staff','is_superuser','is_active',)
-    resource_class = UserResource
-
 class CuentaResource(resources.ModelResource):
     class Meta:
         model = Cuenta
@@ -106,6 +97,3 @@ admin.site.register(TransaccionPrestamo, TransaccionPrestamoAdmin)
 admin.site.register(CreditCard, CreditCardAdmin)
 admin.site.register(CompraCredito, CompraCreditoAdmin)
 admin.site.register(TransaccionPagoCredito, TransaccionPagoCreditoAdmin)
-
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
