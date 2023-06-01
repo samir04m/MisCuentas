@@ -1,4 +1,6 @@
 from django import template
+from apps.contabilidad.models import Transaccion
+
 register = template.Library()
 
 @register.filter
@@ -19,9 +21,13 @@ def puntomil(cantidad):
     return cadena
 
 @register.filter
-def textcolor(tipo):
-    if tipo == 'ingreso': return 'text-primary'
-    elif tipo == 'egreso': return 'text-danger'
+def textcolor(transaccion:Transaccion):
+    if transaccion.estado == 0:
+        return 'text-secondary'
+    if transaccion.tipo == 'ingreso': 
+        return 'text-primary'
+    elif transaccion.tipo == 'egreso': 
+        return 'text-danger'
 
 @register.filter
 def signo(tipo):

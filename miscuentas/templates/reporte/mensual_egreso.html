@@ -10,36 +10,36 @@
             <div class="col-sm-12 col-lg-9">
                 <h5 class="text-white text-center mb-3">Reporte Mensual de Egresos</h5>
                 <div class="card">
-                  <div class="card-body">
-                      {% if egresos %}
-                          <div id="container" style="width:100%; height:400px;"></div>
-                            <br>
-                          <table class="table table-responsive-sm" id="miTabla">
-                              <thead>
-                                  <tr>
-                                      <th>Mes</th>
-                                      <th>N° Egresos</th>
-                                      <th>Total</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                {% for egreso in egresos %}
+                    <div class="card-body">
+                        {% if egresos %}
+                            <div id="container" style="width:100%; height:400px;"></div>
+                                <br>
+                            <table class="table table-responsive-sm" id="miTabla">
+                                <thead>
                                     <tr>
-                                        <td>{{egreso.fecha|date:'F Y'}}</td>
-                                        <td>
-                                            <a href="{% url 'panel:movimientos_mes' 'egreso' egreso.fecha|date:'m-Y' %}" class="reset-">{{egreso.nregistros}} egresos</a>
-                                        </td>
-                                        <td>$ {{egreso.total|puntomil}}</td>
+                                        <th>Mes</th>
+                                        <th>N° Egresos</th>
+                                        <th>Total</th>
                                     </tr>
-                                {% endfor %}
-                              </tbody>
-                          </table>
+                                </thead>
+                                <tbody>
+                                    {% for egreso in egresos %}
+                                        <tr>
+                                            <td>{{egreso.fecha|date:'F Y'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_mes' 'egreso' egreso.fecha|date:'m-Y' %}" class="reset-">{{egreso.nregistros}} egresos</a>
+                                            </td>
+                                            <td>$ {{egreso.total|puntomil}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
 
-                      {% else %}
-                          <div class="text-center">No hay Reporte disponible</div>
-                      {% endif %}
+                        {% else %}
+                            <div class="text-center">No hay Reporte disponible</div>
+                        {% endif %}
 
-                  </div>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12 col-lg-3">
@@ -47,6 +47,8 @@
                 {% include 'base/panel_enlaces.html' %}
                 <br>
                 {% include 'base/panel_reportes.html' %}
+                <br>
+                {% include 'user/alert_switchUserSetting.html' %}
             </div>
         </div>
     </div>
@@ -83,14 +85,12 @@
                 },
                 series: [{
                     name: 'Egreso',
-                     color: '#ff5d5d',
+                        color: '#ff5d5d',
                     data: [
                         {% for g in grafica %}{{g.total}}, {% endfor %}
                     ]
                 }]
             });
-
-
         });
     </script>
-{% endblock %} %}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% if alertData %}
+    <div class="alert alert-{{alertData.color}}" role="alert">
+        <h6 class="alert-heading">{{alertData.titulo}}</h6>
+        <p class="fz-14">{{alertData.mensaje}}</p>
+        <a href="{% url 'user:switchUserSetting' 'IncluirTransaccionesProgramadas' %}">{{alertData.textoBoton}}</a>
+    </div>
+{% endif %}

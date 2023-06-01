@@ -40,7 +40,7 @@
                     <div class="card-body py-1">
                         <h5 class="text-center my-2">Egresos del periodo {{periodo}}</h5>
                         {% if egresosPorEtiqueta %}
-                            <table class="table table-responsive-sm table-bordered table-hover mb-1">
+                            <table class="table table-responsive-sm table-bordered table-hover">
                                 <thead>
                                     <tr class="table-danger">
                                         <th>Etiqueta</th>
@@ -61,9 +61,6 @@
                         {% else %}
                             <div class="text-center my-4">No hay Reporte disponible</div>
                         {% endif %}
-                        <div class="py-2 text-center">
-                            <a href="{% url 'user:incluirTransaccionesProgramadas' %}">{{mensajeIncluirTP}}</a>
-                        </div>
                     </div>
                 </div>
 
@@ -109,7 +106,9 @@
                 <br>
                 {% include 'base/panel_enlaces.html' %}
                 <br>
-                {% include 'base/panel_reportes.html' %}                
+                {% include 'base/panel_reportes.html' %}
+                <br>
+                {% include 'user/alert_switchUserSetting.html' %}        
             </div>
         </div>
     </div>

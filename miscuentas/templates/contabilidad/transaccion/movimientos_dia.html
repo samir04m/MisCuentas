@@ -27,7 +27,7 @@
                                 </thead>
                                 <tbody>
                                     {% for t in transacciones %}
-                                        <tr class="{{t.tipo|textcolor}}">
+                                        <tr class="{{t|textcolor}}">
                                             <td>
                                                 <span class="d-none d-md-block">
                                                     {{t.fecha|date:'D, d/m/y h:iA'}}
@@ -65,7 +65,7 @@
 
                         {% else %}
                             <div class="fs-18 text-center my-4">
-                                No hay movimientos en esta cuenta.
+                                No hay movimientos en este dia.
                             </div>
                         {% endif %}
                     </div>

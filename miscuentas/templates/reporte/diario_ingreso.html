@@ -10,38 +10,38 @@
             <div class="col-sm-12 col-lg-9">
                 <h5 class="text-white text-center mb-3">Reporte Diario de Ingresos</h5>
                 <div class="card">
-                  <div class="card-body">
-                      {% if ingresos %}
-                          <div id="container" style="width:100%; height:400px;"></div>
-                            <br>
-                          <table class="table table-responsive-sm" id="miTabla">
-                              <thead>
-                                  <tr>
-                                      <th>Fecha</th>
-                                      <th>Dia</th>
-                                      <th>N° Ingresos</th>
-                                      <th>Total</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  {% for ingreso in ingresos %}
-                                      <tr>
-                                        <td>{{ingreso.fecha|date:'Y-m-d'}}</td>
-                                        <td>{{ingreso.fecha|date:'l'}}</td>
-                                        <td>
-                                            <a href="{% url 'panel:movimientos_dia' 'ingreso' ingreso.fecha|date:'d-m-Y' %}" class="reset-">{{ingreso.nregistros}} ingresos</a>
-                                        </td>
-                                        <td>$ {{ingreso.total|puntomil}}</td>
-                                      </tr>
-                                  {% endfor %}
-                              </tbody>
-                          </table>
+                    <div class="card-body">
+                        {% if ingresos %}
+                            <div id="container" style="width:100%; height:400px;"></div>
+                                <br>
+                            <table class="table table-responsive-sm" id="miTabla">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Dia</th>
+                                        <th>N° Ingresos</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ingreso in ingresos %}
+                                        <tr>
+                                            <td>{{ingreso.fecha|date:'Y-m-d'}}</td>
+                                            <td>{{ingreso.fecha|date:'l'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_dia' 'ingreso' ingreso.fecha|date:'d-m-Y' %}" class="reset-">{{ingreso.nregistros}} ingresos</a>
+                                            </td>
+                                            <td>$ {{ingreso.total|puntomil}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
 
-                      {% else %}
-                          <div class="text-center">No hay Reporte disponible</div>
-                      {% endif %}
+                        {% else %}
+                            <div class="text-center">No hay Reporte disponible</div>
+                        {% endif %}
 
-                  </div>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12 col-lg-3">
@@ -85,7 +85,7 @@
                 },
                 series: [{
                     name: 'Ingreso',
-                     color: '#00abff',
+                        color: '#00abff',
                     data: [
                         {% for g in grafica %}{{g.total}}, {% endfor %}
                     ]
