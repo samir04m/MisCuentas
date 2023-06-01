@@ -52,7 +52,7 @@ def crear_cuenta(request):
             cuenta.user = request.user
             cuenta.save()
             messages.success(request, 'Cuenta creada exitosamente', extra_tags='success')
-            return redirect('panel:panel')
+            return redirect('panel:inicio')
     else:
         form = CuentaForm()
 
@@ -90,7 +90,7 @@ def crear_egreso(request, cuenta_id):
                 cuenta.saldo -= transaccion.cantidad
                 cuenta.save()
                 messages.success(request, 'Egreso registrado', extra_tags='success')
-                return redirect('panel:panel')
+                return redirect('panel:inicio')
             else:
                 form = TransaccionForm(request.POST)
                 mensaje = "El valor del egreso no puede superar el valor maximo."
@@ -130,7 +130,7 @@ def crear_ingreso(request, cuenta_id):
             cuenta.saldo += transaccion.cantidad
             cuenta.save()
             messages.success(request, 'Ingreso registrado', extra_tags='success')
-            return redirect('panel:panel')
+            return redirect('panel:inicio')
     else:
         form = TransaccionForm()
 
@@ -183,7 +183,7 @@ def transferir(request, cuenta_id):
 
             cuenta_destino.saldo += ingreso.cantidad
             cuenta_destino.save()
-            return redirect('panel:panel')
+            return redirect('panel:inicio')
         else:
             mensaje = "El valor de la transferencia no puede superar el valor maximo."
 
@@ -225,7 +225,7 @@ def transaccion_rollback(request, transaccion_id):
             messages.success(request, 'Se ha deshecho la transacción', extra_tags='success')
         else:
             messages.error(request, 'No fue posible deshacer la transacción', extra_tags='error')
-        return redirect('panel:panel')
+        return redirect('panel:inicio')
     else:
         return render(request, 'contabilidad/transaccion/transaccion_rollback.html', {"transaccion":transaccion})
 
@@ -255,7 +255,7 @@ def vista_mensaje(request):
     if context:
         return render(request, 'contabilidad/vista_mensaje.html', context)
     else:
-        return redirect('panel:panel')
+        return redirect('panel:inicio')
 
 @login_required
 def mensaje_confirmacion(request, context):

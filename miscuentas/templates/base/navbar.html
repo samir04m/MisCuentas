@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-blue">
     <div class="container">
 
-        <a class="navbar-brand" href="{% url 'panel:panel' %}"><i class="far fa-chart-line"></i> Mis Cuentas</a>
+        <a class="navbar-brand" href="{% url 'panel:inicio' %}"><i class="far fa-chart-line"></i> Mis Cuentas</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -10,7 +10,7 @@
 
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'panel:panel' %}">
+                        <a class="nav-link" href="{% url 'panel:inicio' %}">
                             <i class="fal fa-chart-bar"></i> Panel <span class="sr-only">(current)</span>
                         </a>
                     </li>

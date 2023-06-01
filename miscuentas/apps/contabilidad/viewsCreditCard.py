@@ -24,7 +24,7 @@ def crear_creditCard(request):
             except Exception as ex:
                 print("----- Exception -----", ex)
                 messages.error(request, 'No fue posible crear la tarjeta debido a un error', extra_tags='error')
-            return redirect('panel:panel')
+            return redirect('panel:inicio')
     else:
         form = CreditCardForm()
 

@@ -4,7 +4,7 @@ from .views import *
 from .viewsHelpers import *
 
 urlpatterns = [
-    path('', panel, name='panel'),
+    path('', panel, name='inicio'),
     path('crear-cuenta/', crear_cuenta, name='crear_cuenta'),
     path('crear-egreso/<int:cuenta_id>/', crear_egreso, name='crear_egreso'),
     path('crear-ingreso/<int:cuenta_id>/', crear_ingreso, name='crear_ingreso'),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('prestamo/<int:prestamo_id>/', vista_prestamo, name='vista_prestamo'),
     path('crear-prestamo/<int:persona_id>/', crear_prestamo, name='crear_prestamo'),
     path('pagar-prestamo/<int:prestamo_id>/', pagar_prestamo, name='pagar_prestamo'),
+    path('pagar-conjunto-prestamos/<int:persona_id>/', pagarConjuntoPrestamos, name='pagarConjuntoPrestamos'),
     path('eliminar-prestamo/<int:prestamo_id>/', eliminar_prestamo, name='eliminar_prestamo'),
     path('confirm-eliminar-prestamo/<int:prestamo_id>/', confirm_eliminar_prestamo, name='confirm_eliminar_prestamo'),
 

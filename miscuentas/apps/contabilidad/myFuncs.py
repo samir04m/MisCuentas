@@ -2,7 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from .models import *
 
-def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, fecha=datetime.now()):
+def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fecha=datetime.now()):
     saldo_anterior = 0
     if cuenta:
         saldo_anterior = cuenta.saldo
@@ -23,8 +23,8 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, fecha=dat
         fecha=fecha,
         estado=estado,
         cuenta=cuenta,
-        etiqueta=getEtiqueta(tag, cuenta.user),
-        user=cuenta.user
+        etiqueta=getEtiqueta(tag, user),
+        user=user
     )
     transaccion.save()
     return transaccion
@@ -32,9 +32,9 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, fecha=dat
 def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona):
     fecha = datetime.now()
     if tipo == 'yopresto':
-        crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
+        crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', 1, persona.user, fecha)
     if tipo == 'meprestan':
-        crearTransaccion('ingreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
+        crearTransaccion('ingreso', cuenta, cantidad, info, 'Prestamo', 1, persona.user, fecha)
     prestamo = Prestamo(
         tipo=tipo,
         cantidad=cantidad,

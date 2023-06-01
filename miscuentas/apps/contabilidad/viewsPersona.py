@@ -18,7 +18,7 @@ def crear_persona(request):
         )
         persona.save()
         messages.success(request, 'Persona creada exitosamente', extra_tags='success')
-        return redirect('panel:panel')
+        return redirect('panel:inicio')
     return render(request, 'contabilidad/persona/crear_persona.html')
 
 @login_required
@@ -46,6 +46,7 @@ def vista_persona(request, persona_id):
         "meDeben": meDeben,
         "diferencia": abs(diferencia),
         "diferenciaMensaje": diferenciaMensaje,
+        "cuentas": Cuenta.objects.filter(user=request.user),
     }
     return render(request, 'contabilidad/persona/vista_persona.html', context)
 

@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import transaction
 from django.http import request
 from django.db.models import Sum
 from .models import *
@@ -62,6 +63,7 @@ def crear_prestamo(request, persona_id):
             prestamo = form.save(commit=False)
             prestamo.cantidad = validarMiles(prestamo.cantidad)
             cuenta = None
+            print('request.POST.get(cuenta)',request.POST.get('cuenta'))
             if request.POST.get('cuenta') != 'ninguna':
                 cuenta = get_object_or_404(Cuenta, id=int(request.POST.get('cuenta')), user=request.user.id)
             
@@ -85,56 +87,11 @@ def pagar_prestamo(request, prestamo_id):
 
     if request.method == 'POST':
         monto = int(request.POST.get('monto').replace('.',''))
-        if monto > prestamo.saldo_pendiente: 
-            monto = prestamo.saldo_pendiente
-
-        prestamo.saldo_pendiente -= monto
-        if prestamo.saldo_pendiente == 0:
-            prestamo.cancelada = True
-        prestamo.save()
-
-        cuentaId = int(request.POST.get('cuenta'))
-        if cuentaId:
-            cuenta = Cuenta.objects.get(id = cuentaId)
-        else:
-            cuenta = None
-
-        if cuenta: 
-            saldo_anterior = cuenta.saldo
-        else:
-            saldo_anterior = 0
-
-        if prestamo.tipo == 'yopresto':
-            if cuenta:
-                cuenta.saldo += monto
-            tipoTransaccion = 'ingreso'
-            infoTransaccion = " pagó la totalidad del prestamo." if prestamo.cancelada else " pagó una parte del prestamo. "
-            infoTransaccion = prestamo.persona.nombre + infoTransaccion
-        elif prestamo.tipo == 'meprestan':
-            if cuenta:
-                cuenta.saldo -= monto
-            tipoTransaccion = 'egreso'
-            infoTransaccion = "Pagué la totalidad del prestamo con " if prestamo.cancelada else "Pagué parte del prestamo con "
-            infoTransaccion += prestamo.persona.nombre + ". "
-        if cuenta:
-            cuenta.save()
-
-        tag = getEtiqueta('Prestamo', request.user)
-        infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
-        transaccion = Transaccion(
-            tipo = tipoTransaccion,
-            saldo_anterior = saldo_anterior,
-            cantidad = monto,
-            info = infoTransaccion + infoAdicional,
-            cuenta = cuenta,
-            etiqueta = tag,
-            fecha = getDate(request.POST.get('datetime')),
-            user = request.user
-        )
-        transaccion.save()
-
-        transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()
-
+        try:
+            with transaction.atomic():
+                pagarPrestamo(prestamo, monto, request)
+        except Exception as ex:
+            print("----- Exception -----", ex)
         return redirect('panel:vista_prestamo', prestamo_id)
     else:
         cuentas = Cuenta.objects.filter(user=request.user)
@@ -168,3 +125,81 @@ def eliminar_prestamo(request, prestamo_id):
     prestamo.delete()
     messages.success(request, 'Se ha eliminado el prestamo', extra_tags='success')
     return redirect("panel:vista_persona", personaId)
+
+@login_required
+def pagarConjuntoPrestamos(request, persona_id):
+    if request.method == 'POST':
+        cuentaId = int(request.POST.get('cuenta'))
+        pagoTotal = int(request.POST.get('pagoTotal').replace('.',''))
+        if pagoTotal <= 0:
+            messages.error(request, 'El total a pagar debe ser mayor a cero', extra_tags='error')
+            return redirect('panel:vista_persona', persona_id)
+        prestamos = Prestamo.objects.filter(tipo=request.POST.get('tipoPrestamo'), persona=persona_id, cancelada=False).order_by('fecha')
+        disponible = pagoTotal
+        try:
+            with transaction.atomic():
+                for prestamo in prestamos:
+                    if disponible >= prestamo.saldo_pendiente:
+                        monto = prestamo.saldo_pendiente
+                    else:
+                        monto = disponible
+                    disponible -= monto
+                    pagarPrestamo(prestamo, monto, request)
+                    if disponible == 0:
+                        break
+            messages.success(request, 'Pago de multiples prestamos realizado', extra_tags='success')
+        except Exception as ex:
+            print("----- Exception -----", ex)
+            messages.error(request, 'Ocurrio un error', extra_tags='error')
+
+    return redirect('panel:vista_persona', persona_id)
+
+def pagarPrestamo(prestamo:Prestamo, monto, request):
+    if monto > prestamo.saldo_pendiente: 
+            monto = prestamo.saldo_pendiente
+
+    prestamo.saldo_pendiente -= monto
+    if prestamo.saldo_pendiente == 0:
+        prestamo.cancelada = True
+    prestamo.save()
+
+    cuentaId = int(request.POST.get('cuenta'))
+    if cuentaId:
+        cuenta = Cuenta.objects.get(id = cuentaId)
+    else:
+        cuenta = None
+
+    if cuenta: 
+        saldo_anterior = cuenta.saldo
+    else:
+        saldo_anterior = 0
+
+    if prestamo.tipo == 'yopresto':
+        if cuenta:
+            cuenta.saldo += monto
+        tipoTransaccion = 'ingreso'
+        infoTransaccion = " pagó la totalidad del prestamo." if prestamo.cancelada else " pagó una parte del prestamo. "
+        infoTransaccion = prestamo.persona.nombre + infoTransaccion
+    elif prestamo.tipo == 'meprestan':
+        if cuenta:
+            cuenta.saldo -= monto
+        tipoTransaccion = 'egreso'
+        infoTransaccion = "Pagué la totalidad del prestamo con " if prestamo.cancelada else "Pagué parte del prestamo con "
+        infoTransaccion += prestamo.persona.nombre + ". "
+    if cuenta:
+        cuenta.save()
+
+    tag = getEtiqueta('Prestamo', request.user)
+    infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
+    transaccion = Transaccion(
+        tipo = tipoTransaccion,
+        saldo_anterior = saldo_anterior,
+        cantidad = monto,
+        info = infoTransaccion + infoAdicional,
+        cuenta = cuenta,
+        etiqueta = tag,
+        fecha = getDate(request.POST.get('datetime')),
+        user = request.user
+    )
+    transaccion.save()
+    transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()

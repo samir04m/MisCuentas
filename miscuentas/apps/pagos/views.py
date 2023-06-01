@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from apps.contabilidad.models import *
 from apps.contabilidad.myFuncs import *
+from apps.usuario.userSettingFuncs import *
 
 @login_required
 def pagos_recurrentes(request):
@@ -19,7 +20,7 @@ def pago_hbomax(request):
     error = ''
     if cuenta and persona:
         try:
-            transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, 'Gasto mensual', 1)
+            transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, 'Gasto mensual', 1, persona.user)
             prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
         except Exception as ex:
             print(ex)
@@ -74,7 +75,7 @@ def pago_internet(request):
     error = ''
     if cuenta and persona:
         try:
-            transaccionEgreso = crearTransaccion('egreso', cuenta, 55000, info, 'Gasto mensual', 1)
+            transaccionEgreso = crearTransaccion('egreso', cuenta, 55000, info, 'Gasto mensual', 1, persona.user)
             prestamo = crearPrestamo('yopresto', 50000, info, cuenta, persona)
         except Exception as ex:
             error = 'No se pudo realizar el pago debido a un error'
