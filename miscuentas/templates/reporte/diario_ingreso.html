@@ -14,7 +14,7 @@
                         {% if ingresos %}
                             <div id="container" style="width:100%; height:400px;"></div>
                                 <br>
-                            <table class="table table-responsive-sm" id="miTabla">
+                            <table class="table table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
@@ -56,43 +56,33 @@
 {% endblock %}
 
 {% block script %}
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
     <script src="{% static 'js/highcharts.js' %}"></script>
 
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                order: []
-            });
-
-            var myChart = Highcharts.chart('container', {
-                chart: {
-                    type: 'column'
-                },
+        var myChart = Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Ingresos de los ultimos 10 dias'
+            },
+            xAxis: {
+                categories: [
+                    {% for g in grafica %}"{{g.fecha|date:'D d'}}", {% endfor %}
+                ]
+            },
+            yAxis: {
                 title: {
-                    text: 'Ingresos de los ultimos 10 dias'
-                },
-                xAxis: {
-                    categories: [
-                        {% for g in grafica %}"{{g.fecha|date:'D d'}}", {% endfor %}
-                    ]
-                },
-                yAxis: {
-                    title: {
-                        text: '$ COP'
-                    }
-                },
-                series: [{
-                    name: 'Ingreso',
-                        color: '#00abff',
-                    data: [
-                        {% for g in grafica %}{{g.total}}, {% endfor %}
-                    ]
-                }]
-            });
-
-
+                    text: '$ COP'
+                }
+            },
+            series: [{
+                name: 'Ingreso',
+                    color: '#00abff',
+                data: [
+                    {% for g in grafica %}{{g.total}}, {% endfor %}
+                ]
+            }]
         });
     </script>
-{% endblock %} %}
+{% endblock %}

@@ -17,7 +17,7 @@
                         Cancelados todos los prestamos su saldo seria de ${{saldoRestante|puntomil}}
                     </p>
                     
-                    <table class="table table-responsive-sm" id="miTabla">
+                    <table class="table table-responsive-sm" id="datatable">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -70,18 +70,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block script %}
-
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                "aaSorting": []
-            });
-        });
-    </script>
 {% endblock %}

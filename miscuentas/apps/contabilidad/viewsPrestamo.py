@@ -63,12 +63,11 @@ def crear_prestamo(request, persona_id):
             prestamo = form.save(commit=False)
             prestamo.cantidad = validarMiles(prestamo.cantidad)
             cuenta = None
-            print('request.POST.get(cuenta)',request.POST.get('cuenta'))
             if request.POST.get('cuenta') != 'ninguna':
                 cuenta = get_object_or_404(Cuenta, id=int(request.POST.get('cuenta')), user=request.user.id)
             
             try:
-                prestamoCreado = crearPrestamo(prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona)
+                prestamoCreado = crearPrestamo(prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, getDate(request.POST.get('datetime')))
                 return redirect('panel:vista_prestamo', prestamoCreado.id)
             except Exception as e:
                 messages.success(request, e, extra_tags='error')
@@ -87,6 +86,7 @@ def pagar_prestamo(request, prestamo_id):
 
     if request.method == 'POST':
         monto = int(request.POST.get('monto').replace('.',''))
+        monto = validarMiles(monto)
         try:
             with transaction.atomic():
                 pagarPrestamo(prestamo, monto, request)

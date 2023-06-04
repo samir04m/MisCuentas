@@ -29,8 +29,7 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fec
     transaccion.save()
     return transaccion
 
-def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona):
-    fecha = datetime.now()
+def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=datetime.now()):
     if tipo == 'yopresto':
         crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', 1, persona.user, fecha)
     if tipo == 'meprestan':
