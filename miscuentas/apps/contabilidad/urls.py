@@ -22,7 +22,6 @@ urlpatterns = [
     path('pagar-prestamo/<int:prestamo_id>/', pagar_prestamo, name='pagar_prestamo'),
     path('pagar-conjunto-prestamos/<int:persona_id>/', pagarConjuntoPrestamos, name='pagarConjuntoPrestamos'),
     path('eliminar-prestamo/<int:prestamo_id>/', eliminar_prestamo, name='eliminar_prestamo'),
-    path('confirm-eliminar-prestamo/<int:prestamo_id>/', confirm_eliminar_prestamo, name='confirm_eliminar_prestamo'),
 
     path('crear-etiqueta/', crear_etiqueta, name='crear_etiqueta'),
     path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),
@@ -39,7 +38,6 @@ urlpatterns = [
     path('transaccion/<int:transaccion_id>/', vista_transaccion, name='vista_transaccion'),
     path('transaccion-rollback/<int:transaccion_id>/', transaccion_rollback, name='transaccion_rollback'),
 
-    path('mensaje/', vista_mensaje, name='vista_mensaje'),
     path('relacionarUsuarioConTransaccion/', relacionarUsuarioConTransaccion, name='relacionarUsuarioConTransaccion'),
 
     path('crear-creditCard/', crear_creditCard, name='crear_creditCard'),

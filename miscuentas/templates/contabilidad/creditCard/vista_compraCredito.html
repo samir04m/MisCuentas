@@ -13,8 +13,7 @@
                             Detalles de la compra
                             {% if compra.valor == compra.deuda %}
                                 <span class="float-right">
-                                    <a href="{% url 'panel:eliminar_compra' compra.id %}" class="btn btn-outline-danger btn-sm mx-3" 
-                                    onclick="return confirm('¿Esta seguro de eliminar esta compra?')">
+                                    <a href="{% url 'panel:eliminar_compra' compra.id %}" class="btn btn-outline-danger btn-sm mx-3" id="confirmDelete" tooltip="prueba">
                                         <i class="fal fa-trash-alt"></i>
                                     </a>
                                 </span>

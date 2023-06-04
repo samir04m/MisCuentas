@@ -248,26 +248,3 @@ def rollbackTransaction(request, transaccion):
         transaccion.delete()
         sw = True
     return sw
-
-@login_required
-def vista_mensaje(request):
-    context = generateDictFromSessionVariables(request, ['titulo','mensaje','url','color'])
-    if context:
-        return render(request, 'contabilidad/vista_mensaje.html', context)
-    else:
-        return redirect('panel:inicio')
-
-@login_required
-def mensaje_confirmacion(request, context):
-    return render(request, 'contabilidad/mensaje_confirmacion.html', context)
-
-def confirm_eliminar_prestamo(request, prestamo_id):
-    prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    data = {
-        "titulo": "Confirmar eliminación de prestamo",
-        "mensaje": "¿Esta seguro de eliminar el prestamo?",
-        "urlCancel": "/prestamo/"+str(prestamo_id),
-        "urlConfirm": "/eliminar-prestamo/"+str(prestamo_id),
-        "color": "danger"
-    }
-    return mensaje_confirmacion(request, data)

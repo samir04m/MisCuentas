@@ -20,9 +20,11 @@
                         </div>
                         <hr>
                         <div style="overflow: hidden;">
-                            <button type="button" class="btn btn-outline-info float-right" data-toggle="modal" data-target="#modalPagoMultiple">
-                                Pago multiple
-                            </button>
+                            {% if yoDebo or meDeben %}
+                                <button type="button" class="btn btn-outline-info float-right" data-toggle="modal" data-target="#modalPagoMultiple">
+                                    Pago multiple
+                                </button>
+                            {% endif %}
                             <p>
                                 Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
                                 {% if persona.prestamo_set.count %}
