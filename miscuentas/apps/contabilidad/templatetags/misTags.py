@@ -86,3 +86,15 @@ def colorEstadoTransaccion(estado):
     if estado == 1:
         return 'table-secondary'
     return ''
+
+@register.filter
+def operacion(valor1:int, valor2:int, operacion):
+    if operacion == '+':
+        return valor1 + valor2
+    elif operacion == '-':
+        return valor1 - valor2
+    elif operacion == '*':
+        return valor1 * valor2
+    elif operacion == '/':
+        return valor1 / valor2
+    

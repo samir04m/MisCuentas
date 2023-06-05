@@ -113,6 +113,9 @@ class CreditCard(models.Model):
     def __str__(self):
         return self.nombre
 
+    def deuda(self):
+        return self.cupo - self.cupoDisponible
+
 class CompraCredito(models.Model):
     creditCard = models.ForeignKey(CreditCard, null=False, blank=False, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)

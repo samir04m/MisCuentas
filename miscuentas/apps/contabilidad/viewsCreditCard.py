@@ -33,16 +33,24 @@ def crear_creditCard(request):
 @login_required
 def vista_creditCard(request, creditCard_id):
     creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
-    deudaTotal = creditCard.cupo - creditCard.cupoDisponible
     cuentas = Cuenta.objects.filter(user=request.user)
     context = {
         "creditCard": creditCard,
-        "deudaTotal": deudaTotal,
         "cuentas": cuentas,
         "deudaMes": getPagoMes(creditCard),
         "proximosPagos": getProximosPagos(creditCard)
     }
     return render(request, 'contabilidad/creditCard/vista_creditCard.html', context)
+
+@login_required
+def listar_creditCards(request):
+    creditcards = CreditCard.objects.filter(user=request.user)
+    deudaTotal = 0
+    for cc in creditcards:
+        deudaTotal += cc.deuda()
+    context = { 'creditcards': creditcards, 'deudaTotal': deudaTotal }
+    return render(request, 'contabilidad/creditCard/listar_creditCards.html', context)
+
 
 @login_required
 def pagar_tarjeta(request, tarjeta_id):

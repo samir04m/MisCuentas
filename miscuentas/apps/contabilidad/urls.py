@@ -42,6 +42,7 @@ urlpatterns = [
 
     path('crear-creditCard/', crear_creditCard, name='crear_creditCard'),
     path('creditCard/<int:creditCard_id>/', vista_creditCard, name='vista_creditCard'),
+    path('listar-creditcards/', listar_creditCards, name='listar_creditCards'),
     path('crear-compra/<int:creditCard_id>/', crear_compra, name='crear_compra'),
     path('compra-detalles/<int:compra_id>/', vista_compra, name='vista_compra'),
     path('pagar-tarjeta/<int:tarjeta_id>/', pagar_tarjeta, name='pagar_tarjeta'),

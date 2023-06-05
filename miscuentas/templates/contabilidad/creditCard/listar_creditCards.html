@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Credit cards{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="m-b-20 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-18">Tarjetas de crédito</b>
+                    <a href="{% url 'panel:crear_creditCard' %}" class="btn btn-sm btn-outline-light">
+                        Crear  <i class="fal fa-plus"></i></a>
+                </div>
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        {% if creditcards %}
+                            <table class="table table-sm table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Compras</th>
+                                        <th>Dia corte</th>
+                                        <th>Dia pago</th>
+                                        <th>Deuda</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cc in creditcards %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'panel:vista_creditCard' cc.id %}">{{cc.nombre}}</a>
+                                            </td>
+                                            <td>{{cc.compracredito_set.count}} compras</td>
+                                            <td>{{cc.diaCorte}}</td>
+                                            <td>{{cc.diaPago}}</td>
+                                            <td>${{cc.deuda|puntomil}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="text-right">
+                                Deuda total: ${{deudaTotal|puntomil}}
+                            </div>
+                        {% else %}
+                            <div class="fs-18 text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
+                                No se han registrado creditcards
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="offset-lg-1 col-lg-3 pt-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -25,11 +25,11 @@
                                 <p>
                                     Cupo total: ${{creditCard.cupo|puntomil}} <br>
                                     Cupo disponible: ${{creditCard.cupoDisponible|puntomil}} <br>
-                                    Deuda total: ${{deudaTotal|puntomil}} 
+                                    Deuda total: ${{creditCard.deuda|puntomil}} 
                                 </p>
                             </div>
                             <div class="col-sm-12 col-md-6 text-right">
-                                {% if deudaTotal %}
+                                {% if creditCard.deuda %}
                                     <button type="button" class="btn btn-outline-info my-1" data-toggle="modal" data-target="#staticBackdrop">
                                         Pagar tarjeta
                                     </button> <br>
@@ -42,7 +42,7 @@
                             Compras realizadas
                         </h5>
                         {% if creditCard.compracredito_set.all %}
-                            <table class="table table-responsive-sm">
+                            <table class="table table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
                                         <th></th>
