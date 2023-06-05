@@ -108,7 +108,7 @@ class CreditCard(models.Model):
     class Meta:
         verbose_name = 'Credit card'
         verbose_name_plural = 'Credit cards'
-        ordering = ['nombre']
+        ordering = ['id']
 
     def __str__(self):
         return self.nombre

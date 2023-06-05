@@ -42,13 +42,13 @@
                         {% if egresosPorEtiqueta %}
                             <nav>
                                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link" id="nav-table-tab" data-toggle="tab" href="#nav-table" role="tab" aria-controls="nav-table" aria-selected="false">Tabla</a>
+                                    <a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table" role="tab" aria-controls="nav-table" aria-selected="true">Tabla</a>
                                     <a class="nav-item nav-link" id="nav-pieChart-tab" data-toggle="tab" href="#nav-pieChart" role="tab" aria-controls="nav-pieChart" aria-selected="false">Pie chart</a>
-                                    <a class="nav-item nav-link active" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="true">Bar Chart</a>
+                                    <a class="nav-item nav-link" id="nav-barChart-tab" data-toggle="tab" href="#nav-barChart" role="tab" aria-controls="nav-barChart" aria-selected="false">Bar Chart</a>
                                 </div>
                             </nav>
                             <div class="tab-content" id="nav-tabContent">
-                                <div class="tab-pane fade" id="nav-table" role="tabpanel" aria-labelledby="nav-table-tab">
+                                <div class="tab-pane fade show active" id="nav-table" role="tabpanel" aria-labelledby="nav-table-tab">
                                     <table class="table table-responsive-sm table-bordered table-hover">
                                         <thead>
                                             <tr class="table-danger">
@@ -73,7 +73,7 @@
                                         <div id="containerPieChart"></div>
                                     </figure>
                                 </div>
-                                <div class="tab-pane fade show active" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                                <div class="tab-pane fade" id="nav-barChart" role="tabpanel" aria-labelledby="nav-barChart-tab">
                                     <figure class="highcharts-figure">
                                         <div id="containerBarChart"></div>
                                     </figure>
