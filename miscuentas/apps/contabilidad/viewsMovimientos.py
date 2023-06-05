@@ -60,22 +60,19 @@ def movimientos_etiqueta_mes(request, etiqueta_id, tipo, periodo):
     date = periodo.split("-")
     month = int(date[0])
     year = int(date[1])
-    # strTag = ''
     if etiqueta_id > 0:
         tag = Etiqueta.objects.get(id=etiqueta_id)
         strTag = " con etiqueta \"{}\" ".format(tag.nombre)
-        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=tag, estado=1, fecha__month=month, fecha__year=year)
+        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=tag, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year)
     elif etiqueta_id == 0:
         strTag = "sin etiqueta"
-        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=None, estado=1, fecha__month=month, fecha__year=year)
+        transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=None, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year)
     elif etiqueta_id == -1:
         strTag = "del"
-        transacciones = Transaccion.objects.filter(tipo=tipo, estado=1, fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
-
-    strTipo = 'Egresos' if tipo == 'egreso' else 'Ingresos'
+        transacciones = Transaccion.objects.filter(tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
     
     context = {
-        'tipo': strTipo,
+        'tipo': 'Egresos' if tipo == 'egreso' else 'Ingresos',
         'etiqueta': strTag,
         'periodo': periodo,
         'transacciones': transacciones,

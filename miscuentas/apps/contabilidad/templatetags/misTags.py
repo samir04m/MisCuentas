@@ -1,5 +1,8 @@
 from django import template
 from apps.contabilidad.models import Transaccion
+from apps.reporte.myFuncs import TagData
+from typing import List
+import copy
 
 register = template.Library()
 
@@ -97,4 +100,26 @@ def operacion(valor1:int, valor2:int, operacion):
         return valor1 * valor2
     elif operacion == '/':
         return valor1 / valor2
-    
+
+@register.filter
+def getDataPieChart(listTagData:List[TagData]):
+    listTagDataCopy = copy.deepcopy(listTagData)
+    listTagDataCopy.pop()
+    itemTotal = listTagData[-1]
+    data = ""
+    for item in listTagDataCopy:
+        porcentajeDouble = round((item.total * 100) / itemTotal.total, 2)
+        porcentaje = str(porcentajeDouble).replace(',', '.')
+        data += "{{ name:'{}\', y:{} }}, ".format(item.tagName, porcentaje)
+    return data
+
+@register.filter
+def getDataBarChart(listTagData:List[TagData]):
+    listTagDataCopy = copy.deepcopy(listTagData)
+    listTagDataCopy.pop()
+    return listTagDataCopy
+
+@register.filter
+def getHeightBarChart(listTagData:List[TagData]):
+    return (len(listTagData)-1) * 45    
+

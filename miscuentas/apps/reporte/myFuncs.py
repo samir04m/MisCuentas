@@ -1,6 +1,7 @@
 from apps.contabilidad.models import *
 from apps.usuario.models import UserSetting
 from apps.usuario.views import getUserSetting, setUserSetting
+from typing import List
 
 nombreMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
@@ -84,12 +85,6 @@ def createSelectOption(selectName, selectedOption):
             year += 1
         
     return selectOptions
-
-# def getTransaccionesDelMes(tipo, user, mes, anio, incluirTP):
-#     if incluirTP:
-#         return Transaccion.objects.filter(user=user, tipo=tipo, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
-#     else:
-#         return Transaccion.objects.filter(user=user, tipo=tipo, estado=1, fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
 
 def obtenerResumen(totalIngresos, totalEgresos):
     diferencia = totalIngresos - totalEgresos
