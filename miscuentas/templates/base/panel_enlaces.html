@@ -18,5 +18,10 @@
         <li class="list-group-item"><a href="{% url 'panel:listar_creditCards' %}">
             <i class="fal fa-credit-card"></i> Credit cards </a>
         </li>
+        {% if request.user.is_superuser %}
+            <li class="list-group-item"><a href="{% url 'panel:transacciones_programadas' %}">
+                <i class="fal fa-clock"></i> T. Programadas </a>
+            </li>
+        {% endif %}
     </ul>
 </div>

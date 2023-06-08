@@ -200,15 +200,6 @@ def transaccion_rollback(request, transaccion_id):
             transaccion2 = Transaccion.objects.filter(fecha=transaccion.fecha, tipo=tipoContrario, cantidad=transaccion.cantidad).first()
             if transaccion2:
                 ok = rollbackTransaction(request, transaccion2)
-        # elif transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Prestamo':
-        #     tp = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
-        #     if tp:
-        #         prestamo = tp.prestamo
-        #         prestamo.saldo_pendiente += transaccion.cantidad
-        #         if prestamo.saldo_pendiente > 0:
-        #             prestamo.cancelada = False 
-        #         prestamo.save()
-        #         tp.delete()
         
         transaccionPrestamo = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
         if transaccionPrestamo:
@@ -248,3 +239,12 @@ def rollbackTransaction(request, transaccion):
         transaccion.delete()
         sw = True
     return sw
+
+@login_required
+def transacciones_programadas(request):
+    programadas = Transaccion.objects.filter(user=request.user, estado=0)
+    transacciones = []
+    for transaccion in programadas:
+        if not transaccion.transaccionpagocredito_set.count():
+            transacciones.append(transaccion)
+    return render(request, 'contabilidad/transaccion/transacciones_programadas.html', {"transacciones":transacciones})

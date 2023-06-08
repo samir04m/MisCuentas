@@ -69,7 +69,7 @@ def crearTransaccionesProgramadas(compraCredito:CompraCredito):
             tipo='egreso',
             saldo_anterior=0,
             cantidad=getValorCuota(compraCredito, nCuota),
-            info='Pago cuota {} - tarjeta {}'.format(nCuota, compraCredito.creditCard.nombre),
+            info='{}. Cuota {}.'.format(compraCredito.info, nCuota),
             fecha=getFechaPagoCuota(compraCredito, nCuota),
             estado=0,
             etiqueta=compraCredito.etiqueta,

@@ -37,6 +37,7 @@ urlpatterns = [
 
     path('transaccion/<int:transaccion_id>/', vista_transaccion, name='vista_transaccion'),
     path('transaccion-rollback/<int:transaccion_id>/', transaccion_rollback, name='transaccion_rollback'),
+    path('transacciones-programadas/', transacciones_programadas, name='transacciones_programadas'),
 
     path('relacionarUsuarioConTransaccion/', relacionarUsuarioConTransaccion, name='relacionarUsuarioConTransaccion'),
 

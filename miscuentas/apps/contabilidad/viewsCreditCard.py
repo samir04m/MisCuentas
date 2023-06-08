@@ -89,7 +89,8 @@ def crear_compra(request, creditCard_id):
             etiquetaId = nuevaEtiqueta.id
         
         try:
-            compra = crearCompraCredito(creditCard, etiquetaId, valor, cuotas, info, fecha)
+            with transaction.atomic():
+                compra = crearCompraCredito(creditCard, etiquetaId, valor, cuotas, info, fecha)
             messages.success(request, 'Compra registrada', extra_tags='success')
         except Exception as ex:
             print("----- Exception -----", ex)
