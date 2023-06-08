@@ -8,6 +8,8 @@ register = template.Library()
 
 @register.filter
 def puntomil(cantidad):
+    if cantidad < 0:
+        cantidad *= -1
     strcan = str(cantidad)
     result = []
     cont = 0
@@ -121,5 +123,22 @@ def getDataBarChart(listTagData:List[TagData]):
 
 @register.filter
 def getHeightBarChart(listTagData:List[TagData]):
-    return (len(listTagData)-1) * 45    
+    return (len(listTagData)-1) * 45
 
+@register.filter
+def dinero(cantidad, mostarSigno=False):
+    strCantidad = "${}".format(puntomil(cantidad))
+    signo = ""
+    if mostarSigno:
+        if cantidad > 0: signo = '+ '
+        elif cantidad < 0: signo = "- "
+    return signo + strCantidad
+
+@register.filter
+def colorCantidad(cantidad):
+    if cantidad == 0: 
+        return ""
+    elif cantidad > 0: 
+        return "text-primary"
+    elif cantidad < 0: 
+        return "text-danger"

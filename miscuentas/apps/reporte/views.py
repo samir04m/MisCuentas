@@ -1,12 +1,30 @@
 from django.shortcuts import render, redirect
-from apps.contabilidad.models import *
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth, TruncDay
 from django.db.models import Count, Sum
 from datetime import datetime
 from apps.usuario.models import UserSetting
 from apps.usuario.userSettingFuncs import *
+from apps.contabilidad.models import *
+from apps.contabilidad.myFuncs import getSaldoTotalCuentas, getDeudaTarjetasCredito, getDeudaPrestamos
 from .myFuncs import *
+
+@login_required
+def general(request):
+    saldoTotalCuentas = getSaldoTotalCuentas(request)
+    deudaTarjetasCredito = getDeudaTarjetasCredito(request)
+    deudaPrestamos = getDeudaPrestamos(request)
+    saldoFinal = saldoTotalCuentas + deudaPrestamos.meDeben - deudaTarjetasCredito - deudaPrestamos.yoDebo
+    if deudaTarjetasCredito > 0: deudaTarjetasCredito *= -1
+    if deudaPrestamos.yoDebo > 0: deudaPrestamos.yoDebo *= -1
+
+    context = {
+        "saldoTotalCuentas": saldoTotalCuentas,
+        "deudaTarjetasCredito": deudaTarjetasCredito,
+        "deudaPrestamos": deudaPrestamos,
+        "saldoFinal": saldoFinal
+    }
+    return render(request, 'reporte/general.html', context)
 
 @login_required
 def egresos_diarios(request):

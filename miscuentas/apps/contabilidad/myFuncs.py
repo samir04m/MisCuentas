@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from datetime import datetime
 from datetime import timedelta
 from .models import *
@@ -174,3 +175,27 @@ def generateDictFromSessionVariables(request, variables):
     if len(variables) == cont:
         dict = None
     return dict
+
+def getSaldoTotalCuentas(request):
+    cuentas = Cuenta.objects.filter(user=request.user).aggregate(Sum('saldo'))
+    return cuentas['saldo__sum'] if cuentas['saldo__sum'] else 0
+
+def getDeudaTarjetasCredito(request):
+    creditcards = CreditCard.objects.filter(user=request.user)
+    deudaTotal = 0
+    for cc in creditcards:
+        deudaTotal += cc.deuda()
+    return deudaTotal
+
+def getDeudaPrestamos(request):
+    prestamosYoDebo = Prestamo.objects.filter(persona__user=request.user, tipo='meprestan', cancelada=False).aggregate(Sum('saldo_pendiente'))
+    prestamosMeDeben = Prestamo.objects.filter(persona__user=request.user, tipo='yopresto', cancelada=False).aggregate(Sum('saldo_pendiente'))
+    yoDebo = prestamosYoDebo['saldo_pendiente__sum'] if prestamosYoDebo['saldo_pendiente__sum'] else 0
+    meDeben = prestamosMeDeben['saldo_pendiente__sum'] if prestamosMeDeben['saldo_pendiente__sum'] else 0
+    return DeudaPrestamoData(yoDebo, meDeben)
+
+class DeudaPrestamoData:
+    def __init__(self, yoDebo, meDeben):
+        self.yoDebo = yoDebo
+        self.meDeben = meDeben
+        self.deudaTotal = meDeben - yoDebo
