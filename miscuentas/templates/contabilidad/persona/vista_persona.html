@@ -101,18 +101,24 @@
     
                     <div class="form-group">
                         <label for="tipoPrestamo">Seleccione el tipo de prestamos a pagar:</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipoPrestamo" id="tipoPrestamo1" value="yopresto" checked>
-                            <label class="form-check-label" for="tipoPrestamo1">
-                                Yo presto (Le deben en total ${{meDeben|puntomil}})
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipoPrestamo" id="tipoPrestamo2" value="meprestan">
-                            <label class="form-check-label" for="tipoPrestamo2">
-                                Me prestan (Usted debe en total ${{yoDebo|puntomil}})
-                            </label>
-                        </div>
+                        {% if meDeben %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipoPrestamo" id="tipoPrestamo1" 
+                                value="yopresto" {{meDeben|checkedPagoMultiplePrestamo:yoDebo}} required>
+                                <label class="form-check-label" for="tipoPrestamo1">
+                                    Yo presto (Le deben en total ${{meDeben|puntomil}})
+                                </label>
+                            </div>
+                        {% endif %}
+                        {% if yoDebo %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipoPrestamo" id="tipoPrestamo2" 
+                                value="meprestan" {{yoDebo|checkedPagoMultiplePrestamo:meDeben}} required>
+                                <label class="form-check-label" for="tipoPrestamo2">
+                                    Me prestan (Usted debe en total ${{yoDebo|puntomil}})
+                                </label>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="form-group">
                         <label for="cuenta">Seleccione una cuenta para realizar el pago:</label>
@@ -124,7 +130,7 @@
                     </div>
                     <div class="form-group">
                         <label for="pagoTotal">Ingrese la cantidad a pagar:</label>
-                        <input type="text" class="form-control" id="pagoTotal" name="pagoTotal" value="{{meDeben}}" autocomplete="off" required>
+                        <input type="text" class="form-control" id="pagoTotal" name="pagoTotal" value="{{meDeben|valorPagoMultiplePrestamo:yoDebo}}" autocomplete="off" required>
                     </div>
                     <div class="text-center">
                         <button class="btn btn-outline-primary">Pagar prestamos</button>

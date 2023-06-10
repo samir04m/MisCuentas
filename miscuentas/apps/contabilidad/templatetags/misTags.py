@@ -142,3 +142,17 @@ def colorCantidad(cantidad):
         return "text-primary"
     elif cantidad < 0: 
         return "text-danger"
+
+@register.filter
+def checkedPagoMultiplePrestamo(valor1, valor2):
+    if valor1 > 0 and valor2 == 0:
+        return 'checked'
+
+@register.filter
+def valorPagoMultiplePrestamo(meDeben, yoDebo):
+    if meDeben > 0 and yoDebo > 0:
+        return 0
+    elif meDeben > 0 and yoDebo == 0:
+        return meDeben
+    elif meDeben == 0 and yoDebo > 0:
+        return yoDebo
