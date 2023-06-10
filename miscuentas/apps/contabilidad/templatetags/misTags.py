@@ -7,7 +7,7 @@ import copy
 register = template.Library()
 
 @register.filter
-def puntomil(cantidad):
+def puntomil(cantidad:int):
     if cantidad < 0:
         cantidad *= -1
     strcan = str(cantidad)
