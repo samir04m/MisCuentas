@@ -277,3 +277,16 @@ def transacciones_programadas(request):
         if not transaccion.transaccionpagocredito_set.count():
             transacciones.append(transaccion)
     return render(request, 'contabilidad/transaccion/transacciones_programadas.html', {"transacciones":transacciones})
+
+@login_required
+def pagar_transaccion_programada(request, transaccion_id):
+    tp = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
+    try:
+        with transaction.atomic():
+            crearTransaccion(tp.tipo, tp.cuenta, tp.cantidad, tp.info, tp.etiqueta, 1, request.user)
+            tp.delete()
+        messages.success(request, 'Se realizó la transacción', extra_tags='success')
+    except Exception as ex:
+        print("----- Exception -----", ex)
+        messages.error(request, 'Ocurrio un error', extra_tags='error')
+    return redirect('panel:transacciones_programadas')

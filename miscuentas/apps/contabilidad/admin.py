@@ -42,6 +42,7 @@ class TransaccionResource(resources.ModelResource):
 class TransaccionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','tipo','cuenta__nombre','etiqueta__nombre']
     list_display = ('id','cuenta','tipo','cantidad','etiqueta','fecha','estado',)
+    ordering = ['-id']
     resource_class = TransaccionResource
 
 class PrestamoResource(resources.ModelResource):
