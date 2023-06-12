@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect, request
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Sum
+from django.db import transaction
 from datetime import datetime
 import math
 from apps.usuario.models import UserSetting
@@ -239,6 +240,34 @@ def rollbackTransaction(request, transaccion):
         transaccion.delete()
         sw = True
     return sw
+
+@login_required
+def crear_transaccion_programada(request):
+    if request.method == 'POST':
+        print("cuenta", getCuentaFromPost(request))
+        print("etiqueta", getEtiquetaFromPost(request))
+        try:
+            with transaction.atomic():
+                transaccion = Transaccion(
+                    tipo = request.POST.get('tipo'),
+                    saldo_anterior = 0,
+                    cantidad = getCantidadFromPost(request),
+                    info = request.POST.get('info'),
+                    fecha = getDate(request.POST.get('datetime')),
+                    estado = 0,
+                    cuenta = getCuentaFromPost(request),
+                    etiqueta = getEtiquetaFromPost(request),
+                    user = request.user
+                )
+                transaccion.save()
+            messages.success(request, 'Transacción creada', extra_tags='success')
+        except Exception as ex:
+            print("----- Exception -----", ex)
+            messages.error(request, 'Ocurrio un error', extra_tags='error')
+        return redirect('panel:transacciones_programadas')        
+    else:
+        context = {"cuentas":selectCuentas(request), "tags":selectEtiquetas(request)}
+        return render(request, 'contabilidad/transaccion/crear_transaccion_programada.html', context)
 
 @login_required
 def transacciones_programadas(request):

@@ -199,3 +199,26 @@ class DeudaPrestamoData:
         self.yoDebo = yoDebo
         self.meDeben = meDeben
         self.deudaTotal = meDeben - yoDebo
+
+def selectCuentas(request):
+    return Cuenta.objects.filter(user=request.user)
+
+def selectEtiquetas(request):
+    return Etiqueta.objects.filter(user=request.user, tipo=1)
+
+def getCuentaFromPost(request) -> int:
+    if request.POST.get('cuenta') == '0':
+        return None
+    else:
+        return Cuenta.objects.get(id=int(request.POST.get('cuenta')))
+
+def getEtiquetaFromPost(request) -> int:
+    if request.POST.get('tag'):
+        return getEtiquetaById(int(request.POST.get('tag')))
+    elif request.POST.get('newTag'):
+        return getEtiqueta(request.POST.get('newTag'), request.user)
+    else:
+        return None
+
+def getCantidadFromPost(request) -> int:
+    return validarMiles(int(request.POST.get('cantidad').replace('.','')))

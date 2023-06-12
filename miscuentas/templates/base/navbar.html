@@ -27,13 +27,23 @@
                             <i class="far fa-user"></i> {{ request.user.username }}</a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="{% url 'panel:todos_movimientos' %}">
-                                <i class="fal fa-list-alt"></i> Movimientos</a>
+                                <i class="fal fa-list-alt"></i> Movimientos
+                            </a>
                             <a class="dropdown-item" href="{% url 'panel:listar_etiquetas' %}">
-                                <i class="fal fa-tags"></i> Etiquetas</a>
+                                <i class="fal fa-tags"></i> Etiquetas
+                            </a>
                             <a class="dropdown-item" href="{% url 'panel:listar_personas' %}">
-                                <i class="fal fa-users"></i> Personas</a>
+                                <i class="fal fa-users"></i> Personas
+                            </a>
                             <a class="dropdown-item" href="{% url 'panel:listar_prestamos' %}">
-                                <i class="fal fa-handshake"></i> Prestamos</a>
+                                <i class="fal fa-handshake"></i> Prestamos
+                            </a>
+                            <a class="dropdown-item" href="{% url 'panel:listar_creditCards' %}">
+                                <i class="fal fa-credit-card"></i> Credit cards
+                            </a>
+                            <a class="dropdown-item" href="{% url 'panel:transacciones_programadas' %}">
+                                <i class="fal fa-calendar-alt"></i> T. Programadas
+                            </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}">
                                 <i class="fal fa-sign-out-alt"></i> Salir

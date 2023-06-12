@@ -6,10 +6,10 @@
 {% block contenido %}
     <div class="container">
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <div class="m-b-20 text-center text-light animate__animated animate__fadeInDown">
                     <b class="fs-18">Transacciones Programadas</b>
-                    <a href="/admin/contabilidad/transaccion/add/" class="btn btn-sm btn-outline-light" target="_blank">
+                    <a href="{% url 'panel:crear_transaccion_programada' %}" class="btn btn-sm btn-outline-light">
                         Crear  <i class="fal fa-plus"></i>
                     </a>
                 </div>
@@ -20,18 +20,18 @@
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
+                                        <th>Cuenta</th>
                                         <th>Valor</th>
                                         <th>Etiqueta</th>
                                         <th>Descripción</th>
-                                        <th>Ver</th>
+                                        <th>Opciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {% for transaccion in transacciones %}
                                         <tr class="{{transaccion|textcolor}}">
-                                            <td>
-                                                {{transaccion.fecha|date:'d/m/y h:iA'}}
-                                            </td>
+                                            <td>{{transaccion.fecha|date:'d/m/y'}}</td>
+                                            <td>{{transaccion.cuenta.nombre}}</td>
                                             <td> {{transaccion.tipo|signo}}${{transaccion.cantidad|puntomil}}</td>
                                             <td>
                                                 {% if transaccion.etiqueta.id %}
@@ -42,9 +42,13 @@
                                             </td>
                                             <td>{{transaccion.info|truncatechars:'20'}}</td>
                                             <td>
-                                                <a href="{% url 'panel:vista_transaccion' transaccion.id %}"
-                                                    class="btn btn-sm btn-outline-primary">
-                                                <i class="fal fa-external-link"></i></a>
+                                                <a href="{% url 'panel:vista_transaccion' transaccion.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fal fa-external-link"></i>
+                                                </a>
+                                                <a href="{% url 'panel:vista_transaccion' transaccion.id %}" class="btn btn-sm btn-outline-info"
+                                                onclick="return confirm('¿Esta segunro de realizar el pago de esta transacción?')">
+                                                    <i class="fal fa-calendar-check"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -66,4 +70,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    {% include 'base/components/ScriptSweetalert.html' %}
 {% endblock %}

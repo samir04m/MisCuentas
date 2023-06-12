@@ -1,0 +1,13 @@
+{% load misTags %}
+{% if messages %}
+    <script type="text/javascript">
+        $(function () {
+            Swal.fire({
+                icon: '{{messages|getMessage:"icon" }}',
+                title: '{{messages|getMessage }}',
+                showConfirmButton: false,
+                timer: 2500
+            });
+        });
+    </script>
+{% endif %}
