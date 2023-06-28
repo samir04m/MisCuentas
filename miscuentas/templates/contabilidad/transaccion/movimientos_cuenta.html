@@ -26,7 +26,7 @@
                         </div>
                         <hr>
                         {% if transacciones %}
-                            <table class="table table-sm table-responsive-sm" id="miTabla">
+                            <table class="table table-sm table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
@@ -38,7 +38,7 @@
                                 </thead>
                                 <tbody>
                                     {% for t in transacciones %}
-                                        <tr class="{{t.tipo|textcolor}}">
+                                        <tr class="{{t|textcolor}}">
                                             <td>
                                                 <span class="d-none d-md-block">
                                                     {{t.fecha|date:'D, d/m/y h:iA'}}
@@ -78,16 +78,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% block script %}
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                order: []
-            });
-        });
-    </script>
-{% endblock %} %}

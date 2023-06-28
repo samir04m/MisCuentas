@@ -19,4 +19,4 @@ def relacionarUsuarioConTransaccion(request):
     else:
         messages.info(request, 'Todas las transacciones estan relacionadas', extra_tags='info')
 
-    return redirect('panel:panel')
+    return redirect('panel:inicio')

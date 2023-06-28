@@ -7,21 +7,14 @@
 {% block contenido %}
     <div class="container">
         <h5 class="text-center text-light mb-3 animate__animated animate__fadeInDown">Prestamos</h5>
-        <div class="card animate__animated animate__fadeIn">
+        <div class="card animate__animated animate__fadeIn mb-3">
             <div class="card-body">
                 {% if prestamos %}
-                    <p>
-                        Saldo total en cuentas ${{saldoTotal|puntomil}} <br>
-                        Actualmente debe ${{yoDebo|puntomil}} y a usted le deben ${{meDeben|puntomil}} <br>
-                        {{pagandoPrestamosMensaje}} ${{pagandoPrestamosMeQueda|puntomil}} <br>
-                        Cancelados todos los prestamos su saldo seria de ${{saldoRestante|puntomil}}
-                    </p>
-                    
-                    <table class="table table-responsive-sm" id="miTabla">
+                    <table class="table table-responsive-sm" id="datatable">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Personas/Tarjeta</th>
+                                <th>Personas</th>
                                 <th>Tipo</th>
                                 <th>Valor</th>
                                 <th>Por pagar</th>
@@ -62,25 +55,24 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <div class="fs-18 text-center my-5">
+                    <div class="fs-18 text-center text-secondary">
+                        <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
                         Todavía no se han registrado prestamos
                     </div>
                 {% endif %}
             </div>
         </div>
+        {% if prestamos %}
+            <div class="card animate__animated animate__fadeIn">
+                <div class="card-body">
+                    <h6 class="text-center">Resumen</h6>
+                    Saldo total en cuentas ${{saldoTotal|puntomil}} <br>
+                    Actualmente debe ${{yoDebo|puntomil}} y a usted le deben ${{meDeben|puntomil}} <br>
+                    {{pagandoPrestamosMensaje}} ${{pagandoPrestamosMeQueda|puntomil}} <br>
+                    Cancelados todos los prestamos su saldo seria de ${{saldoRestante|puntomil}}
+
+                </div>
+            </div>
+        {% endif %}
     </div>
-{% endblock %}
-
-{% block script %}
-
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                "aaSorting": []
-            });
-        });
-    </script>
 {% endblock %}

@@ -7,9 +7,9 @@
         <div class="row">
             <div class="offset-lg-1 col-lg-6">
                 <div class="m-b-20 text-center text-light animate__animated animate__fadeInDown">
-                    <b class="fs-18">Mis Etiquetas</b>
+                    <b class="fs-18">Etiquetas</b>
                     <a href="{% url 'panel:crear_etiqueta' %}" class="btn btn-sm btn-outline-light">
-                        Crear Etiqueta  <i class="fas fa-plus"></i></a>
+                        Crear  <i class="fal fa-plus"></i></a>
                 </div>
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
@@ -48,7 +48,10 @@
                             </tbody>
                         </table>
                         {% else %}
-                            <h5 class="text-center my-3">No hay Etiquetas.</h5>
+                            <div class="fs-18 text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
+                                No se han registrado etiquetas
+                            </div>
                         {% endif %}
                     </div>
                 </div>

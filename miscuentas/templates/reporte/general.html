@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Reporte General{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 pt-3">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4">Informe general de saldos y deudas</h5>
+                        <table class="table table-responsive-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Saldo total en cuentas</th>
+                                    <td>{{saldoTotalCuentas|dinero}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cantidad de dinero prestado</th>
+                                    <td class="{{deudaPrestamos.meDeben|colorCantidad}}">{{deudaPrestamos.meDeben|dinero:True}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Deuda total en prestamos</th>
+                                    <td class="{{deudaPrestamos.yoDebo|colorCantidad}}">{{deudaPrestamos.yoDebo|dinero:True}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Deuda total en tarjetas de crédito</th>
+                                    <td class="{{deudaTarjetasCredito|colorCantidad}}">{{deudaTarjetasCredito|dinero:True}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo final</th>
+                                    <td><b>{{saldoFinal|dinero}}</b></td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="offset-lg-1 col-lg-3 pt-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -14,10 +14,11 @@
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
                         {% if transacciones %}
-                            <table class="table table-sm table-responsive-sm" id="miTabla">
+                            <table class="table table-sm table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
+                                        <th>Cuenta</th>
                                         <th>Valor</th>
                                         <th>Etiqueta</th>
                                         <th>Info</th>
@@ -26,7 +27,7 @@
                                 </thead>
                                 <tbody>
                                     {% for t in transacciones %}
-                                        <tr class="{{t.tipo|textcolor}}">
+                                        <tr class="{{t|textcolor}}">
                                             <td>
                                                 <span class="d-none d-md-block">
                                                     {{t.fecha|date:'D, d/m/y h:iA'}}
@@ -34,6 +35,9 @@
                                                 <span  class="d-md-none">
                                                     {{t.fecha|date:'d/m/y h:iA'}}
                                                 </span>
+                                            </td>
+                                            <td>
+                                                {{t.cuenta}}
                                             </td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
                                             <td>
@@ -57,7 +61,7 @@
 
                         {% else %}
                             <div class="fs-18 text-center my-4">
-                                No hay movimientos en esta cuenta.
+                                No hay movimientos en este mes.
                             </div>
                         {% endif %}
                     </div>
@@ -66,16 +70,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% block script %}
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                order: []
-            });
-        });
-    </script>
-{% endblock %} %}

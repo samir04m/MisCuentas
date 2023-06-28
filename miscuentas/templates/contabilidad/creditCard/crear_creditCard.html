@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Formulario Credit Card{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-header text-center">
+                        Tarjeta de Crédito
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{form.as_p}}
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#cupo', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
+{% endblock %}

@@ -54,8 +54,8 @@
                                 <div class="text-secondary fs-14">El PRESTAMO YA FUE CANCELADO</div>
                             </div>
                         {% else %}
-                            <a href="{% url 'panel:confirm_eliminar_prestamo' prestamo.id %}" class="btn btn-outline-danger mr-3">
-                                <i class="fal fa-trash"></i>  Eliminar
+                            <a href="{% url 'panel:eliminar_prestamo' prestamo.id %}" class="btn btn-outline-danger mr-3" id="confirmDelete">
+                                <i class="fal fa-undo"></i> Deshacer
                             </a>
                             <a href="{% url 'panel:pagar_prestamo' prestamo.id %}" class="btn btn-outline-primary float-right">
                                 Registrar Pago <i class="fal fa-money-check-edit-alt"></i>

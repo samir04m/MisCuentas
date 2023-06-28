@@ -33,31 +33,52 @@
                                     <button type="submit" class="btn btn-primary btn-block">Consultar</button>
                                 </div>
                             </div>
-                        </form>
+                        </form>                        
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body py-1">
                         <h5 class="text-center my-2">Egresos del periodo {{periodo}}</h5>
                         {% if egresosPorEtiqueta %}
-                            <table class="table table-responsive-sm table-bordered table-hover">
-                                <thead>
-                                    <tr class="table-danger">
-                                        <th>Etiqueta</th>
-                                        <th>N° Registros</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for e in egresosPorEtiqueta %}
-                                        <tr {{e.tagName|tableClass:'egreso'}}>
-                                            <td> {{e.tagName}}</td>
-                                            <td><a href="{% url 'panel:movimientos_etiqueta_mes' e.tagId 'egreso' periodo %}">{{e.nRegistros}} egresos</a></td>
-                                            <td>$ {{e.total|puntomil}}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table" role="tab" aria-controls="nav-table" aria-selected="true">Tabla</a>
+                                    <a class="nav-item nav-link" id="nav-pieChart-tab" data-toggle="tab" href="#nav-pieChart" role="tab" aria-controls="nav-pieChart" aria-selected="false">Pie chart</a>
+                                    <a class="nav-item nav-link" id="nav-barChart-tab" data-toggle="tab" href="#nav-barChart" role="tab" aria-controls="nav-barChart" aria-selected="false">Bar Chart</a>
+                                </div>
+                            </nav>
+                            <div class="tab-content" id="nav-tabContent">
+                                <div class="tab-pane fade show active" id="nav-table" role="tabpanel" aria-labelledby="nav-table-tab">
+                                    <table class="table table-responsive-sm table-bordered table-hover">
+                                        <thead>
+                                            <tr class="table-danger">
+                                                <th>Etiqueta</th>
+                                                <th>N° Registros</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in egresosPorEtiqueta %}
+                                                <tr {{e.tagName|tableClass:'egreso'}}>
+                                                    <td> {{e.tagName}}</td>
+                                                    <td><a href="{% url 'panel:movimientos_etiqueta_mes' e.tagId 'egreso' periodo %}">{{e.nRegistros}} egresos</a></td>
+                                                    <td>$ {{e.total|puntomil}}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="nav-pieChart" role="tabpanel" aria-labelledby="nav-pieChart-tab">
+                                    <figure class="highcharts-figure">
+                                        <div id="containerPieChart"></div>
+                                    </figure>
+                                </div>
+                                <div class="tab-pane fade" id="nav-barChart" role="tabpanel" aria-labelledby="nav-barChart-tab">
+                                    <figure class="highcharts-figure">
+                                        <div id="containerBarChart"></div>
+                                    </figure>
+                                </div>
+                            </div>
                         {% else %}
                             <div class="text-center my-4">No hay Reporte disponible</div>
                         {% endif %}
@@ -106,9 +127,85 @@
                 <br>
                 {% include 'base/panel_enlaces.html' %}
                 <br>
-                {% include 'base/panel_reportes.html' %}                
+                {% include 'base/panel_reportes.html' %}
+                <br>
+                {% include 'user/alert_switchUserSetting.html' %}        
             </div>
         </div>
     </div>
 
+{% endblock %}
+{% block script %}
+{% if egresosPorEtiqueta %}
+    <script src="{% static 'js/highcharts.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Highcharts.chart('containerPieChart', {
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Porcentaje de egresos por etiqueta'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Egresos',
+                    colorByPoint: true,
+                    data: [
+                        {{egresosPorEtiqueta|getDataPieChart|safe}}
+                    ]
+                }]
+            });
+
+            Highcharts.chart('containerBarChart', {
+                chart: {
+                    type: 'bar',
+                    height: {{egresosPorEtiqueta|getHeightBarChart}}
+                },
+                title: {
+                    text: 'Grafico valor egresos por etiqueta'
+                },
+                xAxis: {
+                    categories: [
+                        {% for item in egresosPorEtiqueta|getDataBarChart %}'{{item.tagName}}',{% endfor %}
+                    ],
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Cantidad (COP)'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Total egresos',
+                        color: '#ff5d5d',
+                        data: [
+                            {% for item in egresosPorEtiqueta|getDataBarChart %}{{item.total}},{% endfor %}
+                        ]
+                    }
+                ]   
+            });
+
+        });
+    </script>
+{% endif %}
 {% endblock %}

@@ -4,7 +4,7 @@ from .views import *
 from .viewsHelpers import *
 
 urlpatterns = [
-    path('', panel, name='panel'),
+    path('', panel, name='inicio'),
     path('crear-cuenta/', crear_cuenta, name='crear_cuenta'),
     path('crear-egreso/<int:cuenta_id>/', crear_egreso, name='crear_egreso'),
     path('crear-ingreso/<int:cuenta_id>/', crear_ingreso, name='crear_ingreso'),
@@ -20,8 +20,8 @@ urlpatterns = [
     path('prestamo/<int:prestamo_id>/', vista_prestamo, name='vista_prestamo'),
     path('crear-prestamo/<int:persona_id>/', crear_prestamo, name='crear_prestamo'),
     path('pagar-prestamo/<int:prestamo_id>/', pagar_prestamo, name='pagar_prestamo'),
+    path('pagar-conjunto-prestamos/<int:persona_id>/', pagarConjuntoPrestamos, name='pagarConjuntoPrestamos'),
     path('eliminar-prestamo/<int:prestamo_id>/', eliminar_prestamo, name='eliminar_prestamo'),
-    path('confirm-eliminar-prestamo/<int:prestamo_id>/', confirm_eliminar_prestamo, name='confirm_eliminar_prestamo'),
 
     path('crear-etiqueta/', crear_etiqueta, name='crear_etiqueta'),
     path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),
@@ -37,7 +37,17 @@ urlpatterns = [
 
     path('transaccion/<int:transaccion_id>/', vista_transaccion, name='vista_transaccion'),
     path('transaccion-rollback/<int:transaccion_id>/', transaccion_rollback, name='transaccion_rollback'),
+    path('transacciones-programadas/', transacciones_programadas, name='transacciones_programadas'),
+    path('crear-transaccion-programada/', crear_transaccion_programada, name='crear_transaccion_programada'),
+    path('pagar-transaccion-programada/<int:transaccion_id>/', pagar_transaccion_programada, name='pagar_transaccion_programada'),
 
-    path('mensaje/', vista_mensaje, name='vista_mensaje'),
     path('relacionarUsuarioConTransaccion/', relacionarUsuarioConTransaccion, name='relacionarUsuarioConTransaccion'),
+
+    path('crear-creditCard/', crear_creditCard, name='crear_creditCard'),
+    path('creditCard/<int:creditCard_id>/', vista_creditCard, name='vista_creditCard'),
+    path('listar-creditcards/', listar_creditCards, name='listar_creditCards'),
+    path('crear-compra/<int:creditCard_id>/', crear_compra, name='crear_compra'),
+    path('compra-detalles/<int:compra_id>/', vista_compra, name='vista_compra'),
+    path('pagar-tarjeta/<int:tarjeta_id>/', pagar_tarjeta, name='pagar_tarjeta'),
+    path('eliminar-compra/<int:compra_id>/', eliminar_compra, name='eliminar_compra'),
 ]

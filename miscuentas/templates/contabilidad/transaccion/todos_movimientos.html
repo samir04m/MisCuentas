@@ -18,7 +18,7 @@
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
-                                        <th>Origen</th>
+                                        <th>Cuenta</th>
                                         <th>Valor</th>
                                         <th>Etiqueta</th>
                                         <th>Descripción</th>
@@ -27,7 +27,7 @@
                                 </thead>
                                 <tbody>
                                     {% for t in transacciones %}
-                                        <tr class="{{t.tipo|textcolor}}">
+                                        <tr class="{{t|textcolor}}">
                                             <td>
                                                 <span class="d-none d-md-block">
                                                     {{t.fecha|date:'D, d/m/y h:iA'}}
@@ -63,8 +63,9 @@
                             </table>
 
                         {% else %}
-                            <div class="fs-18 text-center">
-                                No hay movimientos.
+                            <div class="fs-18 text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
+                                No se han registrado transacciones
                             </div>
                         {% endif %}
                     </div>
@@ -73,17 +74,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% block script %}
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                order: [],
-                pageLength: 10
-            });
-        });
-    </script>
-{% endblock %} %}

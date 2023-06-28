@@ -43,6 +43,10 @@ main {
 	color: white;
 }
 
+.color-gray {
+	color: lightgray;
+}
+
 .fz-10 { font-size: 10px; }
 .fz-12 { font-size: 12px; }
 .fz-14 { font-size: 14px; }

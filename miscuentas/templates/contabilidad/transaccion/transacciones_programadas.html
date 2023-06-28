@@ -1,0 +1,77 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Transacciones programadas{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="m-b-20 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-18">Transacciones Programadas</b>
+                    <a href="{% url 'panel:crear_transaccion_programada' %}" class="btn btn-sm btn-outline-light">
+                        Crear  <i class="fal fa-plus"></i>
+                    </a>
+                </div>
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        {% if transacciones %}
+                            <table class="table table-sm table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cuenta</th>
+                                        <th>Valor</th>
+                                        <th>Etiqueta</th>
+                                        <th>Descripción</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for transaccion in transacciones %}
+                                        <tr class="{{transaccion|textcolor}}">
+                                            <td>{{transaccion.fecha|date:'d/m/y'}}</td>
+                                            <td>{{transaccion.cuenta.nombre}}</td>
+                                            <td> {{transaccion.tipo|signo}}${{transaccion.cantidad|puntomil}}</td>
+                                            <td>
+                                                {% if transaccion.etiqueta.id %}
+                                                    <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}" class="reset-color-a">{{transaccion|sin_etiqueta}}</a>
+                                                {% else %}
+                                                    {{transaccion|sin_etiqueta}}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{transaccion.info|truncatechars:'20'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' transaccion.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fal fa-external-link"></i>
+                                                </a>
+                                                <a href="{% url 'panel:pagar_transaccion_programada' transaccion.id %}" class="btn btn-sm btn-outline-info"
+                                                onclick="return confirm('¿Esta segunro de realizar el pago de esta transacción?')">
+                                                    <i class="fal fa-calendar-check"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="fs-18 text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-4x"></i> <br><br>
+                                No hay transacciones programadas
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 pt-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% include 'base/components/ScriptSweetalert.html' %}
+{% endblock %}

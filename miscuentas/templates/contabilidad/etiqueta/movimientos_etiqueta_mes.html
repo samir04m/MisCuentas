@@ -12,7 +12,7 @@
                 <div class="card animate__animated animate__fadeIn">
                     <div class="card-body">
                         {% if transacciones %}
-                            <table class="table table-responsive-sm" id="miTabla">
+                            <table class="table table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
@@ -24,7 +24,7 @@
                                 </thead>
                                 <tbody>
                                     {% for t in transacciones %}
-                                        <tr class="{{t.tipo|textcolor}}">
+                                        <tr class="{{t|textcolor}}">
                                             <td>
                                                 <span class="d-none d-md-block">
                                                     {{t.fecha|date:'D, d/m/y h:iA'}}
@@ -39,7 +39,7 @@
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-external-link-alt"></i></a>
+                                                <i class="fal fa-external-link-alt"></i></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -57,16 +57,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% block script %}
-    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
-    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#miTabla').DataTable({
-                order: []
-            });
-        });
-    </script>
-{% endblock %} %}

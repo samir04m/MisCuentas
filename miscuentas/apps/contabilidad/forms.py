@@ -35,7 +35,8 @@ class PersonaForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Nombre de la cuenta',
-                    'id': 'nombre'
+                    'id': 'nombre',
+                    'autocomplete': 'off'
                 }
             ),
         }
@@ -50,7 +51,8 @@ class EtiquetaForm(forms.ModelForm):
                 attrs = {
                     'class':'form-control',
                     'placeholder':'Nombre de la etiqueta',
-                    'id': 'nombre'
+                    'id': 'nombre',
+                    'autocomplete': 'off'
                 }
             ),
         }
@@ -96,8 +98,8 @@ class PrestamoForm(forms.ModelForm):
             'cantidad': forms.NumberInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Valor',
-                    'id': 'Valor',
+                    'placeholder':'$',
+                    'id': 'cantidad',
                     'type': 'text',
                     'autocomplete': 'off'
                 }
@@ -105,9 +107,52 @@ class PrestamoForm(forms.ModelForm):
             'info': forms.TextInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Infromacion del prestamo',
-                    'id': 'info'
+                    'id': 'info',
+                    'autocomplete': 'off'
                 }
             ),
         }
-        
+
+class CreditCardForm(forms.ModelForm):
+    class Meta:
+        model = CreditCard
+        fields = ['nombre','cupo','diaCorte','diaPago']
+
+        widgets = {
+            'nombre': forms.TextInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Nombre de la tarjeta',
+                    'id': 'nombre'
+                }
+            ),
+            'cupo': forms.NumberInput(
+                attrs = {
+                    'class':'form-control puntoMiles',
+                    'placeholder':'Cupo de la tarjeta',
+                    'id': 'cupo',
+                    'type': 'text',
+                    'autocomplete': 'off'
+                }
+            ),
+            'diaCorte': forms.NumberInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Dia de corte',
+                    'id': 'diaCorte',
+                    'type': 'number',
+                    'min': '1',
+                    'max': '31'
+                }
+            ),
+            'diaPago': forms.NumberInput(
+                attrs = {
+                    'class':'form-control',
+                    'placeholder':'Dia limite de pago',
+                    'id': 'diaPago',
+                    'type': 'number',
+                    'min': '1',
+                    'max': '31'
+                }
+            )
+        }

@@ -12,34 +12,32 @@
                     <div class="card-body">
                         <div class="text-center">
                             <div style="font-size:40px;">
-                                {% if persona.isCreditCard %}
-                                    <i class="fal fa-credit-card"></i>
-                                {% else %}
-                                    <i class="fal fa-user-circle"></i>
-                                {% endif %}
-                                {{persona.nombre}}
+                                <i class="fas fa-user-circle"></i> {{persona.nombre}}
                             </div>
-                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">Crear Prestamo</a>
+                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">
+                                Crear Prestamo <i class="fal fa-plus"></i>
+                            </a>
                         </div>
                         <hr>
-                        <p>
-                            {% if persona.isCreditCard %}
-                                Has realizado {{persona.prestamo_set.count}} prestamos con esta tarjeta. 
-                                Deuda total ${{yoDebo|puntomil}}
-                            {% else %}
+                        <div style="overflow: hidden;">
+                            {% if yoDebo or meDeben %}
+                                <button type="button" class="btn btn-outline-info float-right" data-toggle="modal" data-target="#modalPagoMultiple">
+                                    Pago multiple
+                                </button>
+                            {% endif %}
+                            <p>
                                 Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
                                 {% if persona.prestamo_set.count %}
                                     <br> En total usted debe ${{yoDebo|puntomil}} y le deben a usted ${{meDeben|puntomil}}.
                                     {% if diferencia %}
                                         <br> {{diferenciaMensaje}} ${{diferencia|puntomil}}.
                                     {% endif %}
-                                {% endif %}
-                            {% endif %}
-                        </p> 
-
+                                {% endif %}        
+                            </p>
+                        </div>
                         {% if persona.prestamo_set.all %}
                             <h5 class="text-center mt-3"><b>Prestamos</b></h5>
-                            <table class="table table-responsive-sm">
+                            <table class="table table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -86,17 +84,85 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalPagoMultiple" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="modalPagoMultipleLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modalPagoMultipleLabel">Pago multiple de prestamos</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'panel:pagarConjuntoPrestamos' persona.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="number" name="personaId" id="personaId" value="{{persona.id}}" class="d-none">
+    
+                    <div class="form-group">
+                        <label for="tipoPrestamo">Seleccione el tipo de prestamos a pagar:</label>
+                        {% if meDeben %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipoPrestamo" id="tipoPrestamo1" 
+                                value="yopresto" {{meDeben|checkedPagoMultiplePrestamo:yoDebo}} required>
+                                <label class="form-check-label" for="tipoPrestamo1">
+                                    Yo presto (Le deben en total ${{meDeben|puntomil}})
+                                </label>
+                            </div>
+                        {% endif %}
+                        {% if yoDebo %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipoPrestamo" id="tipoPrestamo2" 
+                                value="meprestan" {{yoDebo|checkedPagoMultiplePrestamo:meDeben}} required>
+                                <label class="form-check-label" for="tipoPrestamo2">
+                                    Me prestan (Usted debe en total ${{yoDebo|puntomil}})
+                                </label>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="cuenta">Seleccione una cuenta para realizar el pago:</label>
+                        <select name="cuenta" class="form-control" id="cuenta" required>
+                            {% for cuenta in cuentas %}
+                                <option value="{{cuenta.id}}">{{cuenta.nombre}} - ${{cuenta.saldo|puntomil}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pagoTotal">Ingrese la cantidad a pagar:</label>
+                        <input type="text" class="form-control" id="pagoTotal" name="pagoTotal" value="{{meDeben|valorPagoMultiplePrestamo:yoDebo}}" autocomplete="off" required>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-outline-primary">Pagar prestamos</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#pagoTotal', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
     {% if messages %}
         <script type="text/javascript">
             $(function () {
                 Swal.fire({
                     icon: '{{messages|getMessage:"icon" }}',
                     title: '{{messages|getMessage }}',
-                    showConfirmButton: false,
-                    timer: 2000
+                    showConfirmButton: true,
+                    // timer: 3000
                 });
             });
         </script>

@@ -26,7 +26,7 @@
                             {% if tags %}
                                 <div class="mb-3">
                                     <label for="tag">Seleccione una etiqueta</label>
-                                    <select name="tag" class="form-control" id="tag">
+                                    <select name="tag" class="form-control selectConBuscador" id="tag">
                                         <option value="" selected disabled>Seleccionar</option>
                                         {% for t in tags %}
                                         <option value="{{t.id}}">{{t.nombre}}</option>
@@ -35,7 +35,7 @@
                                 </div>
                             {% else %}
                                 <div class="alert alert-secondary" role="alert">
-                                    No se ha creado ninguna etiqueta todavía.
+                                    No se han creado etiquetas todavía.
                                 </div>
                             {% endif %}
                             
