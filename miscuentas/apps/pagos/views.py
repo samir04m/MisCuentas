@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import transaction
 from apps.contabilidad.models import *
 from apps.contabilidad.myFuncs import *
-from apps.usuario.userSettingFuncs import *
+from apps.usuario.userSettingFuncs import getUserSetting, getUndefinedUserSettings
 
 @login_required
 def pagos_recurrentes(request):
@@ -11,26 +12,71 @@ def pagos_recurrentes(request):
 
 @login_required
 def pago_hbomax(request):
-    nombreCuenta = 'Nequi'
-    nombrePersona = 'Jorge Ivan'
-    cantidad = 25000/2
-    info = 'Pago HBO Max'
-    cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
-    persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
     error = ''
-    if cuenta and persona:
-        try:
-            transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, 'Gasto mensual', 1, persona.user)
-            prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
-        except Exception as ex:
-            print(ex)
-            error = 'No se pudo realizar el pago debido a un error'
+    valoresSinDefinir = getUndefinedUserSettings(['PagoHboMax_CuentaId', 'PagoHboMax_PersonaId', 'PagoHboMax_Cantidad', 'PagoHboMax_EtiquetaId'], request.user)
+    if valoresSinDefinir:
+        error = "No se han definido los siguentes datos: " + valoresSinDefinir
     else:
-        if not cuenta:
-            error += f"No existe cuenta {nombreCuenta}. "
-        if not persona:
-            error += f'No existe la persona {nombrePersona}. '
-    
+        cuentaId = getUserSetting('PagoHboMax_CuentaId', request.user)
+        personaId = getUserSetting('PagoHboMax_PersonaId', request.user)
+        cantidad = getUserSetting('PagoHboMax_Cantidad', request.user) / 2
+        etiquetaId = getUserSetting('PagoHboMax_EtiquetaId', request.user)
+        info = 'Pago HBO Max'
+        cuenta = Cuenta.objects.filter(id=cuentaId, user=request.user).first()
+        persona = Persona.objects.filter(id=personaId, user=request.user).first()
+        etiqueta = Etiqueta.objects.filter(id=etiquetaId, user=request.user).first()
+        if cuenta and persona and etiqueta:
+            try:
+                with transaction.atomic():
+                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, persona.user)
+                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
+            except Exception as ex:
+                print(ex)
+                error = 'No se pudo realizar el pago debido a un error'
+        else:
+            if not cuenta:
+                error += f"No existe cuenta {cuentaId}. "
+            if not persona:
+                error += f'No existe la persona con id {personaId}. '
+            if not etiqueta:
+                error += f'No existe la etiqueta con id {etiquetaId}. '
+    if error:
+        messages.error(request, error, extra_tags='error')
+    else:
+        messages.success(request, 'Pago exitoso', extra_tags='success')    
+
+    return redirect('pagos:listado')
+
+@login_required
+def pago_internet(request):
+    error = ''
+    valoresSinDefinir = getUndefinedUserSettings(['PagoInternet_CuentaId', 'PagoInternet_PersonaId', 'PagoInternet_CantidadYo', 'PagoInternet_CantidadPersona', 'PagoInternet_EtiquetaId'], request.user)
+    if valoresSinDefinir:
+        error = "No se han definido los siguentes datos: " + valoresSinDefinir
+    else:
+        cuentaId = getUserSetting('PagoInternet_CuentaId', request.user)
+        personaId = getUserSetting('PagoInternet_PersonaId', request.user)
+        cantidadYo = getUserSetting('PagoInternet_CantidadYo', request.user)
+        cantidadPersona = getUserSetting('PagoInternet_CantidadPersona', request.user)
+        etiquetaId = getUserSetting('PagoInternet_EtiquetaId', request.user)
+        info = 'Pago Internet'
+        cuenta = Cuenta.objects.filter(id=cuentaId, user=request.user).first()
+        persona = Persona.objects.filter(id=personaId, user=request.user).first()
+        etiqueta = Etiqueta.objects.filter(id=etiquetaId, user=request.user).first()
+        if cuenta and persona and etiqueta:
+            try:
+                with transaction.atomic():
+                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidadYo, info, etiqueta.nombre, 1, persona.user)
+                    prestamo = crearPrestamo('yopresto', cantidadPersona, info, cuenta, persona)
+            except Exception as ex:
+                error = 'No se pudo realizar el pago debido a un error'
+        else:
+            if not cuenta:
+                error += f"No existe cuenta con id {cuentaId}. "
+            if not persona:
+                error += f'No existe la persona con id {personaId}. '
+            if not etiqueta:
+                error += f'No existe la etiqueta con id {etiquetaId}. '
     if error:
         messages.error(request, error, extra_tags='error')
     else:
@@ -40,54 +86,32 @@ def pago_hbomax(request):
 
 @login_required
 def pago_cuotamoto(request):
-    nombreCuenta = 'Bancolombia'
-    nombrePersona = 'Andy'
-    cantidad = 303000
-    info = 'Pago cuota moto'
-    cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
-    persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
     error = ''
-    if cuenta and persona:
-        try:
-            prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
-        except Exception as ex:
-            error = 'No se pudo realizar el pago debido a un error'
+    valoresSinDefinir = getUndefinedUserSettings(['PagoCuotaMoto_CuentaId', 'PagoCuotaMoto_PersonaId', 'PagoCuotaMoto_Cantidad'], request.user)
+    if valoresSinDefinir:
+        error = "No se han definido los siguentes datos: " + valoresSinDefinir
     else:
-        if not cuenta:
-            error += f"No existe cuenta {nombreCuenta}. "
-        if not persona:
-            error += f'No existe la persona {nombrePersona}. '
+        cuentaId = getUserSetting('PagoCuotaMoto_CuentaId', request.user)
+        personaId = getUserSetting('PagoCuotaMoto_PersonaId', request.user)
+        cantidad = getUserSetting('PagoCuotaMoto_Cantidad', request.user)
+        info = 'Pago cuota moto'
+        cuenta = Cuenta.objects.filter(id=cuentaId, user=request.user).first()
+        persona = Persona.objects.filter(id=personaId, user=request.user).first()
+        if cuenta and persona:
+            try:
+                with transaction.atomic():
+                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
+            except Exception as ex:
+                error = 'No se pudo realizar el pago debido a un error'
+        else:
+            if not cuenta:
+                error += f"No existe cuenta con id {cuentaId}. "
+            if not persona:
+                error += f'No existe la persona con id {personaId}. '
     
     if error:
         messages.error(request, error, extra_tags='error')
     else:
         messages.success(request, 'Pago exitoso', extra_tags='success')
-
-    return redirect('pagos:listado')
-
-@login_required
-def pago_internet(request):
-    nombreCuenta = 'Bancolombia'
-    nombrePersona = 'Andy'
-    info = 'Pago Internet'
-    cuenta = Cuenta.objects.filter(nombre=nombreCuenta, user=request.user).first()
-    persona = Persona.objects.filter(nombre=nombrePersona, user=request.user).first()
-    error = ''
-    if cuenta and persona:
-        try:
-            transaccionEgreso = crearTransaccion('egreso', cuenta, 55000, info, 'Gasto mensual', 1, persona.user)
-            prestamo = crearPrestamo('yopresto', 50000, info, cuenta, persona)
-        except Exception as ex:
-            error = 'No se pudo realizar el pago debido a un error'
-    else:
-        if not cuenta:
-            error += f"No existe cuenta {nombreCuenta}. "
-        if not persona:
-            error += f'No existe la persona {nombrePersona}. '
-    
-    if error:
-        messages.error(request, error, extra_tags='error')
-    else:
-        messages.success(request, 'Pago exitoso', extra_tags='success')    
 
     return redirect('pagos:listado')

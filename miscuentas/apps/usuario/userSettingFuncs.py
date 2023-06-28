@@ -45,3 +45,13 @@ def getEstadoTransaccion(user:User):
     if incluirTP:
         estados.append(0)
     return estados
+
+def getUndefinedUserSettings(keys, user:User):
+    sinDefinir = ""
+    for key in keys:
+        keyValue = getUserSetting(key, user)
+        if keyValue == None or keyValue == "undefined":
+            sinDefinir += key + ", "
+            if keyValue == None:
+                setUserSetting(key, "undefined", user)
+    return sinDefinir
