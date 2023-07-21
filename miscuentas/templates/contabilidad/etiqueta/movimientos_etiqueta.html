@@ -14,6 +14,9 @@
                     </div>
                     <div class="card-body">
                         {% if transacciones %}
+                            <p>
+                                <b>Total egresos:</b> ${{totalEgresos|puntomil}} <br>
+                            </p>
                             <table class="table table-responsive-sm" id="datatable">
                                 <thead>
                                     <tr>
@@ -55,6 +58,9 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+            <div class="col-sm-12 col-lg-3 pt-3">
+                {% include 'user/alert_switchUserSetting.html' %}
             </div>
         </div>
     </div>

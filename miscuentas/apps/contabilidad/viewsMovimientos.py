@@ -43,16 +43,29 @@ def movimientos_mes(request, tipo, fecha):
     fecha2 = datetime(int(year), int(month), 1)
     tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
     transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
+    totalEgresos = 0
+    for transaccion in transacciones:
+        if transaccion.tipo == 'egreso':
+            totalEgresos += transaccion.cantidad
 
-    context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2}
+    context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2,'totalEgresos':totalEgresos}
     return render(request, 'contabilidad/transaccion/movimientos_mes.html', context)
 
 @login_required
 def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
-    transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id, estado=1).order_by('-fecha')
+    transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id, estado__in=getEstadoTransaccion(request.user)).order_by('-fecha')
+    totalEgresos = 0
+    for transaccion in transacciones:
+        if transaccion.tipo == 'egreso':
+            totalEgresos += transaccion.cantidad
 
-    context =  {"transacciones": transacciones, "etiqueta":etiqueta}
+    context =  {
+        "transacciones": transacciones, 
+        "etiqueta":etiqueta, 
+        "totalEgresos":totalEgresos,
+        "alertData":getAlertIncluirTransaccionesProgramadas(request.user)
+    }
     return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
 
 def movimientos_etiqueta_mes(request, etiqueta_id, tipo, periodo):

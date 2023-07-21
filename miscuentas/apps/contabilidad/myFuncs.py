@@ -115,7 +115,10 @@ def getEtiquetaById(id):
     return None
 
 def getSelectEtiquetas(request):
-    return Etiqueta.objects.filter(user=request.user, tipo=1)
+    if request.user.is_superuser:
+        return Etiqueta.objects.filter(user=request.user)
+    else:
+        return Etiqueta.objects.filter(user=request.user, tipo=1)
 
 def getTipoEtiqueta(nombre) -> int:
     tipo2 = ['Prestamo', 'Transferencia']
