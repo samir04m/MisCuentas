@@ -141,6 +141,7 @@ def crear_ingreso(request, cuenta_id):
 @login_required
 def vista_transaccion(request, transaccion_id):
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
+    request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
     return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})
 
 @login_required
@@ -194,32 +195,29 @@ def transferir(request, cuenta_id):
 @login_required
 def transaccion_rollback(request, transaccion_id):
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
-    if request.method == 'POST':
-        ok = True
-        if transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Transferencia':
-            tipoContrario = 'egreso' if transaccion.tipo == 'ingreso' else 'ingreso'
-            transaccion2 = Transaccion.objects.filter(fecha=transaccion.fecha, tipo=tipoContrario, cantidad=transaccion.cantidad).first()
-            if transaccion2:
-                ok = rollbackTransaction(request, transaccion2)
-        
-        transaccionPrestamo = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
-        if transaccionPrestamo:
-            prestamo = transaccionPrestamo.prestamo
-            prestamo.saldo_pendiente += transaccion.cantidad
-            if prestamo.saldo_pendiente > 0:
-                prestamo.cancelada = False 
-            prestamo.save()
-            transaccionPrestamo.delete()
+    ok = True
+    if transaccion.etiqueta != None and transaccion.etiqueta.nombre == 'Transferencia':
+        tipoContrario = 'egreso' if transaccion.tipo == 'ingreso' else 'ingreso'
+        transaccion2 = Transaccion.objects.filter(fecha=transaccion.fecha, tipo=tipoContrario, cantidad=transaccion.cantidad).first()
+        if transaccion2:
+            ok = rollbackTransaction(request, transaccion2)
+    
+    transaccionPrestamo = TransaccionPrestamo.objects.filter(transaccion=transaccion).first()
+    if transaccionPrestamo:
+        prestamo = transaccionPrestamo.prestamo
+        prestamo.saldo_pendiente += transaccion.cantidad
+        if prestamo.saldo_pendiente > 0:
+            prestamo.cancelada = False 
+        prestamo.save()
+        transaccionPrestamo.delete()
 
-        if ok:
-            ok = rollbackTransaction(request, transaccion)
-        if ok:
-            messages.success(request, 'Se ha deshecho la transacción', extra_tags='success')
-        else:
-            messages.error(request, 'No fue posible deshacer la transacción', extra_tags='error')
-        return redirect('panel:inicio')
+    if ok:
+        ok = rollbackTransaction(request, transaccion)
+    if ok:
+        messages.success(request, 'Se ha deshecho la transacción', extra_tags='success')
     else:
-        return render(request, 'contabilidad/transaccion/transaccion_rollback.html', {"transaccion":transaccion})
+        messages.error(request, 'No fue posible deshacer la transacción', extra_tags='error')
+    return redirect(request.session.get('vistaRedireccion'))
 
 def rollbackTransaction(request, transaccion):
     sw = False

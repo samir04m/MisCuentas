@@ -193,18 +193,3 @@
     </div>
 
 {% endblock %}
-
-{% block script %}
-    {% if messages %}
-        <script type="text/javascript">
-            $(function () {
-                Swal.fire({
-                    icon: '{{messages|getMessage:"icon" }}',
-                    title: '{{messages|getMessage }}',
-                    showConfirmButton: true,
-                    // timer: 3000
-                });
-            });
-        </script>
-    {% endif %}
-{% endblock %}

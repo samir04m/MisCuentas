@@ -8,5 +8,5 @@ urlpatterns = [
     path('spotify', pago_spotify, name='spotify'),
     path('cuota-moto', pago_cuotamoto, name='cuotamoto'),
     path('internet', pago_internet, name='internet'),
-
+    path('establecerFechaPagos', establecerFechaPagos, name='establecerFechaPagos'),
 ]

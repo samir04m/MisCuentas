@@ -23,8 +23,4 @@ $(document).ready(function() {
     $('#datatable').DataTable({
         order: []
     });
-
-
-
-    //     $('.selectConBuscador').select2();
 });

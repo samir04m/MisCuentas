@@ -4,11 +4,14 @@ from django.contrib import messages
 from django.db import transaction
 from apps.contabilidad.models import *
 from apps.contabilidad.myFuncs import *
-from apps.usuario.userSettingFuncs import getUserSetting, getUndefinedUserSettings
+from apps.usuario.userSettingFuncs import getUserSetting, getUndefinedUserSettings, setUserSetting
 
 @login_required
 def pagos_recurrentes(request):
-    return render(request, 'pagos/pagos_recurrentes.html')
+    fechaPagos = getUserSetting('FechaPagos', request.user)
+    if not fechaPagos:
+        fechaPagos = ''
+    return render(request, 'pagos/pagos_recurrentes.html', {'fechaPagos':fechaPagos})
 
 @login_required
 def pago_hbomax(request):
@@ -28,8 +31,8 @@ def pago_hbomax(request):
         if cuenta and persona and etiqueta:
             try:
                 with transaction.atomic():
-                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, request.user)
-                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
+                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, request.user, getFechaPago(request))
+                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona, getFechaPago(request))
             except Exception as ex:
                 print(ex)
                 error = 'No se pudo realizar el pago debido a un error'
@@ -62,7 +65,7 @@ def pago_spotify(request):
         if cuenta and etiqueta:
             try:
                 with transaction.atomic():
-                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, request.user)
+                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, request.user, getFechaPago(request))
             except Exception as ex:
                 print(ex)
                 error = 'No se pudo realizar el pago debido a un error'
@@ -96,8 +99,8 @@ def pago_internet(request):
         if cuenta and persona and etiqueta:
             try:
                 with transaction.atomic():
-                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidadYo, info, etiqueta.nombre, 1, persona.user)
-                    prestamo = crearPrestamo('yopresto', cantidadPersona, info, cuenta, persona)
+                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidadYo, info, etiqueta.nombre, 1, persona.user, getFechaPago(request))
+                    prestamo = crearPrestamo('yopresto', cantidadPersona, info, cuenta, persona, getFechaPago(request))
             except Exception as ex:
                 error = 'No se pudo realizar el pago debido a un error'
         else:
@@ -129,7 +132,7 @@ def pago_cuotamoto(request):
         if cuenta and persona:
             try:
                 with transaction.atomic():
-                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona)
+                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona, getFechaPago(request))
             except Exception as ex:
                 error = 'No se pudo realizar el pago debido a un error'
         else:
@@ -143,3 +146,15 @@ def pago_cuotamoto(request):
     else:
         messages.success(request, 'Pago exitoso', extra_tags='success')
     return redirect('pagos:listado')
+
+def establecerFechaPagos(request):
+    if request.method == 'POST':
+        setUserSetting('FechaPagos', request.POST.get('datetime'), request.user)
+    return redirect('pagos:listado')
+
+def getFechaPago(request):
+    fecha = getUserSetting('FechaPagos', request.user)
+    if fecha:
+        return getDate(fecha)
+    else:
+        return datetime.now()

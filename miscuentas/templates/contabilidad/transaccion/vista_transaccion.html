@@ -88,7 +88,8 @@
                                 <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success mr-3" target="_blank"><i class="fal fa-edit"></i> Editar</a>
                             {% endif %}
                             {% if transaccion.estado %}
-                                <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger">
+                                <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger"
+                                    onclick="return confirm('¿Esta seguro de deshacer la transacción?')">
                                     Deshacer <i class="fal fa-undo"></i>
                                 </a>
                             {% endif %}

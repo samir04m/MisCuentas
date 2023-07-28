@@ -8,6 +8,24 @@
         <div class="row">
             <div class="offset-lg-1 col-lg-7">
                 <h4 class="text-center text-white animate__animated animate__fadeInDown">Pagos recurrentes</h4>
+
+                <div class="card mb-3 animate__animated animate__fadeInUp" style="z-index: 1000;">
+                    <div class="card-body py-2">
+                        <form action="{% url 'pagos:establecerFechaPagos' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-sm-12 col-md-5 fz-14 pt-2 my-1">Establecer fecha para los pagos</div>
+                                <div class="col-sm-12 col-md-4 my-1">
+                                    <input type="text" class="form-control" name="datetime" id="datetime" value="{{fechaPagos}}">
+                                </div>
+                                <div class="col-sm-12 col-md-3 my-1">
+                                    <button type="submit" class="btn btn-primary btn-block">Establecer</button>
+                                </div>
+                            </div>
+                        </form>                        
+                    </div>
+                </div>
+
                 <div class="card animate__animated animate__fadeInUp">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
@@ -36,16 +54,11 @@
 {% endblock %}
 
 {% block script %}
-    {% if messages %}
-        <script type="text/javascript">
-            $(function () {
-                Swal.fire({
-                    icon: '{{messages|getMessage:"icon" }}',
-                    title: '{{messages|getMessage }}',
-                    showConfirmButton: true,
-                    // timer: 3000
-                });
+    <script type="text/javascript">
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
             });
-        </script>
-    {% endif %}
+        });
+    </script>
 {% endblock %}
