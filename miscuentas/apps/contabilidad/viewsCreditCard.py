@@ -161,7 +161,9 @@ def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta):
     cuenta.save()
     transaccion.save()
 
-def getPagoMes(creditCard:CreditCard, fecha=datetime.now()):
+def getPagoMes(creditCard:CreditCard, fecha=None):
+    if not fecha:
+        fecha = datetime.now()
     comprasPendientes = CompraCredito.objects.filter(creditCard=creditCard, cancelada=False)
     sumaDeuda = 0
     for compra in comprasPendientes:

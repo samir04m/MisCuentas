@@ -3,7 +3,7 @@ from datetime import datetime
 from datetime import timedelta
 from .models import *
 
-def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fecha=datetime.now()):
+def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fecha=None):
     saldo_anterior = 0
     if cuenta:
         saldo_anterior = cuenta.saldo
@@ -21,7 +21,7 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fec
         saldo_anterior=saldo_anterior,
         cantidad=cantidad,
         info=info,
-        fecha=fecha,
+        fecha=validarFecha(fecha),
         estado=estado,
         cuenta=cuenta,
         etiqueta=getEtiqueta(tag, user),
@@ -30,7 +30,8 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fec
     transaccion.save()
     return transaccion
 
-def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=datetime.now()):
+def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=None):
+    fecha = validarFecha(fecha)
     if tipo == 'yopresto':
         crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', 1, persona.user, fecha)
     if tipo == 'meprestan':
@@ -47,7 +48,7 @@ def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=da
     prestamo.save()
     return prestamo
 
-def crearCompraCredito(creditCard:CreditCard, etiquetaId:int, valor:int, cuotas:int, info, fecha=datetime.now()):
+def crearCompraCredito(creditCard:CreditCard, etiquetaId:int, valor:int, cuotas:int, info, fecha=None):
     compra = CompraCredito(
         creditCard = creditCard,
         etiqueta = getEtiquetaById(etiquetaId),
@@ -55,7 +56,7 @@ def crearCompraCredito(creditCard:CreditCard, etiquetaId:int, valor:int, cuotas:
         cuotas = cuotas,
         info = info,
         deuda = valor,
-        fecha = fecha
+        fecha = validarFecha(fecha)
     )
     compra.save()
     creditCard.cupoDisponible = creditCard.cupoDisponible - valor
@@ -225,3 +226,9 @@ def getEtiquetaFromPost(request) -> int:
 
 def getCantidadFromPost(request) -> int:
     return validarMiles(int(request.POST.get('cantidad').replace('.','')))
+
+def validarFecha(fecha):
+    if fecha:
+        return fecha
+    else:
+        return datetime.now()
