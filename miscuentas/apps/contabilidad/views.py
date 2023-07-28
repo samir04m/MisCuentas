@@ -30,9 +30,9 @@ from .viewsCreditCard import *
 
 @login_required
 def panel(request):
-    cuentas = Cuenta.objects.filter(user = request.user).order_by('id')
-    personas = Persona.objects.filter(user = request.user).order_by('id')
-    creditCards = CreditCard.objects.filter(user = request.user).order_by('id')
+    cuentas = Cuenta.objects.filter(user = request.user, visible = True).order_by('id')
+    personas = Persona.objects.filter(user = request.user, visible = True).order_by('id')
+    creditCards = CreditCard.objects.filter(user = request.user, visible = True).order_by('id')
     context = {
         "cuentas":cuentas,
         "personas":personas, 

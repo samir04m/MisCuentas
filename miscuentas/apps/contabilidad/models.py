@@ -8,6 +8,7 @@ class Cuenta(models.Model):
     nombre = models.CharField('Nombre de la Cuenta', max_length=30)
     saldo = models.IntegerField('Saldo de cuenta')
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    visible = models.BooleanField('Visible', default=True)
 
     class Meta:
         verbose_name = 'Cuenta'
@@ -34,6 +35,7 @@ class Etiqueta(models.Model):
 class Persona(models.Model):
     nombre = models.CharField('Nombre de la Persona', max_length=90)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    visible = models.BooleanField('Visible', default=True)
 
     class Meta:
         verbose_name = 'Persona'
@@ -104,6 +106,7 @@ class CreditCard(models.Model):
     diaCorte = models.IntegerField('Dia de corte')
     diaPago = models.IntegerField('Dia de pago')
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    visible = models.BooleanField('Visible', default=True)
 
     class Meta:
         verbose_name = 'Credit card'

@@ -44,7 +44,7 @@ def vista_creditCard(request, creditCard_id):
 
 @login_required
 def listar_creditCards(request):
-    creditcards = CreditCard.objects.filter(user=request.user)
+    creditcards = CreditCard.objects.filter(user=request.user, visible=True)
     deudaTotal = 0
     for cc in creditcards:
         deudaTotal += cc.deuda()
