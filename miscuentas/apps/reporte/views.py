@@ -12,15 +12,15 @@ from .myFuncs import *
 @login_required
 def general(request):
     saldoTotalCuentas = getSaldoTotalCuentas(request)
-    deudaTarjetasCredito = getDeudaTarjetasCredito(request)
+    infoDeudaTC = getDeudaTarjetasCredito(request)
     deudaPrestamos = getDeudaPrestamos(request)
-    saldoFinal = saldoTotalCuentas + deudaPrestamos.meDeben - deudaTarjetasCredito - deudaPrestamos.yoDebo
-    if deudaTarjetasCredito > 0: deudaTarjetasCredito *= -1
+    saldoFinal = saldoTotalCuentas + deudaPrestamos.meDeben - infoDeudaTC.deudaPropia - deudaPrestamos.yoDebo
+    if infoDeudaTC.deudaPropia > 0: infoDeudaTC.deudaPropia *= -1
     if deudaPrestamos.yoDebo > 0: deudaPrestamos.yoDebo *= -1
 
     context = {
         "saldoTotalCuentas": saldoTotalCuentas,
-        "deudaTarjetasCredito": deudaTarjetasCredito,
+        "deudaTarjetasCredito": infoDeudaTC.deudaPropia,
         "deudaPrestamos": deudaPrestamos,
         "saldoFinal": saldoFinal
     }

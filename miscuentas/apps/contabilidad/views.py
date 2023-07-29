@@ -5,17 +5,13 @@ from multiprocessing import context
 from sqlite3 import Timestamp
 
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, request
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Sum
 from django.db import transaction
 from datetime import datetime
-import math
 from apps.usuario.models import UserSetting
 from apps.usuario.views import getUserSetting, setUserSetting
 

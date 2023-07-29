@@ -40,8 +40,23 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <div class="text-right">
-                                Deuda total: ${{deudaTotal|puntomil}}
+                            <div class="float-right">
+                                <table class="tablet table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th>Deuda propia:</th>
+                                            <td>$ {{infoDeuda.deudaPropia|puntomil}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Deuda prestamo:</th>
+                                            <td>$ {{infoDeuda.deudaPrestamo|puntomil}}</td>
+                                        </tr>
+                                        <tr class="table-primary">
+                                            <th>Deuda total:</th>
+                                            <td>$ {{infoDeuda.deudaTotal|puntomil}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         {% else %}
                             <div class="fs-18 text-center text-secondary">

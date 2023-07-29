@@ -45,10 +45,7 @@ def vista_creditCard(request, creditCard_id):
 @login_required
 def listar_creditCards(request):
     creditcards = CreditCard.objects.filter(user=request.user, visible=True)
-    deudaTotal = 0
-    for cc in creditcards:
-        deudaTotal += cc.deuda()
-    context = { 'creditcards': creditcards, 'deudaTotal': deudaTotal }
+    context = { 'creditcards': creditcards, 'infoDeuda':getDeudaTarjetasCredito(request) }
     return render(request, 'contabilidad/creditCard/listar_creditCards.html', context)
 
 

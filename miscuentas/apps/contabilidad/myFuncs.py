@@ -184,13 +184,6 @@ def getSaldoTotalCuentas(request):
     cuentas = Cuenta.objects.filter(user=request.user).aggregate(Sum('saldo'))
     return cuentas['saldo__sum'] if cuentas['saldo__sum'] else 0
 
-def getDeudaTarjetasCredito(request):
-    creditcards = CreditCard.objects.filter(user=request.user)
-    deudaTotal = 0
-    for cc in creditcards:
-        deudaTotal += cc.deuda()
-    return deudaTotal
-
 def getDeudaPrestamos(request):
     prestamosYoDebo = Prestamo.objects.filter(persona__user=request.user, tipo='meprestan', cancelada=False).aggregate(Sum('saldo_pendiente'))
     prestamosMeDeben = Prestamo.objects.filter(persona__user=request.user, tipo='yopresto', cancelada=False).aggregate(Sum('saldo_pendiente'))
@@ -232,3 +225,18 @@ def validarFecha(fecha):
         return fecha
     else:
         return datetime.now()
+
+class InfoDeudaTarjetasCredito:
+    def __init__(self, deudaPropia, deudaPrestamo):
+        self.deudaPropia = deudaPropia
+        self.deudaPrestamo = deudaPrestamo
+        self.deudaTotal = deudaPropia + deudaPrestamo
+
+def getDeudaTarjetasCredito(request) -> InfoDeudaTarjetasCredito:
+    comprasCreditoPropias = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__tipo=1, cancelada=False).aggregate(Sum('deuda'))
+    comprasCreditoPrestamo = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__nombre='Prestamo', cancelada=False).aggregate(Sum('deuda'))
+    return InfoDeudaTarjetasCredito(comprasCreditoPropias['deuda__sum'], comprasCreditoPrestamo['deuda__sum'])
+
+
+    
+        
