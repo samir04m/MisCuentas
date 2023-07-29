@@ -27,3 +27,14 @@ def switchUserSetting(request, key:str):
 
 def confirm_registro(request):
     return render(request, 'registration/confirm_registro.html')
+
+def getMetaAhorroMes(month:str, year:str, request) -> int:
+    metaAhorro = getUserSetting("MetaAhorroMes_{}_{}".format(month, year), request.user)
+    if not metaAhorro:
+        metaAhorroMensual = getUserSetting('MetaAhorroMensual', request.user)
+        if not metaAhorroMensual:
+            metaAhorroMensual = 1500000
+            setUserSetting('MetaAhorroMensual', metaAhorroMensual, request.user)
+        metaAhorro = metaAhorroMensual
+        setUserSetting("MetaAhorroMes_{}_{}".format(month, year), metaAhorroMensual, request.user)
+    return metaAhorro

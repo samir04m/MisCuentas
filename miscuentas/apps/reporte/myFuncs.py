@@ -1,6 +1,7 @@
 from apps.contabilidad.models import *
+from apps.contabilidad.myFuncs import getFormatoDinero
 from apps.usuario.models import UserSetting
-from apps.usuario.views import getUserSetting, setUserSetting
+from apps.usuario.views import getUserSetting, setUserSetting, getMetaAhorroMes
 from typing import List
 
 nombreMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
@@ -86,19 +87,28 @@ def createSelectOption(selectName, selectedOption):
         
     return selectOptions
 
-def obtenerResumen(totalIngresos, totalEgresos):
-    diferencia = totalIngresos - totalEgresos
+def getResumenAhorroMes(totalIngresos, totalEgresos, month, year, request):
+    ahorro = totalIngresos - totalEgresos
     porcentaje = (totalEgresos * 100) / totalIngresos
+    mensajeMetaAhorro = None
     if totalIngresos > totalEgresos:
-        mensajeDiferencia = 'Este mes se ahorró '
+        mensajeAhorro = 'Este mes se ahorró ' + getFormatoDinero(ahorro)
+        metaAhorro = getMetaAhorroMes(month, year, request)
+        if ahorro == metaAhorro:
+            mensajeMetaAhorro = 'Cumpló con la meta de ahorro de {}'.format(getFormatoDinero(metaAhorro))
+        elif ahorro > metaAhorro:
+            mensajeMetaAhorro = 'Cumpló con la meta de ahorro de {} y además ahorró un extra de {}'.format(getFormatoDinero(metaAhorro), getFormatoDinero(ahorro-metaAhorro))
+        else:
+            mensajeMetaAhorro = 'No cumpló con la meta de ahorro de {}. Le hicieron falta {} para cumplirla.'.format(getFormatoDinero(metaAhorro), getFormatoDinero(metaAhorro-ahorro))
     else:
-        diferencia = diferencia * -1
-        mensajeDiferencia = 'No se ahorró y se gastó de más '
+        ahorro = ahorro * -1
+        mensajeAhorro = 'No se ahorró y se gastó mas de lo que ganó '
 
     return {
-        'diferencia': diferencia,
-        'porcentaje': truncate(porcentaje, 2),
-        'mensajeDiferencia': mensajeDiferencia
+        'ahorro': ahorro,
+        'mensajePorcentaje': "Gastó el {}% de los ingresos".format(truncate(porcentaje, 2)),
+        'mensajeAhorro': mensajeAhorro,
+        'mensajeMetaAhorro':mensajeMetaAhorro
     }
 
 def getMensajeIncluirTransaccionesProgramadas(user:User):

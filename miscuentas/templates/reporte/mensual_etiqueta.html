@@ -116,8 +116,9 @@
                 <div class="card mt-4">
                     <div class="card-body pt-1">
                         <h5 class="text-center my-2">Resumen del mes</h5>
-                        {{ resumen.mensajeDiferencia }} ${{ resumen.diferencia|puntomil }} <br>
-                        Gastó el {{ resumen.porcentaje }}% de los ingresos
+                        {{ resumen.mensajeAhorro }} <br>
+                        {{ resumen.mensajePorcentaje }} <br>
+                        {{ resumen.mensajeMetaAhorro }}
                     </div>
                 </div>
                 {% endif %}

@@ -153,11 +153,10 @@ def egresos_etiqueta(request, month, year):
     ingresosPorEtiqueta = createListTagData(
         Transaccion.objects.filter(user=request.user, tipo='ingreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
     )
-
     if egresosPorEtiqueta and ingresosPorEtiqueta:
         totalEgresos = egresosPorEtiqueta[-1]
         totalIngresos = ingresosPorEtiqueta[-1]
-        resumen = obtenerResumen(totalIngresos.total, totalEgresos.total)
+        resumen = getResumenAhorroMes(totalIngresos.total, totalEgresos.total, mes, anio, request)
     else:
         resumen = None
 
