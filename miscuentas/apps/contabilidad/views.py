@@ -57,7 +57,6 @@ def crear_cuenta(request):
 
 @login_required
 def crear_egreso(request, cuenta_id):
-    mensaje = None
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
@@ -66,35 +65,32 @@ def crear_egreso(request, cuenta_id):
         form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
 
         if form.is_valid():
-            transaccion = form.save(commit=False)
-            transaccion.cantidad = validarMiles(transaccion.cantidad)
-            if transaccion.cantidad <= cuenta.saldo:
-                transaccion.tipo = 'egreso'
-                transaccion.cuenta = cuenta
-                transaccion.saldo_anterior = cuenta.saldo
-                transaccion.fecha = getDate(request.POST.get('datetime'))
-                transaccion.user = request.user
-
+            cantidad = validarMiles(request.POST.get('cantidad'))
+            if cantidad <= cuenta.saldo:
                 if request.POST.get('newTag'):
-                    newTag = request.POST.get('newTag')
-                    if newTag:
-                        tag = getEtiqueta(newTag, request.user)
-                        transaccion.etiqueta = tag
+                    tag = getEtiqueta(request.POST.get('newTag'), request.user)
                 elif request.POST.get('tag'):
                     tag = Etiqueta.objects.get(id=int(request.POST.get('tag')))
-                    transaccion.etiqueta = tag
-                transaccion.save()
-                cuenta.saldo -= transaccion.cantidad
-                cuenta.save()
+                else:
+                    tag = None
+                
+                info = request.POST.get('info')
+                fecha = getDate(request.POST.get('datetime'))
+                transaccion = crearTransaccion('egreso', cuenta, cantidad, info, tag, 1, request.user, fecha)
+                if request.POST.get('subtag'):
+                    transaccion.subtag = SubTag.objects.get(id=int(request.POST.get('subtag')))
+                    transaccion.save()
+
                 messages.success(request, 'Egreso registrado', extra_tags='success')
-                return redirect('panel:inicio')
+                return redirect(request.session['vistaRedireccion'])
             else:
                 form = TransaccionForm(request.POST)
-                mensaje = "El valor del egreso no puede superar el valor maximo."
+                messages.error(request, 'El valor del egreso no puede superar el saldo de la cuenta.', extra_tags='error')
     else:
+        request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
         form = TransaccionForm()
 
-    context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request), "mensaje":mensaje}
+    context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request)}
     return render(request, 'contabilidad/transaccion/crear_egreso.html', context)
 
 @login_required
@@ -127,8 +123,9 @@ def crear_ingreso(request, cuenta_id):
             cuenta.saldo += transaccion.cantidad
             cuenta.save()
             messages.success(request, 'Ingreso registrado', extra_tags='success')
-            return redirect('panel:inicio')
+            return redirect(request.session['vistaRedireccion'])
     else:
+        request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
         form = TransaccionForm()
 
     context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request)}
@@ -142,7 +139,6 @@ def vista_transaccion(request, transaccion_id):
 
 @login_required
 def transferir(request, cuenta_id):
-    mensaje = None
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
     cuentas_destino = Cuenta.objects.filter(user = request.user.id).exclude(id= cuenta.id)
 
@@ -181,11 +177,13 @@ def transferir(request, cuenta_id):
 
             cuenta_destino.saldo += ingreso.cantidad
             cuenta_destino.save()
-            return redirect('panel:inicio')
+            return redirect(request.session['vistaRedireccion'])
         else:
-            mensaje = "El valor de la transferencia no puede superar el valor maximo."
+            messages.error(request, "El valor de la transferencia no puede superar el valor maximo.", extra_tags='error')
+    else:
+        request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
 
-    context = {"cuenta":cuenta, "cuentas_destino":cuentas_destino,  "mensaje":mensaje}
+    context = {"cuenta":cuenta, "cuentas_destino":cuentas_destino}
     return render(request, 'contabilidad/transaccion/transferir.html', context)
 
 @login_required
