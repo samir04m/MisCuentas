@@ -55,8 +55,8 @@ class Transaccion(models.Model):
                     ('egreso', 'Egreso')]
     tipo = models.CharField('Tipo de transaccion', max_length=30, choices=TIPO_CHOICES)
     saldo_anterior = models.IntegerField('Saldo anterior')
-    cantidad = models.IntegerField('Cantidad')
-    info = models.TextField('Informacion', max_length=300)
+    cantidad = models.IntegerField('Valor')
+    info = models.TextField('Descripción', max_length=300)
     fecha = models.DateTimeField('Fecha')
     estado = models.IntegerField('Estado', default=1) # 0 programada, 1 realizada
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)

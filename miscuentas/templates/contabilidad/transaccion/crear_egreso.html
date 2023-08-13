@@ -12,22 +12,17 @@
                         Egreso en {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-warning p-10" role="alert">
-                            La cantidad no debe superar los ${{cuenta.saldo|puntomil}}
+                        <div class="alert alert-info p-10" role="alert">
+                            Saldo en cuenta: ${{cuenta.saldo|puntomil}}
                         </div>
-                        {% if mensaje %}
-                            <div class="alert alert-danger p-10" role="alert">
-                                <b>Mensaje:</b> {{mensaje}}
-                            </div>
-                        {% endif %}
                         <form method="post">
                             {% csrf_token %}
                             {{form.as_p}}
                             {% if tags %}
                                 <div class="mb-3">
-                                    <label for="tag">Seleccione una etiqueta</label>
+                                    <label for="tag">Etiqueta:</label>
                                     <select name="tag" class="form-control selectConBuscador" id="tag">
-                                        <option value="" selected disabled>Seleccionar</option>
+                                        <option value="" selected disabled></option>
                                         {% for t in tags %}
                                             <option value="{{t.id}}">{{t.nombre}}</option>
                                         {% endfor %}
@@ -44,9 +39,9 @@
                                 <input type="text" class="form-control" name="newTag" id="newTag" placeholder="Nombre">
                             </div>
                             <div class="collapse pb-3" id="collapseSubTag">
-                                <label for="subtag">Agregar segunda etiqueta</label>
+                                <label for="subtag">Segunda etiqueta</label>
                                 <select name="subtag" class="form-control" id="subtag">
-                                    <option value="" selected disabled>Seleccionar</option>
+                                    <option value="" selected disabled></option>
                                     {% for t in request.user.subtag_set.all %}
                                         <option value="{{t.id}}">{{t.nombre}}</option>
                                     {% endfor %}

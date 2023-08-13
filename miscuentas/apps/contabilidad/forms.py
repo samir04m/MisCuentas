@@ -66,7 +66,7 @@ class TransaccionForm(forms.ModelForm):
             'cantidad': forms.NumberInput(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Valor o cantidad',
+                    'placeholder':'Valor',
                     'id': 'cantidad',
                     'type': 'text',
                     'autocomplete': 'off'
@@ -75,7 +75,7 @@ class TransaccionForm(forms.ModelForm):
             'info': forms.Textarea(
                 attrs = {
                     'class':'form-control',
-                    'placeholder':'Detalles o información',
+                    'placeholder':'Descripción',
                     'id': 'info',
                     'rows': 2
                 }

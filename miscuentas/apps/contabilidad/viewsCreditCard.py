@@ -76,18 +76,18 @@ def pagar_tarjeta(request, tarjeta_id):
 def crear_compra(request, creditCard_id):
     creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
     if request.method == 'POST':
-        valor = validarMiles(int(request.POST.get('valor').replace('.','')))
+        valor = getCantidadFromPost(request)
         cuotas = int(request.POST.get('cuotas'))
         info = request.POST.get('info')
         fecha = getDate(request.POST.get('datetime'))
-        etiquetaId = request.POST.get('tag')
-        if request.POST.get('newTag'):
-            nuevaEtiqueta = getEtiqueta(request.POST.get('newTag'), request.user)
-            etiquetaId = nuevaEtiqueta.id
-        
+        etiqueta = getEtiquetaFromPost(request)
+        if request.POST.get('subtag'):
+            subtag = SubTag.objects.get(id=int(request.POST.get('subtag')))
+        else:
+            subtag = None
         try:
             with transaction.atomic():
-                compra = crearCompraCredito(creditCard, etiquetaId, valor, cuotas, info, fecha)
+                compra = crearCompraCredito(creditCard, valor, cuotas, info, etiqueta, subtag, fecha)
             messages.success(request, 'Compra registrada', extra_tags='success')
         except Exception as ex:
             print("----- Exception -----", ex)

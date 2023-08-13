@@ -48,10 +48,10 @@ def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=No
     prestamo.save()
     return prestamo
 
-def crearCompraCredito(creditCard:CreditCard, etiquetaId:int, valor:int, cuotas:int, info, fecha=None):
+def crearCompraCredito(creditCard:CreditCard, valor:int, cuotas:int, info, etiqueta:Etiqueta, subtag:SubTag, fecha=None):
     compra = CompraCredito(
         creditCard = creditCard,
-        etiqueta = getEtiquetaById(etiquetaId),
+        etiqueta = etiqueta,
         valor = valor,
         cuotas = cuotas,
         info = info,
@@ -61,10 +61,10 @@ def crearCompraCredito(creditCard:CreditCard, etiquetaId:int, valor:int, cuotas:
     compra.save()
     creditCard.cupoDisponible = creditCard.cupoDisponible - valor
     creditCard.save()
-    crearTransaccionesProgramadas(compra)
+    crearTransaccionesProgramadas(compra, subtag)
     return compra
 
-def crearTransaccionesProgramadas(compraCredito:CompraCredito):
+def crearTransaccionesProgramadas(compraCredito:CompraCredito, subtag:SubTag):
     for i in range(compraCredito.cuotas):
         nCuota = i+1
         transaccion = Transaccion(
@@ -75,6 +75,7 @@ def crearTransaccionesProgramadas(compraCredito:CompraCredito):
             fecha=getFechaPagoCuota(compraCredito, nCuota),
             estado=0,
             etiqueta=compraCredito.etiqueta,
+            subtag=subtag,
             user=compraCredito.creditCard.user
         )
         transaccion.save()
@@ -101,7 +102,7 @@ def getFechaPagoCuota(compra:CompraCredito, cuota):
         sumarMes = sumarMes + 1
     return datetime(fechaCompra.year, fechaCompra.month+sumarMes, compra.creditCard.diaPago, fechaCompra.hour, fechaCompra.minute, fechaCompra.second)
 
-def getEtiqueta(nombre, user):
+def getEtiqueta(nombre, user) -> Etiqueta:
     if nombre:
         etiqueta = Etiqueta.objects.filter(nombre=nombre, user=user).first()
         if not etiqueta:
@@ -110,7 +111,7 @@ def getEtiqueta(nombre, user):
         return etiqueta
     return None
 
-def getEtiquetaById(id):
+def getEtiquetaById(id) -> Etiqueta:
     if id:
         return Etiqueta.objects.get(id=id)
     return None
@@ -209,7 +210,7 @@ def getCuentaFromPost(request) -> int:
     else:
         return Cuenta.objects.get(id=int(request.POST.get('cuenta')))
 
-def getEtiquetaFromPost(request) -> int:
+def getEtiquetaFromPost(request) -> Etiqueta:
     if request.POST.get('tag'):
         return getEtiquetaById(int(request.POST.get('tag')))
     elif request.POST.get('newTag'):
@@ -219,6 +220,11 @@ def getEtiquetaFromPost(request) -> int:
 
 def getCantidadFromPost(request) -> int:
     return validarMiles(int(request.POST.get('cantidad').replace('.','')))
+
+def agregarSubTagFromPost(request, transaccion:Transaccion):
+    if request.POST.get('subtag'):
+        transaccion.subtag = SubTag.objects.get(id=int(request.POST.get('subtag')))
+        transaccion.save()
 
 def validarFecha(fecha):
     if fecha:

@@ -60,29 +60,22 @@ def crear_egreso(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
-        request.POST._mutable = True
         form = TransaccionForm(request.POST)
-        form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
-
         if form.is_valid():
-            cantidad = validarMiles(request.POST.get('cantidad'))
-            if cantidad <= cuenta.saldo:
-                if request.POST.get('newTag'):
-                    tag = getEtiqueta(request.POST.get('newTag'), request.user)
-                elif request.POST.get('tag'):
-                    tag = Etiqueta.objects.get(id=int(request.POST.get('tag')))
-                else:
-                    tag = None
-                
+            cantidad = getCantidadFromPost(request)
+            if cantidad <= cuenta.saldo:              
                 info = request.POST.get('info')
                 fecha = getDate(request.POST.get('datetime'))
-                transaccion = crearTransaccion('egreso', cuenta, cantidad, info, tag, 1, request.user, fecha)
-                if request.POST.get('subtag'):
-                    transaccion.subtag = SubTag.objects.get(id=int(request.POST.get('subtag')))
-                    transaccion.save()
-
-                messages.success(request, 'Egreso registrado', extra_tags='success')
-                return redirect(request.session['vistaRedireccion'])
+                tag = getEtiquetaFromPost(request)
+                try:
+                    with transaction.atomic():
+                        transaccion = crearTransaccion('egreso', cuenta, cantidad, info, tag, 1, request.user, fecha)
+                        agregarSubTagFromPost(request, transaccion)
+                    messages.success(request, 'Egreso registrado', extra_tags='success')
+                except Exception as ex:
+                    print("----- Exception -----", ex)
+                    messages.error(request, 'Ocurrio un error', extra_tags='error')
+                return redirect(request.session['vistaRedireccion'])               
             else:
                 form = TransaccionForm(request.POST)
                 messages.error(request, 'El valor del egreso no puede superar el saldo de la cuenta.', extra_tags='error')
@@ -236,8 +229,6 @@ def rollbackTransaction(request, transaccion):
 @login_required
 def crear_transaccion_programada(request):
     if request.method == 'POST':
-        print("cuenta", getCuentaFromPost(request))
-        print("etiqueta", getEtiquetaFromPost(request))
         try:
             with transaction.atomic():
                 transaccion = Transaccion(
