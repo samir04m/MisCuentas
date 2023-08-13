@@ -31,6 +31,11 @@ class Etiqueta(models.Model):
     def __str__(self):
         return self.nombre
 
+class SubTag(models.Model):
+    nombre = models.CharField(max_length=50)
+    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.nombre
 
 class Persona(models.Model):
     nombre = models.CharField('Nombre de la Persona', max_length=90)
@@ -56,6 +61,7 @@ class Transaccion(models.Model):
     estado = models.IntegerField('Estado', default=1) # 0 programada, 1 realizada
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
+    subtag = models.ForeignKey(SubTag, null=True, blank=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:

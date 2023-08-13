@@ -57,15 +57,21 @@
                                 <tr>
                                     <th>Etiqueta</th>
                                     <td>
-                                            {% if transaccion.etiqueta %}
-                                                <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
-                                                    {{transaccion.etiqueta.nombre}}
-                                                </a>
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </td>
+                                        {% if transaccion.etiqueta %}
+                                            <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
+                                                {{transaccion.etiqueta.nombre}}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if transaccion.subtag %}
+                                    <tr>
+                                        <th>Sub etiqueta</th>
+                                        <td>{{transaccion.subtag.nombre}}</td>
                                     </tr>
+                                {% endif %}
                                 <tr>
                                     <th>Información:</th>
                                     <td>{{transaccion.info|linebreaks}}</td>

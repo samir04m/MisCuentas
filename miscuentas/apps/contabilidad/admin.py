@@ -22,9 +22,18 @@ class EtiquetaResource(resources.ModelResource):
         model = Etiqueta
 
 class EtiquetaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    search_fields = ['id','nombre','user__username']
-    list_display = ('id','nombre', 'tipo', 'user',)
+    search_fields = ['nombre','user__username']
+    list_display = ('nombre', 'tipo', 'user',)
     resource_class = EtiquetaResource
+
+class SubTagResource(resources.ModelResource):
+    class Meta:
+        model = SubTag
+
+class SubTagAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    search_fields = ['nombre','user__username']
+    list_display = ('nombre','user',)
+    resource_class = SubTagResource
 
 class PersonaResource(resources.ModelResource):
     class Meta:
@@ -91,6 +100,7 @@ class TransaccionPagoCreditoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 admin.site.register(Cuenta, CuentaAdmin)
 admin.site.register(Etiqueta, EtiquetaAdmin)
+admin.site.register(SubTag, SubTagAdmin)
 admin.site.register(Persona, PersonaAdmin)
 admin.site.register(Transaccion, TransaccionAdmin)
 admin.site.register(Prestamo, PrestamoAdmin)
