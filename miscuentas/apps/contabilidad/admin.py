@@ -32,7 +32,7 @@ class PersonaResource(resources.ModelResource):
 
 class PersonaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','nombre','user__username']
-    list_display = ('id','nombre', 'user',)
+    list_display = ('id','nombre', 'visible', 'user',)
     resource_class = PersonaResource
 
 class TransaccionResource(resources.ModelResource):
@@ -68,7 +68,7 @@ class CreditCardResource(resources.ModelResource):
 
 class CreditCardAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['nombre']
-    list_display = ('id','nombre','cupo')
+    list_display = ('id','nombre','cupo','visible','user')
     resource_class = CreditCardResource
 
 class CompraCreditoResource(resources.ModelResource):

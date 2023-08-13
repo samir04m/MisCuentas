@@ -21,7 +21,6 @@
                                         <th>Nombre</th>
                                         <th>Prestamos</th>
                                         <th></th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -30,10 +29,16 @@
                                             <td><a href="{% url 'panel:vista_persona' p.id %}">{{p.nombre}}</a></td>
                                             <td>{{p.prestamo_set.count}}</td>
                                             <td>
+                                                <a href="{% url 'panel:ocultar_persona' p.id %}" class="btn btn-sm btn-outline-secondary">
+                                                    {% if p.visible %}
+                                                        <i class="far fa-eye"></i>
+                                                    {% else %}
+                                                        <i class="far fa-eye-slash"></i>
+                                                    {% endif %}
+                                                </a>
                                                 <a href="{% url 'panel:editar_persona' p.id %}" class="btn btn-sm btn-outline-success">
-                                                <i class="far fa-edit"></i></a>
-                                            </td>
-                                            <td>
+                                                    <i class="far fa-edit"></i>
+                                                </a>
                                                 {% if p.prestamo_set.count == 0 %}
                                                     <a href="{% url 'panel:eliminar_persona' p.id %}" class="btn btn-sm btn-outline-danger">
                                                         <i class="far fa-trash-alt"></i>

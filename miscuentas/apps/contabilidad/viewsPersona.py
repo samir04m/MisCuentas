@@ -65,3 +65,10 @@ class EliminarPersona(DeleteView):
     model = Persona
     template_name = 'contabilidad/persona/persona_confirm_delete.html'
     success_url = reverse_lazy('panel:listar_personas')
+
+@login_required
+def ocultar_persona(request, persona_id):
+    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
+    persona.visible = not persona.visible
+    persona.save()
+    return redirect(request.META.get('HTTP_REFERER')) # redirect url anterior vista anterior

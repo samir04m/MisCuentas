@@ -15,6 +15,7 @@ urlpatterns = [
     path('administar-personas', listar_personas, name='listar_personas'),
     path('editar-persona/<int:pk>/', login_required(EditarPersona.as_view()), name = 'editar_persona'),
     path('eliminar-persona/<int:pk>/', login_required(EliminarPersona.as_view()), name = 'eliminar_persona'),
+    path('ocultar-persona/<int:persona_id>/', ocultar_persona, name = 'ocultar_persona'),
 
     path('prestamos/', listar_prestamos, name='listar_prestamos'),
     path('prestamo/<int:prestamo_id>/', vista_prestamo, name='vista_prestamo'),
