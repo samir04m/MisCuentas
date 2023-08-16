@@ -66,12 +66,38 @@
                                         {% endif %}
                                     </td>
                                 </tr>
-                                {% if transaccion.subtag %}
-                                    <tr>
-                                        <th>Sub etiqueta</th>
-                                        <td>{{transaccion.subtag.nombre}}</td>
-                                    </tr>
-                                {% endif %}
+                                <tr>
+                                    <th>Sub etiqueta</th>
+                                    <td>
+                                        {% if transaccion.subtag %}
+                                            {{transaccion.subtag.nombre}}
+                                        {% else %}
+                                            <a class="btn btn-outline-secondary btn-sm rounded-circle" data-toggle="collapse" href="#collapseAddSubTag" role="button" aria-expanded="false" aria-controls="collapseAddSubTag">
+                                                <i class="fal fa-plus"></i>
+                                            </a>
+                                            <div class="collapse pt-2" id="collapseAddSubTag" >
+                                                <form action="{% url 'panel:agregar_subtag'  transaccion.id %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <div class="form-row">
+                                                        <div class="col-8 my-1">
+                                                            <select class="custom-select mr-sm-2" id="subtag" name="subtag" required>
+                                                                <option value="" selected disabled></option>
+                                                                {% for subtag in request.user.subtag_set.all %}
+                                                                    <option value="{{subtag.id}}">{{subtag.nombre}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4 my-1">
+                                                            <button type="submit" class="btn btn-outline-primary">
+                                                                <i class="fal fa-plus"></i> <i class="fal fa-tags"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
                                 <tr>
                                     <th>Información:</th>
                                     <td>{{transaccion.info|linebreaks}}</td>

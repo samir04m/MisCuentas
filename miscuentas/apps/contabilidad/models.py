@@ -34,6 +34,8 @@ class Etiqueta(models.Model):
 class SubTag(models.Model):
     nombre = models.CharField(max_length=50)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
+    class Meta:
+        ordering = ['nombre']
     def __str__(self):
         return self.nombre
 

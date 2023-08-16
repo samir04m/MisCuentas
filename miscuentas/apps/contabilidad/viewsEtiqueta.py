@@ -38,3 +38,13 @@ class EliminarEtiqueta(DeleteView):
     model = Etiqueta
     template_name = 'contabilidad/etiqueta/etiqueta_confirm_delete.html'
     success_url = reverse_lazy('panel:listar_etiquetas')
+
+@login_required
+def agregar_subtag(request, transaccion_id):
+    if request.method == 'POST':
+        transaccion = Transaccion.objects.get(id=transaccion_id)
+        subtag = SubTag.objects.get(id=int(request.POST.get('subtag')))
+        if transaccion and subtag:
+            transaccion.subtag = subtag
+            transaccion.save()
+    return redirect(request.META.get('HTTP_REFERER'))

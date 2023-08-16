@@ -51,4 +51,6 @@ urlpatterns = [
     path('compra-detalles/<int:compra_id>/', vista_compra, name='vista_compra'),
     path('pagar-tarjeta/<int:tarjeta_id>/', pagar_tarjeta, name='pagar_tarjeta'),
     path('eliminar-compra/<int:compra_id>/', eliminar_compra, name='eliminar_compra'),
+    
+    path('agregar-subtag/<int:transaccion_id>/', agregar_subtag, name='agregar_subtag'),
 ]
