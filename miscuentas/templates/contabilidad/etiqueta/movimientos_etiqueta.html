@@ -15,7 +15,8 @@
                     <div class="card-body">
                         {% if transacciones %}
                             <p>
-                                <b>Total egresos:</b> ${{totalEgresos|puntomil}} <br>
+                                <b>Total ingresos:</b> ${{totalIngresos|puntomil}} <br>
+                                <b>Total egresos:</b> ${{totalEgresos|puntomil}}
                             </p>
                             <table class="table table-responsive-sm" id="datatable">
                                 <thead>
@@ -23,6 +24,7 @@
                                         <th>Fecha</th>
                                         <th>Cuenta</th>
                                         <th>Valor</th>
+                                        <th>Subtag</th>
                                         <th>Info</th>
                                         <th>Ver</th>
                                     </tr>
@@ -40,7 +42,8 @@
                                             </td>
                                             <td>{{t.cuenta.nombre}}</td>
                                             <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
-                                            <td>{{t.info|truncatechars:'40'}}</td>
+                                            <td>{{t.subtag.nombre}}</td>
+                                            <td>{{t.info|truncatechars:'30'}}</td>
                                             <td>
                                                 <a href="{% url 'panel:vista_transaccion' t.id %}"
                                                     class="btn btn-sm btn-outline-primary">

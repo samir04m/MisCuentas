@@ -56,14 +56,18 @@ def movimientos_etiqueta(request, etiqueta_id):
     etiqueta = get_object_or_404(Etiqueta, id=etiqueta_id, user=request.user.id)
     transacciones = Transaccion.objects.filter(etiqueta=etiqueta.id, estado__in=getEstadoTransaccion(request.user)).order_by('-fecha')
     totalEgresos = 0
+    totalIngresos= 0
     for transaccion in transacciones:
         if transaccion.tipo == 'egreso':
             totalEgresos += transaccion.cantidad
+        else:
+            totalIngresos += transaccion.cantidad
 
     context =  {
         "transacciones": transacciones, 
         "etiqueta":etiqueta, 
         "totalEgresos":totalEgresos,
+        "totalIngresos":totalIngresos,
         "alertData":getAlertIncluirTransaccionesProgramadas(request.user)
     }
     return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)
