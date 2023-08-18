@@ -8,6 +8,8 @@ urlpatterns = [
     path('ingresos-diarios/', ingresos_diarios, name='ingresos_diarios'),
     path('egresos-mensuales/', egresos_mensuales, name='egresos_mensuales'),
     path('ingresos-mensuales/', ingresos_mensuales, name='ingresos_mensuales'),
-    path('egresos-etiqueta/<int:month>/<int:year>', egresos_etiqueta, name='egresos_etiqueta'),
-    path('consultar-periodo-etiquetas/', consultar_periodo_etiquetas, name='consultar_periodo_etiquetas'),
+    path('etiqueta/<int:month>/<int:year>', reporte_etiqueta_mensual, name='reporte_etiqueta_mensual'),
+    path('cambiar_periodo_reporte_etiqueta_mensual/', cambiar_periodo_reporte_etiqueta_mensual, name='cambiar_periodo_reporte_etiqueta_mensual'),
+    path('subtag/<int:etiquetaId>/<str:periodo>', reporte_subtag_mensual, name='reporte_subtag_mensual'),
+    path('cambiar_periodo_reporte_subtag_mensual/', cambiar_periodo_reporte_subtag_mensual, name='cambiar_periodo_reporte_subtag_mensual'),
 ]

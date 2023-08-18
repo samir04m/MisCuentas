@@ -68,6 +68,7 @@ def movimientos_etiqueta(request, etiqueta_id):
         "etiqueta":etiqueta, 
         "totalEgresos":totalEgresos,
         "totalIngresos":totalIngresos,
+        'periodoActual':datetime.now().strftime("%Y-%m"),
         "alertData":getAlertIncluirTransaccionesProgramadas(request.user)
     }
     return render(request, 'contabilidad/etiqueta/movimientos_etiqueta.html', context)

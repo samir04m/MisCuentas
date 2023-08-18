@@ -8,6 +8,7 @@ from apps.usuario.userSettingFuncs import *
 from apps.contabilidad.models import *
 from apps.contabilidad.myFuncs import getSaldoTotalCuentas, getDeudaTarjetasCredito, getDeudaPrestamos
 from .myFuncs import *
+from apps.contabilidad.myFuncs import getEtiquetaById
 
 @login_required
 def general(request):
@@ -132,20 +133,31 @@ def ingresos_mensuales(request):
     return render(request, 'reporte/mensual_ingreso.html', context)
 
 @login_required
-def consultar_periodo_etiquetas(request):
+def cambiar_periodo_reporte_etiqueta_mensual(request):
     month = 0
     year = 0
     if request.method == 'POST':
         month = request.POST.get('month')
         year = request.POST.get('year')
-    return redirect('reporte:egresos_etiqueta', month, year)
+    return redirect('reporte:reporte_etiqueta_mensual', month, year)
 
 @login_required
-def egresos_etiqueta(request, month, year):
+def cambiar_periodo_reporte_subtag_mensual(request):
+    month = datetime.now().strftime("%m")
+    year = datetime.now().strftime("%Y")
+    etiquetaId = 0
+    if request.method == 'POST':
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        etiquetaId = int(request.POST.get('etiqueta'))
+    return redirect('reporte:reporte_subtag_mensual', etiquetaId, year+'-'+month)
+
+@login_required
+def reporte_etiqueta_mensual(request, month, year):
     mes = datetime.today().month if month < 1 or month > 12 else month
     anio = datetime.today().year if year < 1998 or year > 2098 else year
-    mensajeIncluirTP = getMensajeIncluirTransaccionesProgramadas(request.user)
-    incluirTP = getUserSetting('IncluirTransaccionesProgramadas', request.user)
+    # mensajeIncluirTP = getMensajeIncluirTransaccionesProgramadas(request.user)
+    # incluirTP = getUserSetting('IncluirTransaccionesProgramadas', request.user)
 
     egresosPorEtiqueta = createListTagData(
         Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
@@ -173,3 +185,30 @@ def egresos_etiqueta(request, month, year):
         'alertData':getAlertIncluirTransaccionesProgramadas(request.user)
     }
     return render(request, 'reporte/mensual_etiqueta.html', context)
+
+@login_required
+def reporte_subtag_mensual(request, etiquetaId, periodo):
+    periodoSplited = periodo.split("-")
+    year = int(periodoSplited[0])
+    month = int(periodoSplited[1])
+    mes = datetime.today().month if month < 1 or month > 12 else month
+    anio = datetime.today().year if year < 1998 or year > 2098 else year
+    
+    egresosPorEtiqueta = createListSubTagData(
+        Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio, etiqueta__id=etiquetaId, subtag__isnull=False).exclude(etiqueta__tipo=2)
+    )
+
+    context = {
+        'egresosPorEtiqueta' : egresosPorEtiqueta,
+        # 'ingresosPorEtiqueta' : ingresosPorEtiqueta,
+        'nombreMes' : nombreMeses[mes-1],
+        'month' : convertMonthToString(mes),
+        'year' : anio,
+        'periodo' : convertMonthToString(mes)+'-'+str(anio),
+        'selectMonth' : createSelectOption('month', mes),
+        'selectYear' : createSelectOption('year', anio),
+        'etiqueta': getEtiquetaById(etiquetaId),
+        # 'resumen': resumen,
+        # 'alertData':getAlertIncluirTransaccionesProgramadas(request.user)
+    }
+    return render(request, 'reporte/mensual_subtag.html', context)

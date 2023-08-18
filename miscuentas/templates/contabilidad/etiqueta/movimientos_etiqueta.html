@@ -15,6 +15,7 @@
                     <div class="card-body">
                         {% if transacciones %}
                             <p>
+                                <a href="{% url 'reporte:reporte_subtag_mensual' etiqueta.id periodoActual %}" class="btn btn-outline-primary float-right">Reporte sub tags</a>
                                 <b>Total ingresos:</b> ${{totalIngresos|puntomil}} <br>
                                 <b>Total egresos:</b> ${{totalEgresos|puntomil}}
                             </p>
@@ -24,7 +25,7 @@
                                         <th>Fecha</th>
                                         <th>Cuenta</th>
                                         <th>Valor</th>
-                                        <th>Subtag</th>
+                                        <th>Sub tag</th>
                                         <th>Info</th>
                                         <th>Ver</th>
                                     </tr>

@@ -68,6 +68,23 @@ def createListTagData(transacciones):
         listTagData.append(total)
     return listTagData
 
+def createListSubTagData(transacciones):
+    listTagData = []
+    total = TagData('Total periodo', -1)
+    for transaccion in transacciones:
+        total.sumar(transaccion.cantidad)
+        td = getTagData(listTagData, transaccion.subtag.nombre)
+        if td:
+            td.sumar(transaccion.cantidad)
+        else:
+            newTd = TagData(transaccion.subtag.nombre, transaccion.subtag.id)
+            newTd.sumar(transaccion.cantidad)
+            listTagData.append(newTd)
+    if listTagData:
+        listTagData = sorted(listTagData, key=lambda x: x.tagName)
+        listTagData.append(total)
+    return listTagData
+
 def createSelectOption(selectName, selectedOption):
     selectOptions = []
     if selectName == 'month':
