@@ -11,7 +11,7 @@
                 <h4 class="text-center text-light mb-3">Reporte por etiquetas - {{nombreMes}} del {{year}}</h4>
                 <div class="card mb-3">
                     <div class="card-body py-2">
-                        <form action="{% url 'reporte:consultar_periodo_etiquetas' %}" method="POST">
+                        <form action="{% url 'reporte:cambiar_periodo_reporte_etiqueta_mensual' %}" method="POST">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-sm-12 col-lg-5 fz-16 pt-2  my-1">Seleccione el periodo a consultar</div>
