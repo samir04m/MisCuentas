@@ -57,7 +57,7 @@ def egresos_diarios(request):
 @login_required
 def ingresos_diarios(request):
     ingresos = (
-        Transaccion.objects.filter(user=request.user, tipo='ingreso').exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
+        Transaccion.objects.filter(user=request.user, tipo='ingreso').exclude(etiqueta__tipo=2)
         .annotate(day=TruncDay('fecha'))
         .values('day')
         .annotate(numero=Count('id'), total=Sum('cantidad'))

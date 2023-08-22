@@ -30,7 +30,7 @@ def movimientos_dia(request, tipo, fecha):
     year = date[2]
     fecha2 = datetime(int(year), int(month), int(day))
     tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
-    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__nombre='Transferencia').exclude(etiqueta__nombre='Prestamo')
+    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
 
     context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2}
     return render(request, 'contabilidad/transaccion/movimientos_dia.html', context)

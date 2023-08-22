@@ -60,9 +60,11 @@ def crear_egreso(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
 
     if request.method == 'POST':
+        request.POST._mutable = True
         form = TransaccionForm(request.POST)
+        cantidad = getCantidadFromPost(request)
+        form.data['cantidad'] = cantidad    # se hace para que pueda pasar la validacion form.is_valid
         if form.is_valid():
-            cantidad = getCantidadFromPost(request)
             if cantidad <= cuenta.saldo:              
                 info = request.POST.get('info')
                 fecha = getDate(request.POST.get('datetime'))
