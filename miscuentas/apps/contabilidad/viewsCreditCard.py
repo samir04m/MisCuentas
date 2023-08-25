@@ -130,14 +130,14 @@ def pagarDeuda(creditCard:CreditCard, cuenta:Cuenta, tipoPago:int):
             transaccion = transaccionCompra.transaccion
             if transaccion.estado == 0:
                 if tipoPago == 1: # Totalidad deuda
-                    realizarPagoTransaccion(transaccion, cuenta)
+                    realizarPagoTransaccion(transaccion, cuenta, compra)
                     compra.deuda -= transaccion.cantidad
                     creditCard.cupoDisponible += transaccion.cantidad
                     cuotasCanceladas += 1
                 elif tipoPago == 2: # Solo pagar correspondientes al mes actual
                     fecha = datetime.now()
                     if transaccion.fecha.year == fecha.year and transaccion.fecha.month == fecha.month:
-                        realizarPagoTransaccion(transaccion, cuenta)
+                        realizarPagoTransaccion(transaccion, cuenta, compra)
                         compra.deuda -= transaccion.cantidad
                         creditCard.cupoDisponible += transaccion.cantidad
                         cuotasCanceladas += 1
@@ -149,11 +149,12 @@ def pagarDeuda(creditCard:CreditCard, cuenta:Cuenta, tipoPago:int):
             compra.save()
             creditCard.save()
 
-def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta):
+def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta, compra:CompraCredito):
     transaccion.saldo_anterior = cuenta.saldo
     cuenta.saldo = cuenta.saldo - transaccion.cantidad
     transaccion.cuenta = cuenta
-    transaccion.fecha = datetime.now()
+    # transaccion.fecha = datetime.now()
+    transaccion.fecha = compra.fecha
     transaccion.estado = 1
     cuenta.save()
     transaccion.save()
