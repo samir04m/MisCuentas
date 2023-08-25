@@ -241,7 +241,10 @@ class InfoDeudaTarjetasCredito:
 def getDeudaTarjetasCredito(request) -> InfoDeudaTarjetasCredito:
     comprasCreditoPropias = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__tipo=1, cancelada=False).aggregate(Sum('deuda'))
     comprasCreditoPrestamo = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__nombre='Prestamo', cancelada=False).aggregate(Sum('deuda'))
-    return InfoDeudaTarjetasCredito(comprasCreditoPropias['deuda__sum'], comprasCreditoPrestamo['deuda__sum'])
+    if comprasCreditoPropias['deuda__sum'] and comprasCreditoPrestamo['deuda__sum']:
+        return InfoDeudaTarjetasCredito(comprasCreditoPropias['deuda__sum'], comprasCreditoPrestamo['deuda__sum'])
+    else:
+        return InfoDeudaTarjetasCredito(0, 0)
 
 def getFormatoDinero(cantidad) -> str:
     if cantidad < 0:
