@@ -18,7 +18,7 @@ def todos_movimientos(request):
 @login_required
 def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
-    transacciones = Transaccion.objects.filter(cuenta=cuenta.id, estado=1).order_by('-fecha')
+    transacciones = Transaccion.objects.filter(cuenta=cuenta.id, estado__in=[1,3]).order_by('-fecha')
     context =  {"transacciones": transacciones, "cuenta":cuenta}
     return render(request, 'contabilidad/transaccion/movimientos_cuenta.html', context)
 

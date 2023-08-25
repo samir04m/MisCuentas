@@ -57,7 +57,7 @@ class Transaccion(models.Model):
                     ('egreso', 'Egreso')]
     tipo = models.CharField('Tipo de transaccion', max_length=30, choices=TIPO_CHOICES)
     saldo_anterior = models.IntegerField('Saldo anterior')
-    cantidad = models.IntegerField('Valor')
+    cantidad = models.IntegerField('Cantidad')
     info = models.TextField('Descripción', max_length=300)
     fecha = models.DateTimeField('Fecha')
     estado = models.IntegerField('Estado', default=1) # 0 programada, 1 realizada
@@ -156,3 +156,12 @@ class TransaccionPagoCredito(models.Model):
 
     def __str__(self):
         return "{} - {} | ({})Transaccion".format(self.compraCredito.id, self.compraCredito.creditCard.nombre, self.transaccion.id)
+
+class GrupoTransaccion(models.Model):
+    transaccionPadre = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE, related_name='transacciones_padres')
+    transaccionHija = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE, related_name='transacciones_hijas')
+    class Meta:
+        verbose_name = 'Grupo transaccion'
+        verbose_name_plural = 'Grupo transacciones'
+    def __str__(self):
+        return "{} - {}".format(self.transaccionPadre, self.transaccionHija)

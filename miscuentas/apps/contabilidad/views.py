@@ -73,6 +73,7 @@ def crear_egreso(request, cuenta_id):
                     with transaction.atomic():
                         transaccion = crearTransaccion('egreso', cuenta, cantidad, info, tag, 1, request.user, fecha)
                         agregarSubTagFromPost(request, transaccion)
+                        agruparTransacciones(transaccion)
                     messages.success(request, 'Egreso registrado', extra_tags='success')
                 except Exception as ex:
                     print("----- Exception -----", ex)
@@ -129,8 +130,9 @@ def crear_ingreso(request, cuenta_id):
 @login_required
 def vista_transaccion(request, transaccion_id):
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
+    fileName =  'vista_transaccionGrupo.html' if transaccion.estado == 3 else 'vista_transaccion.html'
     request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
-    return render(request, 'contabilidad/transaccion/vista_transaccion.html', {"transaccion":transaccion})
+    return render(request, 'contabilidad/transaccion/'+fileName, {"transaccion":transaccion})
 
 @login_required
 def transferir(request, cuenta_id):

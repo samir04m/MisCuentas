@@ -1,6 +1,8 @@
 from django.db.models import Sum
-from datetime import datetime
-from datetime import timedelta
+from django.utils import timezone
+from django.db import transaction
+from datetime import datetime, timedelta
+import pytz
 from .models import *
 
 def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fecha=None):
@@ -259,3 +261,69 @@ def getFormatoDinero(cantidad) -> str:
         cont = cont + 1
     result.reverse()
     return "$" + "".join(result)
+
+def agruparTransacciones(transaccionNueva):
+    fechaNT = transaccionNueva.fecha.astimezone(pytz.timezone(timezone.get_default_timezone_name())) # convertir la fecha a la zona horaria en la que se guarda en DB
+
+    transaccionesExistentes = Transaccion.objects.filter(
+        tipo=transaccionNueva.tipo,
+        cuenta=transaccionNueva.cuenta,
+        user=transaccionNueva.user,
+        fecha__year=fechaNT.year, 
+        fecha__month=fechaNT.month, 
+        fecha__day=fechaNT.day, 
+        fecha__hour=fechaNT.hour,
+        fecha__minute=fechaNT.minute
+    ).exclude(id=transaccionNueva.id)
+    
+    print('transaccionesExistentes', transaccionesExistentes)
+    if len(transaccionesExistentes) == 1:
+        transaccionExistente = transaccionesExistentes.first()
+        print(transaccionExistente)
+        crearGrupoTransaccion(transaccionExistente, transaccionNueva)
+    elif len(transaccionesExistentes) > 1:
+        pass
+
+def crearGrupoTransaccion(transaccionExistente, transaccionNueva):
+    try:
+        with transaction.atomic():
+            if transaccionExistente.estado == 1:
+                # Si la transaccionExistente no esta asignada a un grupo, primero se crea el grupo y se asigna a ese grupo
+                transaccionPadre = Transaccion(
+                    tipo = transaccionExistente.tipo,
+                    saldo_anterior = 0,
+                    cantidad = transaccionExistente.cantidad,
+                    info = 'Grupo de transacciones',
+                    fecha = transaccionExistente.fecha,
+                    estado = 3,
+                    cuenta = transaccionExistente.cuenta,
+                    user = transaccionExistente.user
+                )
+                transaccionPadre.save()
+                grupo = GrupoTransaccion(
+                    transaccionPadre = transaccionPadre,
+                    transaccionHija = transaccionExistente
+                )
+                grupo.save()
+                transaccionExistente.estado = 2
+                transaccionExistente.save()
+                transaccionExistente = transaccionPadre # se sobreescribe para que entre en el siguente condicional
+
+            if transaccionExistente.estado == 3:
+                # este es el caso donde transaccionExistente es padre del grupo
+                grupo = GrupoTransaccion(
+                    transaccionPadre = transaccionExistente,
+                    transaccionHija = transaccionNueva
+                )
+                grupo.save()
+                transaccionExistente.cantidad += transaccionNueva.cantidad
+                transaccionNueva.estado = 2
+                transaccionExistente.save()
+                transaccionNueva.save()
+
+            # guardar mensaje adiciona el variables de sesion que indique que se agruparon transacciones y agregarlos al; swwetalert
+
+    except Exception as ex:
+        print("----- Exception -----", ex)
+        messages.error(request, 'Ocurrio un error al intentar agrupar las transacciones', extra_tags='error')
+
