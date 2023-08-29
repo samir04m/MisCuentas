@@ -12,7 +12,7 @@ from .myFuncs import *
 
 @login_required
 def todos_movimientos(request):
-    transacciones = Transaccion.objects.filter(user=request.user, estado=1)
+    transacciones = Transaccion.objects.filter(user=request.user, estado__in=[1,3])
     return render(request, 'contabilidad/transaccion/todos_movimientos.html', {"transacciones":transacciones})
 
 @login_required

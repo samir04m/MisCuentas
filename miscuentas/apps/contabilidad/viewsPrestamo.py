@@ -67,7 +67,7 @@ def crear_prestamo(request, persona_id):
                 cuenta = get_object_or_404(Cuenta, id=int(request.POST.get('cuenta')), user=request.user.id)
             
             try:
-                prestamoCreado = crearPrestamo(prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, getDate(request.POST.get('datetime')))
+                prestamoCreado = crearPrestamo(request, prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, getDate(request.POST.get('datetime')))
                 return redirect('panel:vista_prestamo', prestamoCreado.id)
             except Exception as e:
                 messages.success(request, e, extra_tags='error')
@@ -189,7 +189,7 @@ def pagarPrestamo(prestamo:Prestamo, monto, request):
     if cuenta:
         cuenta.save()
 
-    tag = getEtiqueta('Prestamo', request.user)
+    tag = getEtiquetaByName('Prestamo', request.user)
     infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
     transaccion = Transaccion(
         tipo = tipoTransaccion,

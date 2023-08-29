@@ -71,9 +71,8 @@ def crear_egreso(request, cuenta_id):
                 tag = getEtiquetaFromPost(request)
                 try:
                     with transaction.atomic():
-                        transaccion = crearTransaccion('egreso', cuenta, cantidad, info, tag, 1, request.user, fecha)
+                        transaccion = crearTransaccion(request, 'egreso', cuenta, cantidad, info, tag, 1, fecha)
                         agregarSubTagFromPost(request, transaccion)
-                        agruparTransacciones(transaccion)
                     messages.success(request, 'Egreso registrado', extra_tags='success')
                 except Exception as ex:
                     print("----- Exception -----", ex)
@@ -110,7 +109,7 @@ def crear_ingreso(request, cuenta_id):
             if request.POST.get('newTag'):
                 newTag = request.POST.get('newTag')
                 if newTag:
-                    tag = getEtiqueta(newTag, request.user)
+                    tag = getEtiquetaByName(newTag, request.user)
                     transaccion.etiqueta = tag
             elif request.POST.get('tag'):
                 tag = Etiqueta.objects.get(id=int(request.POST.get('tag')))
@@ -144,7 +143,7 @@ def transferir(request, cuenta_id):
         egreso.cantidad = validarMiles(egreso.cantidad)
         if egreso.cantidad <= cuenta.saldo:
             fecha = getDate(request.POST.get('datetime'))
-            etiqueta = getEtiqueta('Transferencia', request.user)
+            etiqueta = getEtiquetaByName('Transferencia', request.user)
             info = ".\n" + request.POST.get('info') if (request.POST.get('info')) else ""
 
             cuenta_destino = Cuenta.objects.get(id=int(request.POST.get('cuenta_destino')))
@@ -270,10 +269,37 @@ def pagar_transaccion_programada(request, transaccion_id):
     tp = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
     try:
         with transaction.atomic():
-            crearTransaccion(tp.tipo, tp.cuenta, tp.cantidad, tp.info, tp.etiqueta, 1, request.user)
+            crearTransaccion(request, tp.tipo, tp.cuenta, tp.cantidad, tp.info, tp.etiqueta, 1)
             tp.delete()
         messages.success(request, 'Se realizó la transacción', extra_tags='success')
     except Exception as ex:
         print("----- Exception -----", ex)
         messages.error(request, 'Ocurrio un error', extra_tags='error')
     return redirect('panel:transacciones_programadas')
+
+@login_required
+def agregar_transaccion_grupo(request, transaccionPadre_id):
+    transaccionPadre = get_object_or_404(Transaccion, id=transaccionPadre_id)
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                cantidad = getCantidadFromPost(request)
+                info = request.POST.get('info')
+                etiqueta = getEtiquetaFromPost(request)
+                transaccion = crearTransaccion(request, transaccionPadre.tipo, transaccionPadre.cuenta, cantidad, info, etiqueta, 1)
+                agregarSubTagFromPost(request, transaccion)
+                nuevaTransaccionPadreGrupo = crearGrupoTransaccion(request, transaccionPadre, transaccion)
+            messages.success(request, 'Se agregó la transacción al grupo', extra_tags='success')
+            if nuevaTransaccionPadreGrupo:
+                return redirect('panel:vista_transaccion', nuevaTransaccionPadreGrupo.id)
+        except Exception as ex:
+            printException(ex)
+            messages.error(request, 'Ocurrio un error', extra_tags='error')
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        context = {
+            "transaccionPadre":transaccionPadre, 
+            "cuenta":Cuenta.objects.get(id=transaccionPadre.cuenta.id),
+            "tags":getSelectEtiquetas(request)
+        }
+        return render(request, 'contabilidad/transaccion/crear_transaccionGrupo.html', context)

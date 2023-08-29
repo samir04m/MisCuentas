@@ -41,7 +41,7 @@ class AlertData:
 
 def getEstadoTransaccion(user:User):
     incluirTP = getUserSetting('IncluirTransaccionesProgramadas', user)
-    estados = [1]
+    estados = [1, 2]
     if incluirTP:
         estados.append(0)
     return estados

@@ -31,8 +31,8 @@ def pago_hbomax(request):
         if cuenta and persona and etiqueta:
             try:
                 with transaction.atomic():
-                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, request.user, getFechaPago(request))
-                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona, getFechaPago(request))
+                    transaccionEgreso = crearTransaccion(request, 'egreso', cuenta, cantidad, info, etiqueta.nombre, 1, getFechaPago(request))
+                    prestamo = crearPrestamo(request, 'yopresto', cantidad, info, cuenta, persona, getFechaPago(request))
             except Exception as ex:
                 print(ex)
                 error = 'No se pudo realizar el pago debido a un error'
@@ -65,7 +65,7 @@ def pago_spotify(request):
         if cuenta and etiqueta:
             try:
                 with transaction.atomic():
-                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidad, info, etiqueta.nombre, 1, request.user, getFechaPago(request))
+                    transaccionEgreso = crearTransaccion(request, 'egreso', cuenta, cantidad, info, etiqueta.nombre, 1, getFechaPago(request))
             except Exception as ex:
                 print(ex)
                 error = 'No se pudo realizar el pago debido a un error'
@@ -99,8 +99,8 @@ def pago_internet(request):
         if cuenta and persona and etiqueta:
             try:
                 with transaction.atomic():
-                    transaccionEgreso = crearTransaccion('egreso', cuenta, cantidadYo, info, etiqueta.nombre, 1, persona.user, getFechaPago(request))
-                    prestamo = crearPrestamo('yopresto', cantidadPersona, info, cuenta, persona, getFechaPago(request))
+                    transaccionEgreso = crearTransaccion(request, 'egreso', cuenta, cantidadYo, info, etiqueta.nombre, 1, getFechaPago(request))
+                    prestamo = crearPrestamo(request, 'yopresto', cantidadPersona, info, cuenta, persona, getFechaPago(request))
             except Exception as ex:
                 error = 'No se pudo realizar el pago debido a un error'
         else:
@@ -132,7 +132,7 @@ def pago_cuotamoto(request):
         if cuenta and persona:
             try:
                 with transaction.atomic():
-                    prestamo = crearPrestamo('yopresto', cantidad, info, cuenta, persona, getFechaPago(request))
+                    prestamo = crearPrestamo(request, 'yopresto', cantidad, info, cuenta, persona, getFechaPago(request))
             except Exception as ex:
                 error = 'No se pudo realizar el pago debido a un error'
         else:

@@ -1,11 +1,12 @@
 from django.db.models import Sum
+from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
 from datetime import datetime, timedelta
 import pytz
 from .models import *
 
-def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fecha=None):
+def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, tag, estado:int, fecha=None):
     saldo_anterior = 0
     if cuenta:
         saldo_anterior = cuenta.saldo
@@ -26,18 +27,18 @@ def crearTransaccion(tipo, cuenta:Cuenta, cantidad, info, tag, estado, user, fec
         fecha=validarFecha(fecha),
         estado=estado,
         cuenta=cuenta,
-        etiqueta=getEtiqueta(tag, user),
-        user=user
+        etiqueta=getEtiquetaByName(tag, request.user),
+        user=request.user
     )
     transaccion.save()
     return transaccion
 
-def crearPrestamo(tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=None):
+def crearPrestamo(request, tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=None):
     fecha = validarFecha(fecha)
     if tipo == 'yopresto':
-        crearTransaccion('egreso', cuenta, cantidad, info, 'Prestamo', 1, persona.user, fecha)
+        crearTransaccion(request, 'egreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
     if tipo == 'meprestan':
-        crearTransaccion('ingreso', cuenta, cantidad, info, 'Prestamo', 1, persona.user, fecha)
+        crearTransaccion(request, 'ingreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
     prestamo = Prestamo(
         tipo=tipo,
         cantidad=cantidad,
@@ -104,7 +105,7 @@ def getFechaPagoCuota(compra:CompraCredito, cuota):
         sumarMes = sumarMes + 1
     return datetime(fechaCompra.year, fechaCompra.month+sumarMes, compra.creditCard.diaPago, fechaCompra.hour, fechaCompra.minute, fechaCompra.second)
 
-def getEtiqueta(nombre, user) -> Etiqueta:
+def getEtiquetaByName(nombre:str, user) -> Etiqueta:
     if nombre:
         etiqueta = Etiqueta.objects.filter(nombre=nombre, user=user).first()
         if not etiqueta:
@@ -216,7 +217,7 @@ def getEtiquetaFromPost(request) -> Etiqueta:
     if request.POST.get('tag'):
         return getEtiquetaById(int(request.POST.get('tag')))
     elif request.POST.get('newTag'):
-        return getEtiqueta(request.POST.get('newTag'), request.user)
+        return getEtiquetaByName(request.POST.get('newTag'), request.user)
     else:
         return None
 
@@ -262,68 +263,74 @@ def getFormatoDinero(cantidad) -> str:
     result.reverse()
     return "$" + "".join(result)
 
-def agruparTransacciones(transaccionNueva):
-    fechaNT = transaccionNueva.fecha.astimezone(pytz.timezone(timezone.get_default_timezone_name())) # convertir la fecha a la zona horaria en la que se guarda en DB
+# def agruparTransacciones(request, transaccionNueva):
+#     fechaNT = transaccionNueva.fecha.astimezone(pytz.timezone(timezone.get_default_timezone_name())) # convertir la fecha a la zona horaria en la que se guarda en DB
 
-    transaccionesExistentes = Transaccion.objects.filter(
-        tipo=transaccionNueva.tipo,
-        cuenta=transaccionNueva.cuenta,
-        user=transaccionNueva.user,
-        fecha__year=fechaNT.year, 
-        fecha__month=fechaNT.month, 
-        fecha__day=fechaNT.day, 
-        fecha__hour=fechaNT.hour,
-        fecha__minute=fechaNT.minute
-    ).exclude(id=transaccionNueva.id)
+#     transaccionesExistentes = Transaccion.objects.filter(
+#         tipo=transaccionNueva.tipo,
+#         cuenta=transaccionNueva.cuenta,
+#         user=transaccionNueva.user,
+#         estado__in=[1,3],
+#         fecha__year=fechaNT.year, 
+#         fecha__month=fechaNT.month, 
+#         fecha__day=fechaNT.day, 
+#         fecha__hour=fechaNT.hour,
+#         fecha__minute=fechaNT.minute
+#     ).exclude(id=transaccionNueva.id)
     
-    print('transaccionesExistentes', transaccionesExistentes)
-    if len(transaccionesExistentes) == 1:
-        transaccionExistente = transaccionesExistentes.first()
-        print(transaccionExistente)
-        crearGrupoTransaccion(transaccionExistente, transaccionNueva)
-    elif len(transaccionesExistentes) > 1:
-        pass
+#     if transaccionesExistentes:
+#         if len(transaccionesExistentes) > 1:
+#             transaccionExistente = transaccionesExistentes.filter(estado=3)
+#             print('grupo', transaccionExistente)
+#         elif len(transaccionesExistentes) == 1:
+#             transaccionExistente = transaccionesExistentes.first()
+#         crearGrupoTransaccion(request, transaccionExistente, transaccionNueva)
 
-def crearGrupoTransaccion(transaccionExistente, transaccionNueva):
+def crearGrupoTransaccion(request, transaccionPadre, transaccionNueva) -> Transaccion:
     try:
         with transaction.atomic():
-            if transaccionExistente.estado == 1:
-                # Si la transaccionExistente no esta asignada a un grupo, primero se crea el grupo y se asigna a ese grupo
-                transaccionPadre = Transaccion(
-                    tipo = transaccionExistente.tipo,
+            if transaccionPadre.estado == 1:
+                # Si la transaccionPadre no esta asignada a un grupo, primero se crea el grupo y se asigna a ese grupo
+                nuevaTransaccionPadre = Transaccion(
+                    tipo = transaccionPadre.tipo,
                     saldo_anterior = 0,
-                    cantidad = transaccionExistente.cantidad,
-                    info = 'Grupo de transacciones',
-                    fecha = transaccionExistente.fecha,
+                    cantidad = transaccionPadre.cantidad,
+                    info = '(Grupo) ' + transaccionPadre.info,
+                    fecha = transaccionPadre.fecha,
                     estado = 3,
-                    cuenta = transaccionExistente.cuenta,
-                    user = transaccionExistente.user
+                    cuenta = transaccionPadre.cuenta,
+                    user = transaccionPadre.user
                 )
-                transaccionPadre.save()
+                nuevaTransaccionPadre.save()
                 grupo = GrupoTransaccion(
-                    transaccionPadre = transaccionPadre,
-                    transaccionHija = transaccionExistente
+                    transaccionPadre = nuevaTransaccionPadre,
+                    transaccionHija = transaccionPadre
                 )
                 grupo.save()
-                transaccionExistente.estado = 2
-                transaccionExistente.save()
-                transaccionExistente = transaccionPadre # se sobreescribe para que entre en el siguente condicional
+                transaccionPadre.estado = 2
+                transaccionPadre.save()
+                transaccionPadre = nuevaTransaccionPadre # se sobreescribe para que entre en el siguente condicional
 
-            if transaccionExistente.estado == 3:
-                # este es el caso donde transaccionExistente es padre del grupo
+            if transaccionPadre.estado == 3:
                 grupo = GrupoTransaccion(
-                    transaccionPadre = transaccionExistente,
+                    transaccionPadre = transaccionPadre,
                     transaccionHija = transaccionNueva
                 )
                 grupo.save()
-                transaccionExistente.cantidad += transaccionNueva.cantidad
+                transaccionPadre.cantidad += transaccionNueva.cantidad
+                transaccionPadre.info += ' - ' + transaccionNueva.info
+                transaccionPadre.save()
                 transaccionNueva.estado = 2
-                transaccionExistente.save()
                 transaccionNueva.save()
-
-            # guardar mensaje adiciona el variables de sesion que indique que se agruparon transacciones y agregarlos al; swwetalert
-
+                return transaccionPadre
     except Exception as ex:
-        print("----- Exception -----", ex)
+        printException(ex)
         messages.error(request, 'Ocurrio un error al intentar agrupar las transacciones', extra_tags='error')
+        return None
 
+def printException(ex):
+    line = ex.__traceback__.tb_lineno
+    fileName = ex.__traceback__.tb_frame.f_code.co_filename
+    print(' | | | | | | | | | | |  Exception | | | | | | | | | | | ')
+    print(f" File: {fileName}, line: {line}, Message: {ex}")
+    print(' | | | | | | | | | | |  | | | | | | | | | | | | | | | | ')

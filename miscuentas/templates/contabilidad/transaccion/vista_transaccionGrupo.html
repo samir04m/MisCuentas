@@ -85,7 +85,9 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-
+                        <div class="text-center">
+                            <a href="{% url 'panel:agregar_transaccion_grupo' transaccion.id %}" class="btn btn-outline-primary">Agregar transacción al grupo</a>
+                        </div>
                     </div>
                 </div>
             </div>
