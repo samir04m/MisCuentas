@@ -137,7 +137,7 @@
                                 {% endif %}
                             </tbody>
                         </table>
-                        {% if transaccion.estado == 1 %}
+                        {% if transaccion.estado == 1 and not transaccion.transaccionpagocredito_set.first  %}
                             <div class="text-center">
                                 <a href="{% url 'panel:agregar_transaccion_grupo' transaccion.id %}" class="btn btn-outline-primary">Agregar transacción al grupo</a>
                             </div>

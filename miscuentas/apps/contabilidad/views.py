@@ -131,6 +131,7 @@ def vista_transaccion(request, transaccion_id):
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
     fileName =  'vista_transaccionGrupo.html' if transaccion.estado == 3 else 'vista_transaccion.html'
     request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
+    print(fileName)
     return render(request, 'contabilidad/transaccion/'+fileName, {"transaccion":transaccion})
 
 @login_required

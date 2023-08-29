@@ -43,14 +43,20 @@ def egresos_diarios(request):
     egresosOrdenados.sort(key=lambda x: x.fecha, reverse=True)
     
     datosGrafica = []
-    cont = 10
+    numeroDias = 40
+    cont = numeroDias
     for egreso in egresosOrdenados:
         datosGrafica.insert(0, egreso)
         cont -= 1
         if cont == 0:
             break
 
-    context = {"egresos": egresosOrdenados, "grafica": datosGrafica, "alertData":getAlertIncluirTransaccionesProgramadas(request.user)}
+    context = {
+        "numeroDias": numeroDias,
+        "egresos": egresosOrdenados, 
+        "grafica": datosGrafica, 
+        "alertData":getAlertIncluirTransaccionesProgramadas(request.user)
+    }
     return render(request, 'reporte/diario_egreso.html', context)
 
 
@@ -96,14 +102,20 @@ def egresos_mensuales(request):
     egresosOrdenados.sort(key=lambda x: x.fecha, reverse=True)
 
     datosGrafica = []
-    cont = 10
+    numeroMeses = 12
+    cont = numeroMeses
     for egreso in egresosOrdenados:
         datosGrafica.insert(0, egreso)
         cont -= 1
         if cont == 0:
             break
 
-    context = {"egresos": egresosOrdenados, "grafica": datosGrafica, "alertData":getAlertIncluirTransaccionesProgramadas(request.user)}
+    context = {
+        "numeroMeses": numeroMeses,
+        "egresos": egresosOrdenados, 
+        "grafica": datosGrafica, 
+        "alertData":getAlertIncluirTransaccionesProgramadas(request.user)
+    }
     return render(request, 'reporte/mensual_egreso.html', context)
 
 @login_required
