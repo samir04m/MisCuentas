@@ -1,0 +1,69 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Pago apartamento{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-header text-center">
+                        Registrar pago apartamento
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="valor">Valor:</label>
+                                <input type="text" class="form-control" id="valor" name="valor" autocomplete="off" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cuenta">Cuenta:</label>
+                                <select name="cuenta" class="form-control" id="cuenta" required>
+                                    <option value="" disabled selected>Seleccione</option>
+                                    {% for cuenta in cuentas %}
+                                        <option value="{{cuenta.id}}">{{cuenta.nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="info">Información:</label>
+                                <input type="text" class="form-control" id="info" name="info" autocomplete="off" required>
+                            </div>
+                            <div class="collapse pb-3" id="collapseDate">
+                                <label for="datetime">Fecha</label>
+                                <input type="text" class="form-control" name="datetime" id="datetime">
+                            </div>
+                            <div class="text-right py-2">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate" title="Seleccionar fecha">
+                                    Seleccionar <i class="fal fa-calendar-alt"></i>
+                                </button>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#valor', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
+        });
+    </script>
+{% endblock %}

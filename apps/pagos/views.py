@@ -147,6 +147,40 @@ def pago_cuotamoto(request):
         messages.success(request, 'Pago exitoso', extra_tags='success')
     return redirect('pagos:listado')
 
+@login_required
+def pago_apartamento(request):
+    error = ''
+    valoresSinDefinir = getUndefinedUserSettings(['Jota_PersonaId', 'Manuel_PersonaId'], request.user)
+    if valoresSinDefinir:
+        error = "No se han definido los siguentes datos: " + valoresSinDefinir
+    else:
+        if request.method == 'POST':
+            valor = validarMiles(int(request.POST.get('valor').replace('.','')))
+            cuenta = getCuentaFromPost(request)
+            info = request.POST.get('info')
+            fecha = getDate(request.POST.get('datetime'))
+            terceraParteValor = int(valor/3)
+            ajusteDecimales = valor - (terceraParteValor*3)
+            try:
+                with transaction.atomic():
+                    jotaPersona = Persona.objects.get(id=int(getUserSetting('Jota_PersonaId', request.user)))
+                    manuelPersona = Persona.objects.get(id=int(getUserSetting('Manuel_PersonaId', request.user)))
+                    crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, jotaPersona, fecha)
+                    crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, manuelPersona, fecha)
+                    crearTransaccion(request, 'egreso', cuenta, terceraParteValor+ajusteDecimales, info, None, 1, fecha)                    
+            except Exception as ex:
+                print("Exception: ", ex)
+                error = "Ocurrio un error al intentar crear las transacciones"
+        else:
+            return render(request, 'pagos/pago_apartamento.html', {"cuentas": selectCuentas(request)})
+
+    if error:
+        messages.error(request, error, extra_tags='error')
+    else:
+        messages.success(request, 'Se registro el pago exitosamente', extra_tags='success')
+    return redirect('pagos:listado')
+
+
 def establecerFechaPagos(request):
     if request.method == 'POST':
         setUserSetting('FechaPagos', request.POST.get('datetime'), request.user)
