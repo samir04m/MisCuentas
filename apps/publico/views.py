@@ -14,7 +14,6 @@ def generarToken(request):
 def resumenPrestamos(request, token):
     tokenData = getTokenData(token)
     if tokenData:
-        print(tokenData)
         if "PersonaId" in tokenData:
             persona = get_object_or_404(Persona, id=int(tokenData["PersonaId"]))
             prestamos = Prestamo.objects.filter(persona=persona, cancelada=False)
@@ -27,14 +26,26 @@ def resumenPrestamos(request, token):
                     meDeben += p.saldo_pendiente
             
             context = {
+                "token": token,
                 "persona": persona, 
                 "yoDebo": yoDebo,
                 "meDeben": meDeben
             }
             return render(request, 'publico/resumenPrestamos.html', context)
-            # return HttpResponse(tokenData, content_type="text/plain")
     raise Http404("No se encontró la página")
     
+def vistaPrestamo(request, prestamoId, token):
+    tokenData = getTokenData(token)
+    if tokenData:
+        if "PersonaId" in tokenData:
+            persona = get_object_or_404(Persona, id=int(tokenData["PersonaId"]))
+            prestamo =  get_object_or_404(Prestamo, id=prestamoId, persona=persona)
+            context = {
+                "prestamo": prestamo,
+                "token": token
+            }
+            return render(request, 'publico/vistaPrestamo.html', context)
+    raise Http404("No se encontró la página")
 
 def getTokenData(token):
     token = Token.objects.filter(token=token).first()

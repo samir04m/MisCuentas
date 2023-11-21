@@ -156,3 +156,12 @@ def valorPagoMultiplePrestamo(meDeben, yoDebo):
         return meDeben
     elif meDeben == 0 and yoDebo > 0:
         return yoDebo
+
+@register.filter
+def tipoPrestamoPublico(tipoPrestamo):
+    if tipoPrestamo == "yopresto":
+        return "Debo"
+    elif tipoPrestamo == "meprestan":
+        return "Me deben"
+    else:
+        return ""
