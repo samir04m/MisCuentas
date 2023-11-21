@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Inicio{% endblock %} • Mis Cuentas</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.ico' %}">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/helpers.css' %}">
+    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/fontawesome-all-pro.js' %}" charset="utf-8"></script>
+</head>
+<body class="gradiente">
+    <main>
+        {% block contenido %}
+            <h6>Contenido</h6>
+        {% endblock %}
+    </main>
+
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/moment.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/popper.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/bootstrap.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/sweetalert2.min.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
+    <script src="{% static 'js/myScript.js' %}" charset="utf-8"></script>
+</body>
+</html>

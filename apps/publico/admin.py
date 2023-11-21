@@ -9,7 +9,7 @@ class TokenResource(resources.ModelResource):
 
 class TokenAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','token']
-    list_display = ('id','token','data','active',)
+    list_display = ('id','token','data','description','active',)
     resource_class = TokenResource
 
 admin.site.register(Token, TokenAdmin)

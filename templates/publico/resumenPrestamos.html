@@ -1,0 +1,71 @@
+{% extends 'base/basePublico.html' %}
+{% load misTags %}
+
+{% block title %}Resumen de prestamos{% endblock %}
+
+{% block contenido %}
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <div style="font-size:40px;">
+                                <i class="fas fa-user-circle"></i> {{persona.nombre}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div style="overflow: hidden;">
+                            <p>
+                                {% if meDeben %}
+                                    Usted debe en total ${{meDeben|puntomil}} 
+                                {% endif %}        
+                                {% if yoDebo %}
+                                    A usted le deben en total ${{yoDebo|puntomil}} 
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% if persona.prestamo_set.all %}
+                            <h5 class="text-center mt-3"><b>Prestamos</b></h5>
+                            <table class="table table-responsive-sm" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Pendiente</th>
+                                        <th>Información</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in persona.prestamo_set.all %}
+                                        <tr class="{{p.cancelada|cancelada_color}}">
+                                            <td class="text-center"><i class="{{p.cancelada|cancelada_icono}}"></i></td>
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{p.fecha|date:'D, d/m/y h:iA'}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{p.fecha|date:'d/m/y h:iA'}}
+                                                </span>
+                                            </td>
+                                            <td>${{p.cantidad|puntomil}}</td>
+                                            <td>${{p.saldo_pendiente|puntomil}}</td>
+                                            <td>{{p.info|truncatechars:'40'}}</td>                                           
+                                            <td>
+                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fal fa-external-link"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
