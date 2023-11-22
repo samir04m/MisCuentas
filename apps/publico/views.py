@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
@@ -6,10 +7,15 @@ import string
 from .models import *
 from apps.contabilidad.models import *
 
+@login_required
 def generarToken(request):
     caracteres = string.ascii_letters + string.digits
-    token = ''.join(secrets.choice(caracteres) for _ in range(10))
-    return HttpResponse(token, content_type="text/plain")
+    token = Token(
+        token = ''.join(secrets.choice(caracteres) for _ in range(10)),
+        data = "|",
+    )
+    token.save()
+    return redirect("/admin/publico/token/{}/change/".format(token.id))
 
 def resumenPrestamos(request, token):
     tokenData = getTokenData(token)
@@ -48,7 +54,7 @@ def vistaPrestamo(request, prestamoId, token):
     raise Http404("No se encontró la página")
 
 def getTokenData(token):
-    token = Token.objects.filter(token=token).first()
+    token = Token.objects.filter(token=token, active=True).first()
     if token:
         dataArray = token.data.split("|")
         if len(dataArray)%2 == 0:
