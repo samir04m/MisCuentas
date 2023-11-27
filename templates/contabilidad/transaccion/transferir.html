@@ -24,7 +24,9 @@
                                 <select name="cuenta_destino" class="form-control" required>
                                     <option value="" selected disabled>Seleccionar cuenta</option>
                                     {% for cuenta in cuentas_destino %}
-                                    <option value="{{cuenta.id}}">{{cuenta.nombre}} - $ {{cuenta.saldo|puntomil}}</option>
+                                        <option value="{{cuenta.id}}">{{cuenta.nombre}} 
+                                            {% if mostrarSaldoCuentas %} - $ {{cuenta.saldo|puntomil}}{% endif %}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -47,9 +49,11 @@
                                     <input type="text" id="cantidad" name="cantidad" class="form-control" 
                                         aria-describedby="cantidadInfo" autocomplete="off" required >
                                 </div>
-                                <small id="cantidadInfo" class="form-text text-muted">
-                                    El valor maximo de transferencia es ${{cuenta.saldo|puntomil}}
-                                </small>
+                                {% if mostrarSaldoCuentas %}
+                                    <small id="cantidadInfo" class="form-text text-muted">
+                                        El valor maximo de transferencia es ${{cuenta.saldo|puntomil}}
+                                    </small>
+                                {% endif %}
                             </div>
 
                             <div class="form-group">

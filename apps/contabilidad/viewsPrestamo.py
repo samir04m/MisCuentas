@@ -8,6 +8,7 @@ from django.db.models import Sum
 from .models import *
 from .forms import *
 from .myFuncs import *
+from apps.usuario.views import getUserSetting
 
 @login_required
 def vista_prestamo(request, prestamo_id):
@@ -77,7 +78,13 @@ def crear_prestamo(request, persona_id):
         form = PrestamoForm()
 
     cuentas = Cuenta.objects.filter(user=request.user.id)
-    context = {"form": form, "cuentas":cuentas, "persona":persona, "mensaje":mensaje}
+    context = {
+        "form": form, 
+        "cuentas":cuentas, 
+        "persona":persona, 
+        "mensaje":mensaje,
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+    }
     return render(request, 'contabilidad/prestamo/crear_prestamo.html', context)
 
 @login_required

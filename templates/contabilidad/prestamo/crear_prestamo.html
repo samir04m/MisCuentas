@@ -29,7 +29,9 @@
                                     <option selected disabled value="">Seleccionar</option>
                                     <option value="ninguna">Ninguna</option>
                                     {% for c in cuentas %}
-                                        <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
+                                        <option value="{{c.id}}">{{c.nombre}} 
+                                            {% if mostrarSaldoCuentas %} - Saldo $ {{c.saldo|puntomil}}{% endif %}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </p>

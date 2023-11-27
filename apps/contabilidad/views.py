@@ -85,7 +85,12 @@ def crear_egreso(request, cuenta_id):
         request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
         form = TransaccionForm()
 
-    context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request)}
+    context = {
+        "form":form, 
+        "cuenta":cuenta, 
+        "tags":getSelectEtiquetas(request),
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+    }
     return render(request, 'contabilidad/transaccion/crear_egreso.html', context)
 
 @login_required
@@ -123,7 +128,12 @@ def crear_ingreso(request, cuenta_id):
         request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
         form = TransaccionForm()
 
-    context = {"form": form, "cuenta":cuenta, "tags":getSelectEtiquetas(request)}
+    context = {
+        "form":form, 
+        "cuenta":cuenta, 
+        "tags":getSelectEtiquetas(request),
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+    }
     return render(request, 'contabilidad/transaccion/crear_ingreso.html', context)
 
 @login_required
@@ -180,7 +190,11 @@ def transferir(request, cuenta_id):
     else:
         request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
 
-    context = {"cuenta":cuenta, "cuentas_destino":cuentas_destino}
+    context = {
+        "cuenta":cuenta, 
+        "cuentas_destino":cuentas_destino,
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+    }
     return render(request, 'contabilidad/transaccion/transferir.html', context)
 
 @login_required

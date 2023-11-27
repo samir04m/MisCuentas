@@ -9,6 +9,7 @@ from apps.usuario.userSettingFuncs import *
 from .models import *
 from .forms import *
 from .myFuncs import *
+from apps.usuario.views import getUserSetting
 
 @login_required
 def todos_movimientos(request):
@@ -19,7 +20,11 @@ def todos_movimientos(request):
 def movimientos_cuenta(request, cuenta_id):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id, user=request.user.id)
     transacciones = Transaccion.objects.filter(cuenta=cuenta.id, estado__in=[1,3]).order_by('-fecha')
-    context =  {"transacciones": transacciones, "cuenta":cuenta}
+    context =  {
+        "transacciones":transacciones, 
+        "cuenta":cuenta,
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+    }
     return render(request, 'contabilidad/transaccion/movimientos_cuenta.html', context)
 
 @login_required

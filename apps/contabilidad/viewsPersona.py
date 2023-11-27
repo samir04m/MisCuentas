@@ -8,6 +8,7 @@ from django.http import request
 from .models import *
 from .forms import *
 from .myFuncs import *
+from apps.usuario.views import getUserSetting
 
 @login_required
 def crear_persona(request):
@@ -47,6 +48,7 @@ def vista_persona(request, persona_id):
         "diferencia": abs(diferencia),
         "diferenciaMensaje": diferenciaMensaje,
         "cuentas": Cuenta.objects.filter(user=request.user),
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
     }
     return render(request, 'contabilidad/persona/vista_persona.html', context)
 

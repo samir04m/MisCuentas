@@ -124,7 +124,9 @@
                         <label for="cuenta">Seleccione una cuenta para realizar el pago:</label>
                         <select name="cuenta" class="form-control" id="cuenta" required>
                             {% for cuenta in cuentas %}
-                                <option value="{{cuenta.id}}">{{cuenta.nombre}} - ${{cuenta.saldo|puntomil}}</option>
+                                <option value="{{cuenta.id}}">{{cuenta.nombre}} 
+                                    {% if mostrarSaldoCuentas %} - ${{cuenta.saldo|puntomil}}{% endif %}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>

@@ -12,9 +12,11 @@
                         Egreso en {{cuenta.nombre}}
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-info p-10" role="alert">
-                            Saldo en cuenta: ${{cuenta.saldo|puntomil}}
-                        </div>
+                        {% if mostrarSaldoCuentas %}
+                            <div class="alert alert-info p-10" role="alert">
+                                Saldo en cuenta: ${{cuenta.saldo|puntomil}}
+                            </div>
+                        {% endif %}
                         <form method="post">
                             {% csrf_token %}
                             {{form.as_p}}
