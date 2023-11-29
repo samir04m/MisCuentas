@@ -63,7 +63,7 @@ def egresos_diarios(request):
 @login_required
 def ingresos_diarios(request):
     ingresos = (
-        Transaccion.objects.filter(user=request.user, tipo='ingreso')
+        Transaccion.objects.filter(user=request.user, tipo='ingreso', estado__in=getEstadoTransaccion(request.user))
         .exclude(etiqueta__tipo__in=[2,3])
         .annotate(day=TruncDay('fecha'))
         .values('day')
@@ -122,7 +122,7 @@ def egresos_mensuales(request):
 @login_required
 def ingresos_mensuales(request):
     ingresos = (
-        Transaccion.objects.filter(user=request.user, tipo='ingreso')
+        Transaccion.objects.filter(user=request.user, tipo='ingreso', estado__in=getEstadoTransaccion(request.user))
         .exclude(etiqueta__tipo__in=[2,3])
         .annotate(month=TruncMonth('fecha'))
         .values('month')

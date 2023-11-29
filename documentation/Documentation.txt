@@ -2,3 +2,9 @@ TIPOS ETIQUETA:
     1 - Default, todas las creadas por el usuario
     2 - Prestamo, Transferencia (De uso interno del software)
     3 - Prestamo compra con tarjeta de credito. El sistema filtra por este tipo (para que el nombre pueda cambiar) para no tenerla en cuenta como compra o gasto propio.
+
+ESTADOS TRANSACCION:
+    0 - Transaccion programada. Se tendra en cuenta en los reportes segun ajuste del usuario
+    1 - Transaccion realizada.
+    2 - Transaccion agrupada. Es una transaccion que fue realizada pero se muestra dentro de grupo. Se tiene en cuenta en los reportes.
+    3 - Transaccion padre de grupo. No se tiene en cuenta en los resportes ya que su valor es el total de todas las transacciones agrupadas.

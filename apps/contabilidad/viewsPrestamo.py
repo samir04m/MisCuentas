@@ -143,6 +143,7 @@ def pagarConjuntoPrestamos(request, persona_id):
             return redirect('panel:vista_persona', persona_id)
         prestamos = Prestamo.objects.filter(tipo=request.POST.get('tipoPrestamo'), persona=persona_id, cancelada=False).order_by('fecha')
         disponible = pagoTotal
+        transaccionPadre = None
         try:
             with transaction.atomic():
                 for prestamo in prestamos:
@@ -151,7 +152,13 @@ def pagarConjuntoPrestamos(request, persona_id):
                     else:
                         monto = disponible
                     disponible -= monto
-                    pagarPrestamo(prestamo, monto, request)
+                    transaccionNueva = pagarPrestamo(prestamo, monto, request)
+                    
+                    if transaccionPadre:
+                        transaccionPadre = crearGrupoTransaccion(request, transaccionPadre, transaccionNueva)
+                    else:
+                        transaccionPadre = transaccionNueva # Solo se iguala la primera vez
+
                     if disponible == 0:
                         break
             messages.success(request, 'Pago de multiples prestamos realizado', extra_tags='success')
@@ -161,7 +168,7 @@ def pagarConjuntoPrestamos(request, persona_id):
 
     return redirect('panel:vista_persona', persona_id)
 
-def pagarPrestamo(prestamo:Prestamo, monto, request):
+def pagarPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
     if monto > prestamo.saldo_pendiente: # Si el monto es mayor al saldo pendiente
         monto = prestamo.saldo_pendiente # El monto a pagar se iguala para que no lo supere
 
@@ -212,3 +219,4 @@ def pagarPrestamo(prestamo:Prestamo, monto, request):
     transaccion.save()
     transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo)
     transaccionPrestamo.save()
+    return transaccion
