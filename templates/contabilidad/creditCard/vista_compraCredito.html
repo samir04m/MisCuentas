@@ -93,6 +93,21 @@
                         </table>
                     </div>
                 </div>
+                <div class="card animate__animated animate__fadeIn my-3">
+                    <div class="card-body">
+                        <h5 class="text-center">Prestamos relacionados a la compra</h5>
+                        <div class="row">
+                            {% for compraPrestamo in compra.compracreditoprestamo_set.all %}
+                                <div class="col-sm-6 my-2">
+                                    <a href="{% url 'panel:vista_prestamo' compraPrestamo.prestamo.id %}" class="btn btn-outline-secondary btn-block">
+                                        <i class="{{compraPrestamo.prestamo.cancelada|cancelada_icono}}"></i> 
+                                        {{compraPrestamo.prestamo.persona.nombre}} ${{compraPrestamo.prestamo.cantidad|puntomil}}
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

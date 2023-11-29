@@ -107,6 +107,15 @@ class GrupoTransaccionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('id','transaccionPadre','transaccionHija')
     resource_class = GrupoTransaccionResource
 
+class CompraCreditoPrestamoResource(resources.ModelResource):
+    class Meta:
+        model = CompraCreditoPrestamo
+
+class CompraCreditoPrestamoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    # search_fields = ['creditCard_nombre']
+    list_display = ('id','compraCredito','prestamo')
+    resource_class = CompraCreditoPrestamoResource
+
 admin.site.register(Cuenta, CuentaAdmin)
 admin.site.register(Etiqueta, EtiquetaAdmin)
 admin.site.register(SubTag, SubTagAdmin)
@@ -118,3 +127,4 @@ admin.site.register(CreditCard, CreditCardAdmin)
 admin.site.register(CompraCredito, CompraCreditoAdmin)
 admin.site.register(TransaccionPagoCredito, TransaccionPagoCreditoAdmin)
 admin.site.register(GrupoTransaccion, GrupoTransaccionAdmin)
+admin.site.register(CompraCreditoPrestamo, CompraCreditoPrestamoAdmin)

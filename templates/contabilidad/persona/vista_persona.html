@@ -123,6 +123,8 @@
                     <div class="form-group">
                         <label for="cuenta">Seleccione una cuenta para realizar el pago:</label>
                         <select name="cuenta" class="form-control" id="cuenta" required>
+                            <option value="" disabled selected>Seleccione</option>
+                            <option value="0">Ninguna</option>
                             {% for cuenta in cuentas %}
                                 <option value="{{cuenta.id}}">{{cuenta.nombre}} 
                                     {% if mostrarSaldoCuentas %} - ${{cuenta.saldo|puntomil}}{% endif %}

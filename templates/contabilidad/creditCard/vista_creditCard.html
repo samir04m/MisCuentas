@@ -26,6 +26,9 @@
                                     Cupo total: ${{creditCard.cupo|puntomil}} <br>
                                     Cupo disponible: ${{creditCard.cupoDisponible|puntomil}} <br>
                                     Deuda total: ${{creditCard.deuda|puntomil}} 
+                                    {% if deudaAjena %}
+                                        (${{deudaPropia|puntomil}} propia, ${{deudaAjena|puntomil}} ajena)
+                                    {% endif %}
                                 </p>
                             </div>
                             <div class="col-sm-12 col-md-6 text-right">

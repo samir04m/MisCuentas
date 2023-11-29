@@ -120,10 +120,10 @@ def getEtiquetaById(id) -> Etiqueta:
     return None
 
 def getSelectEtiquetas(request):
-    if request.user.is_superuser:
-        return Etiqueta.objects.filter(user=request.user)
-    else:
-        return Etiqueta.objects.filter(user=request.user, tipo=1)
+    # if request.user.is_superuser:
+    #     return Etiqueta.objects.filter(user=request.user)
+    # else:
+    return Etiqueta.objects.filter(user=request.user, tipo__in=[1,3])
 
 def getTipoEtiqueta(nombre) -> int:
     tipo2 = ['Prestamo', 'Transferencia']
@@ -236,17 +236,17 @@ def validarFecha(fecha):
         return datetime.now()
 
 class InfoDeudaTarjetasCredito:
-    def __init__(self, deudaPropia:int, deudaPrestamo:int):
+    def __init__(self, deudaPropia:int, deudaAjena:int):
         self.deudaPropia = deudaPropia
-        self.deudaPrestamo = deudaPrestamo
-        self.deudaTotal = deudaPropia + deudaPrestamo
+        self.deudaAjena = deudaAjena
+        self.deudaTotal = deudaPropia + deudaAjena
 
 def getDeudaTarjetasCredito(request) -> InfoDeudaTarjetasCredito:
     comprasCreditoPropias = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__tipo=1, cancelada=False).aggregate(Sum('deuda'))
-    comprasCreditoPrestamo = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__nombre='Prestamo', cancelada=False).aggregate(Sum('deuda'))
+    comprasCreditoAjena = CompraCredito.objects.filter(creditCard__user=request.user, etiqueta__tipo=3, cancelada=False).aggregate(Sum('deuda'))
     deudaPropia = comprasCreditoPropias['deuda__sum'] if comprasCreditoPropias['deuda__sum'] else 0
-    deudaPrestamo = comprasCreditoPrestamo['deuda__sum'] if comprasCreditoPrestamo['deuda__sum'] else 0
-    return InfoDeudaTarjetasCredito(deudaPropia, deudaPrestamo)
+    deudaAjena = comprasCreditoAjena['deuda__sum'] if comprasCreditoAjena['deuda__sum'] else 0
+    return InfoDeudaTarjetasCredito(deudaPropia, deudaAjena)
 
 def getFormatoDinero(cantidad) -> str:
     if cantidad < 0:
@@ -334,3 +334,13 @@ def printException(ex):
     print(' | | | | | | | | | | |  Exception | | | | | | | | | | | ')
     print(f" File: {fileName}, line: {line}, Message: {ex}")
     print(' | | | | | | | | | | |  | | | | | | | | | | | | | | | | ')
+
+def crearEtiquetaPrestamoCompraTC(request):
+    etiquetaPrestamoCompraTC = Etiqueta.objects.filter(tipo=3).first()
+    if not etiquetaPrestamoCompraTC:
+        etiquetaPrestamoCompraTC = Etiqueta(
+            nombre = 'Prestamo compra TC',
+            tipo=3,
+            user=request.user
+        )
+        etiquetaPrestamoCompraTC.save()

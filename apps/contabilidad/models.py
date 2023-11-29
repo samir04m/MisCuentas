@@ -35,6 +35,8 @@ class SubTag(models.Model):
     nombre = models.CharField(max_length=50)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
     class Meta:
+        verbose_name = 'SubTag'
+        verbose_name_plural = 'SubTags'
         ordering = ['nombre']
     def __str__(self):
         return self.nombre
@@ -100,8 +102,8 @@ class TransaccionPrestamo(models.Model):
     prestamo = models.ForeignKey(Prestamo, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Transaccion del prestamo'
-        verbose_name_plural = 'Transacciones del prestamo'
+        verbose_name = 'TransaccionPrestamo'
+        verbose_name_plural = 'TransaccionPrestamo'
         ordering = ['-transaccion__fecha']
 
     def __str__(self):
@@ -117,8 +119,8 @@ class CreditCard(models.Model):
     visible = models.BooleanField('Visible', default=True)
 
     class Meta:
-        verbose_name = 'Credit card'
-        verbose_name_plural = 'Credit cards'
+        verbose_name = 'CreditCard'
+        verbose_name_plural = 'CreditCards'
         ordering = ['id']
 
     def __str__(self):
@@ -138,8 +140,8 @@ class CompraCredito(models.Model):
     fecha = models.DateTimeField('Fecha')
 
     class Meta:
-        verbose_name = 'Compra a credito'
-        verbose_name_plural = 'Compras a credito'
+        verbose_name = 'CompraCredito'
+        verbose_name_plural = 'CompraCredito'
         ordering = ['-fecha']
 
     def __str__(self):
@@ -150,8 +152,8 @@ class TransaccionPagoCredito(models.Model):
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Transacción pago credito'
-        verbose_name_plural = 'Transacciones pago credito'
+        verbose_name = 'TransaccionPagoCredito'
+        verbose_name_plural = 'TransaccionPagoCredito'
         ordering = ['id']
 
     def __str__(self):
@@ -161,7 +163,14 @@ class GrupoTransaccion(models.Model):
     transaccionPadre = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE, related_name='transacciones_padres')
     transaccionHija = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE, related_name='transacciones_hijas')
     class Meta:
-        verbose_name = 'Grupo transaccion'
-        verbose_name_plural = 'Grupo transacciones'
+        verbose_name = 'GrupoTransaccion'
+        verbose_name_plural = 'GrupoTransaccion'
     def __str__(self):
         return "{} - {}".format(self.transaccionPadre, self.transaccionHija)
+
+class CompraCreditoPrestamo(models.Model):
+    compraCredito = models.ForeignKey(CompraCredito, null=False, blank=False, on_delete=models.CASCADE)
+    prestamo = models.ForeignKey(Prestamo, null=False, blank=False, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = 'CompraCreditoPrestamo'
+        verbose_name_plural = 'CompraCreditoPrestamo'

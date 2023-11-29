@@ -31,7 +31,7 @@ def general(request):
 def egresos_diarios(request):
     egresos = (
         Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user))
-        .exclude(etiqueta__tipo=2)
+        .exclude(etiqueta__tipo__in=[2,3])
         .annotate(day=TruncDay('fecha'))
         .values('day')
         .annotate(numero=Count('id'), total=Sum('cantidad'))
@@ -63,7 +63,8 @@ def egresos_diarios(request):
 @login_required
 def ingresos_diarios(request):
     ingresos = (
-        Transaccion.objects.filter(user=request.user, tipo='ingreso').exclude(etiqueta__tipo=2)
+        Transaccion.objects.filter(user=request.user, tipo='ingreso')
+        .exclude(etiqueta__tipo__in=[2,3])
         .annotate(day=TruncDay('fecha'))
         .values('day')
         .annotate(numero=Count('id'), total=Sum('cantidad'))
@@ -90,7 +91,7 @@ def ingresos_diarios(request):
 def egresos_mensuales(request):
     egresos = (
         Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user))
-        .exclude(etiqueta__tipo=2)
+        .exclude(etiqueta__tipo__in=[2,3])
         .annotate(month=TruncMonth('fecha'))
         .values('month')
         .annotate(nRegistros=Count('id'), total=Sum('cantidad'))
@@ -122,7 +123,7 @@ def egresos_mensuales(request):
 def ingresos_mensuales(request):
     ingresos = (
         Transaccion.objects.filter(user=request.user, tipo='ingreso')
-        .exclude(etiqueta__tipo=2)
+        .exclude(etiqueta__tipo__in=[2,3])
         .annotate(month=TruncMonth('fecha'))
         .values('month')
         .annotate(nRegistros=Count('id'), total=Sum('cantidad'))
@@ -168,14 +169,12 @@ def cambiar_periodo_reporte_subtag_mensual(request):
 def reporte_etiqueta_mensual(request, month, year):
     mes = datetime.today().month if month < 1 or month > 12 else month
     anio = datetime.today().year if year < 1998 or year > 2098 else year
-    # mensajeIncluirTP = getMensajeIncluirTransaccionesProgramadas(request.user)
-    # incluirTP = getUserSetting('IncluirTransaccionesProgramadas', request.user)
 
     egresosPorEtiqueta = createListTagData(
-        Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
+        Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo__in=[2,3])
     )
     ingresosPorEtiqueta = createListTagData(
-        Transaccion.objects.filter(user=request.user, tipo='ingreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo=2)
+        Transaccion.objects.filter(user=request.user, tipo='ingreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio).exclude(etiqueta__tipo__in=[2,3])
     )
     if egresosPorEtiqueta and ingresosPorEtiqueta:
         totalEgresos = egresosPorEtiqueta[-1]
@@ -207,7 +206,7 @@ def reporte_subtag_mensual(request, etiquetaId, periodo):
     anio = datetime.today().year if year < 1998 or year > 2098 else year
     
     egresosPorEtiqueta = createListSubTagData(
-        Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio, etiqueta__id=etiquetaId, subtag__isnull=False).exclude(etiqueta__tipo=2)
+        Transaccion.objects.filter(user=request.user, tipo='egreso', estado__in=getEstadoTransaccion(request.user), fecha__month=mes, fecha__year=anio, etiqueta__id=etiquetaId, subtag__isnull=False).exclude(etiqueta__tipo__in=[2,3])
     )
 
     context = {

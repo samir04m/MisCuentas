@@ -32,13 +32,17 @@ def crear_creditCard(request):
 
 @login_required
 def vista_creditCard(request, creditCard_id):
-    creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
+    creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user) 
     cuentas = Cuenta.objects.filter(user=request.user)
+    deudaPropia = CompraCredito.objects.filter(creditCard=creditCard, etiqueta__tipo=1, cancelada=False).aggregate(Sum('deuda'))
+    deudaAjena = CompraCredito.objects.filter(creditCard=creditCard, etiqueta__tipo=3, cancelada=False).aggregate(Sum('deuda'))    
     context = {
         "creditCard": creditCard,
         "cuentas": cuentas,
         "deudaMes": getPagoMes(creditCard),
-        "proximosPagos": getProximosPagos(creditCard)
+        "proximosPagos": getProximosPagos(creditCard),
+        "deudaPropia": int(deudaPropia['deuda__sum']) if deudaPropia['deuda__sum'] else 0,
+        "deudaAjena": int(deudaAjena['deuda__sum']) if deudaAjena['deuda__sum'] else 0
     }
     return render(request, 'contabilidad/creditCard/vista_creditCard.html', context)
 
@@ -80,7 +84,11 @@ def crear_compra(request, creditCard_id):
         cuotas = int(request.POST.get('cuotas'))
         info = request.POST.get('info')
         fecha = getDate(request.POST.get('datetime'))
-        etiqueta = getEtiquetaFromPost(request)
+        personas = request.POST.getlist('personas')
+        if personas:
+            etiqueta = Etiqueta.objects.filter(tipo=3).first()
+        else:
+            etiqueta = getEtiquetaFromPost(request)
         if request.POST.get('subtag'):
             subtag = SubTag.objects.get(id=int(request.POST.get('subtag')))
         else:
@@ -88,18 +96,24 @@ def crear_compra(request, creditCard_id):
         try:
             with transaction.atomic():
                 compra = crearCompraCredito(creditCard, valor, cuotas, info, etiqueta, subtag, fecha)
+                crearPrestamoCompraTC(compra, personas)
             messages.success(request, 'Compra registrada', extra_tags='success')
         except Exception as ex:
             print("----- Exception -----", ex)
             messages.error(request, 'No fue posible registrar la compra', extra_tags='error')
         return redirect('panel:vista_creditCard', creditCard.id)
     else:
-        context = {"creditCard": creditCard, "tags":getSelectEtiquetas(request)}
+        crearEtiquetaPrestamoCompraTC(request)
+        context = {
+            "creditCard": creditCard, 
+            "tags": getSelectEtiquetas(request), 
+            "personas": Persona.objects.filter(user=request.user, visible=True)
+        }
         return render(request, 'contabilidad/creditCard/compra_creditCard.html', context)
 
 @login_required
 def vista_compra(request, compra_id):
-    compra = get_object_or_404(CompraCredito, id=compra_id)        
+    compra = get_object_or_404(CompraCredito, id=compra_id)
     return render(request, 'contabilidad/creditCard/vista_compraCredito.html', {"compra":compra})
 
 @login_required
@@ -112,6 +126,9 @@ def eliminar_compra(request, compra_id):
                 transaccion = transaccionCompra.transaccion
                 transaccion.delete()
                 transaccionCompra.delete()
+            for compraPrestamo in compra.compracreditoprestamo_set.all():
+                prestamo = compraPrestamo.prestamo
+                prestamo.delete() # con la eliminacion en cascade se borra el registro compraCreditoPrestamo
             creditCard.cupoDisponible += compra.valor
             creditCard.save()
             compra.delete()
@@ -195,3 +212,29 @@ def getProximosPagos(creditCard:CreditCard):
         else:
             break
     return proximosPagos
+
+def crearPrestamoCompraTC(compra:CompraCredito, personasIds):
+    if personasIds:
+        personas = Persona.objects.filter(id__in=personasIds)
+        valorPorPersona = int(compra.valor/len(personas))
+        info = 'Compra con tarjeta de crédito: ' + compra.info
+        try:
+            with transaction.atomic():
+                for persona in personas:
+                    prestamo = Prestamo(
+                        tipo='yopresto',
+                        cantidad=valorPorPersona,
+                        info=info,
+                        saldo_pendiente=valorPorPersona,
+                        fecha=datetime.now(),
+                        cuenta=None,
+                        persona=persona
+                    )
+                    prestamo.save()
+                    compraPrestamo = CompraCreditoPrestamo(
+                        compraCredito=compra,
+                        prestamo=prestamo
+                    )
+                    compraPrestamo.save()
+        except Exception as ex:
+            printException(ex)

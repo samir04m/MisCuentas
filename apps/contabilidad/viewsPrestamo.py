@@ -123,8 +123,8 @@ def eliminar_prestamo(request, prestamo_id):
                 eliminarTransaccion(transaccionPartePago)
             eliminarTransaccion(transaccion)
     else:
-        tps = TransaccionPrestamo.objects.filter(prestamo=prestamo)
-        for tp in tps:
+        transaccionPrestamo = TransaccionPrestamo.objects.filter(prestamo=prestamo)
+        for tp in transaccionPrestamo:
             transaccion = tp.transaccion
             transaccion.delete()
             tp.delete()
@@ -136,8 +136,8 @@ def eliminar_prestamo(request, prestamo_id):
 @login_required
 def pagarConjuntoPrestamos(request, persona_id):
     if request.method == 'POST':
-        cuentaId = int(request.POST.get('cuenta'))
-        pagoTotal = int(request.POST.get('pagoTotal').replace('.',''))
+        # cuentaId = int(request.POST.get('cuenta'))
+        pagoTotal = validarMiles(int(request.POST.get('pagoTotal').replace('.','')))
         if pagoTotal <= 0:
             messages.error(request, 'El total a pagar debe ser mayor a cero', extra_tags='error')
             return redirect('panel:vista_persona', persona_id)
@@ -162,8 +162,8 @@ def pagarConjuntoPrestamos(request, persona_id):
     return redirect('panel:vista_persona', persona_id)
 
 def pagarPrestamo(prestamo:Prestamo, monto, request):
-    if monto > prestamo.saldo_pendiente: 
-            monto = prestamo.saldo_pendiente
+    if monto > prestamo.saldo_pendiente: # Si el monto es mayor al saldo pendiente
+        monto = prestamo.saldo_pendiente # El monto a pagar se iguala para que no lo supere
 
     prestamo.saldo_pendiente -= monto
     if prestamo.saldo_pendiente == 0:
@@ -173,12 +173,9 @@ def pagarPrestamo(prestamo:Prestamo, monto, request):
     cuentaId = int(request.POST.get('cuenta'))
     if cuentaId:
         cuenta = Cuenta.objects.get(id = cuentaId)
-    else:
-        cuenta = None
-
-    if cuenta: 
         saldo_anterior = cuenta.saldo
     else:
+        cuenta = None
         saldo_anterior = 0
 
     if prestamo.tipo == 'yopresto':
@@ -196,7 +193,11 @@ def pagarPrestamo(prestamo:Prestamo, monto, request):
     if cuenta:
         cuenta.save()
 
-    tag = getEtiquetaByName('Prestamo', request.user)
+    compraCreditoPrestamo = CompraCreditoPrestamo.objects.filter(prestamo=prestamo).first()
+    if compraCreditoPrestamo:
+        tag = Etiqueta.objects.filter(tipo=3).first()
+    else:
+        tag = getEtiquetaByName('Prestamo', request.user)
     infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
     transaccion = Transaccion(
         tipo = tipoTransaccion,
@@ -209,4 +210,5 @@ def pagarPrestamo(prestamo:Prestamo, monto, request):
         user = request.user
     )
     transaccion.save()
-    transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo).save()
+    transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo)
+    transaccionPrestamo.save()

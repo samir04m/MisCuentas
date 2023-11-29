@@ -6,8 +6,8 @@ class UserSetting(models.Model):
     value = models.CharField(max_length=100)
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)
     class Meta:
-        verbose_name = 'Ajuste de usuario'
-        verbose_name_plural = 'Ajustes del usuario'
+        verbose_name = 'UserSetting'
+        verbose_name_plural = 'UserSettings'
         ordering = ['id']
 
     def __str__(self):

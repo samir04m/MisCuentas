@@ -1,0 +1,4 @@
+TIPOS ETIQUETA:
+    1 - Default, todas las creadas por el usuario
+    2 - Prestamo, Transferencia (De uso interno del software)
+    3 - Prestamo compra con tarjeta de credito. El sistema filtra por este tipo (para que el nombre pueda cambiar) para no tenerla en cuenta como compra o gasto propio.
