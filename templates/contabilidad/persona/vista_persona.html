@@ -136,6 +136,15 @@
                         <label for="pagoTotal">Ingrese la cantidad a pagar:</label>
                         <input type="text" class="form-control" id="pagoTotal" name="pagoTotal" value="{{meDeben|valorPagoMultiplePrestamo:yoDebo}}" autocomplete="off" required>
                     </div>
+                    <div class="collapse pb-3" id="collapseDate">
+                        <label for="datetime">Fecha</label>
+                        <input type="text" class="form-control" name="datetime" id="datetime">
+                    </div>
+                    <div class="text-right py-2">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate" title="Seleccionar fecha">
+                            Seleccionar <i class="fal fa-calendar-alt"></i>
+                        </button>
+                    </div>
                     <div class="text-center">
                         <button class="btn btn-outline-primary">Pagar prestamos</button>
                     </div>
@@ -157,6 +166,11 @@
             digitGroupSeparator: ".",
             decimalCharacter: ",",
             currencySymbol : ''
+        });
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
         });
     </script>
 {% endblock %}

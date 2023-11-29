@@ -136,7 +136,6 @@ def eliminar_prestamo(request, prestamo_id):
 @login_required
 def pagarConjuntoPrestamos(request, persona_id):
     if request.method == 'POST':
-        # cuentaId = int(request.POST.get('cuenta'))
         pagoTotal = validarMiles(int(request.POST.get('pagoTotal').replace('.','')))
         if pagoTotal <= 0:
             messages.error(request, 'El total a pagar debe ser mayor a cero', extra_tags='error')
