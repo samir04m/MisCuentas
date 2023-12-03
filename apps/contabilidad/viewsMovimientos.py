@@ -35,7 +35,7 @@ def movimientos_dia(request, tipo, fecha):
     year = date[2]
     fecha2 = datetime(int(year), int(month), int(day))
     tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
-    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
+    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__day=day, fecha__month=month, fecha__year=year).exclude(etiqueta__tipo__in=[2,3])
 
     context = {'transacciones':transacciones, 'fecha':fecha2, 'tipo':tipo2}
     return render(request, 'contabilidad/transaccion/movimientos_dia.html', context)
@@ -47,7 +47,7 @@ def movimientos_mes(request, tipo, fecha):
     year = date[1]
     fecha2 = datetime(int(year), int(month), 1)
     tipo2 = 'Egresos' if tipo=='egreso' else 'Ingresos'
-    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
+    transacciones = Transaccion.objects.filter(user=request.user, tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year).exclude(etiqueta__tipo__in=[2,3])
     totalEgresos = 0
     for transaccion in transacciones:
         if transaccion.tipo == 'egreso':
@@ -92,7 +92,7 @@ def movimientos_etiqueta_mes(request, etiqueta_id, tipo, periodo):
         transacciones = Transaccion.objects.filter(tipo=tipo, etiqueta=None, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year)
     elif etiqueta_id == -1:
         strTag = "del"
-        transacciones = Transaccion.objects.filter(tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year).exclude(etiqueta__tipo=2)
+        transacciones = Transaccion.objects.filter(tipo=tipo, estado__in=getEstadoTransaccion(request.user), fecha__month=month, fecha__year=year).exclude(etiqueta__tipo__in=[2,3])
     
     context = {
         'tipo': 'Egresos' if tipo == 'egreso' else 'Ingresos',

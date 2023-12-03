@@ -109,7 +109,13 @@ def getFechaPagoCuota(compra:CompraCredito, cuota):
         sumarMes = sumarMes + 1
     if compra.creditCard.diaPago < compra.creditCard.diaCorte:
         sumarMes = sumarMes + 1
-    return datetime(fechaCompra.year, fechaCompra.month+sumarMes, compra.creditCard.diaPago, fechaCompra.hour, fechaCompra.minute, fechaCompra.second)
+    if fechaCompra.month+sumarMes > 12:
+        month = sumarMes - 1
+        year = fechaCompra.year + 1
+    else:
+        month = fechaCompra.month+sumarMes
+        year = fechaCompra.year
+    return datetime(year, month, compra.creditCard.diaPago, fechaCompra.hour, fechaCompra.minute, fechaCompra.second)
 
 def getEtiquetaByName(nombre:str, user) -> Etiqueta:
     if nombre:

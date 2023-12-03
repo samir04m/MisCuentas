@@ -76,6 +76,8 @@ def pagar_tarjeta(request, tarjeta_id):
                 messages.error(request, 'Ocurrió un error al realizar el pago', extra_tags='error')
     return redirect('panel:vista_creditCard', tarjeta_id)
 
+# import traceback
+
 @login_required
 def crear_compra(request, creditCard_id):
     creditCard = get_object_or_404(CreditCard, id=creditCard_id, user=request.user)
@@ -100,6 +102,7 @@ def crear_compra(request, creditCard_id):
             messages.success(request, 'Compra registrada', extra_tags='success')
         except Exception as ex:
             print("----- Exception -----", ex)
+            # print("----- Exception -----",traceback.format_exc())
             messages.error(request, 'No fue posible registrar la compra', extra_tags='error')
         return redirect('panel:vista_creditCard', creditCard.id)
     else:
