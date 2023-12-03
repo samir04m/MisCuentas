@@ -161,18 +161,23 @@ def pago_apartamento(request):
             fecha = getDate(request.POST.get('datetime'))
             terceraParteValor = int(valor/3)
             ajusteDecimales = valor - (terceraParteValor*3)
+            tagName = getEtiquetaFromPost(request).nombre if getEtiquetaFromPost(request) else None
             try:
                 with transaction.atomic():
                     jotaPersona = Persona.objects.get(id=int(getUserSetting('Jota_PersonaId', request.user)))
                     manuelPersona = Persona.objects.get(id=int(getUserSetting('Manuel_PersonaId', request.user)))
                     crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, jotaPersona, fecha)
                     crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, manuelPersona, fecha)
-                    crearTransaccion(request, 'egreso', cuenta, terceraParteValor+ajusteDecimales, info, None, 1, fecha)                    
+                    crearTransaccion(request, 'egreso', cuenta, terceraParteValor+ajusteDecimales, info, tagName, 1, fecha)                    
             except Exception as ex:
                 print("Exception: ", ex)
                 error = "Ocurrio un error al intentar crear las transacciones"
         else:
-            return render(request, 'pagos/pago_apartamento.html', {"cuentas": selectCuentas(request)})
+            context = {
+                "cuentas": selectCuentas(request),
+                "tags": getSelectEtiquetas(request)
+            }
+            return render(request, 'pagos/pago_apartamento.html', context)
 
     if error:
         messages.error(request, error, extra_tags='error')

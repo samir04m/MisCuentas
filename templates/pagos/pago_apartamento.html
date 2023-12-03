@@ -30,6 +30,21 @@
                                 <label for="info">Información:</label>
                                 <input type="text" class="form-control" id="info" name="info" autocomplete="off" required>
                             </div>
+                            {% if tags %}
+                                <div class="form-group">
+                                    <label for="tag">Etiqueta:</label>
+                                    <select name="tag" class="form-control selectConBuscador" id="tag">
+                                        <option value="" selected disabled></option>
+                                        {% for t in tags %}
+                                            <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary" role="alert">
+                                    No se han creado etiquetas todavía.
+                                </div>
+                            {% endif %}
                             <div class="collapse pb-3" id="collapseDate">
                                 <label for="datetime">Fecha</label>
                                 <input type="text" class="form-control" name="datetime" id="datetime">

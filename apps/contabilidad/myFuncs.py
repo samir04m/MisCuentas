@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pytz
 from .models import *
 
-def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, tag, estado:int, fecha=None):
+def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, tagName:str, estado:int, fecha=None):
     saldo_anterior = 0
     if cuenta:
         saldo_anterior = cuenta.saldo
@@ -27,7 +27,7 @@ def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, t
         fecha=validarFecha(fecha),
         estado=estado,
         cuenta=cuenta,
-        etiqueta=getEtiquetaByName(tag, request.user),
+        etiqueta=getEtiquetaByName(tagName, request.user),
         user=request.user
     )
     transaccion.save()
