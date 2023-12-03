@@ -166,9 +166,10 @@ def pago_apartamento(request):
                 with transaction.atomic():
                     jotaPersona = Persona.objects.get(id=int(getUserSetting('Jota_PersonaId', request.user)))
                     manuelPersona = Persona.objects.get(id=int(getUserSetting('Manuel_PersonaId', request.user)))
-                    crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, jotaPersona, fecha)
-                    crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, manuelPersona, fecha)
-                    crearTransaccion(request, 'egreso', cuenta, terceraParteValor+ajusteDecimales, info, tagName, 1, fecha)                    
+                    prestamo1 = crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, jotaPersona, fecha)
+                    prestamo2 = crearPrestamo(request, 'yopresto', terceraParteValor, info, cuenta, manuelPersona, fecha)
+                    transaccion = crearTransaccion(request, 'egreso', cuenta, terceraParteValor+ajusteDecimales, info, tagName, 1, fecha)
+                    agruparTransaccionesPagoApartamento(prestamo1, prestamo2, transaccion)
             except Exception as ex:
                 print("Exception: ", ex)
                 error = "Ocurrio un error al intentar crear las transacciones"
@@ -185,6 +186,11 @@ def pago_apartamento(request):
         messages.success(request, 'Se registro el pago exitosamente', extra_tags='success')
     return redirect('pagos:listado')
 
+def agruparTransaccionesPagoApartamento(prestamo1, prestamo2, transaccion3):
+    transaccionPrestamo1 = TransaccionPrestamo.objects.filter(prestamo=prestamo1).first()
+    transaccionPrestamo2 = TransaccionPrestamo.objects.filter(prestamo=prestamo2).first()
+    transaccionPadre = crearGrupoTransaccion(None, transaccion3, transaccionPrestamo1.transaccion)
+    crearGrupoTransaccion(None, transaccionPadre, transaccionPrestamo2.transaccion)
 
 def establecerFechaPagos(request):
     if request.method == 'POST':

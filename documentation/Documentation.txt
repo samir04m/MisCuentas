@@ -8,3 +8,7 @@ ESTADOS TRANSACCION:
     1 - Transaccion realizada.
     2 - Transaccion agrupada. Es una transaccion que fue realizada pero se muestra dentro de grupo. Se tiene en cuenta en los reportes.
     3 - Transaccion padre de grupo. No se tiene en cuenta en los resportes ya que su valor es el total de todas las transacciones agrupadas.
+
+TIPOS TransaccionPrestamo:
+    1 - Egreso/ingreso transaccion. Relacion con la transaccion de ingreso o egreso al momento de crear el Prestamo.
+    2 - Pago del prestamo. Relacion con la transaccion en la cual se realiza el pago del prestamo.

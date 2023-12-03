@@ -13,7 +13,11 @@ from apps.usuario.views import getUserSetting
 @login_required
 def vista_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
-    return render(request, 'contabilidad/prestamo/vista_prestamo.html', {"prestamo":prestamo})
+    context = {
+        "prestamo":prestamo,
+        "transaccionesPago":TransaccionPrestamo.objects.filter(prestamo=prestamo, tipo=2).all()
+    }
+    return render(request, 'contabilidad/prestamo/vista_prestamo.html', context)
 
 @login_required
 def listar_prestamos(request):

@@ -100,6 +100,7 @@ class Prestamo(models.Model):
 class TransaccionPrestamo(models.Model):
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
     prestamo = models.ForeignKey(Prestamo, null=False, blank=False, on_delete=models.CASCADE)
+    tipo = models.IntegerField(default=2) # 1 ingreso/egreso prestamo - 2 pago prestamo
 
     class Meta:
         verbose_name = 'TransaccionPrestamo'

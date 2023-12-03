@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pytz
 from .models import *
 
-def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, tagName:str, estado:int, fecha=None):
+def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, tagName:str, estado:int, fecha=None) -> Transaccion:
     saldo_anterior = 0
     if cuenta:
         saldo_anterior = cuenta.saldo
@@ -33,12 +33,12 @@ def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, t
     transaccion.save()
     return transaccion
 
-def crearPrestamo(request, tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=None):
+def crearPrestamo(request, tipo, cantidad, info, cuenta:Cuenta, persona:Persona, fecha=None) -> Prestamo:
     fecha = validarFecha(fecha)
     if tipo == 'yopresto':
-        crearTransaccion(request, 'egreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
+        transaccion = crearTransaccion(request, 'egreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
     if tipo == 'meprestan':
-        crearTransaccion(request, 'ingreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
+        transaccion = crearTransaccion(request, 'ingreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
     prestamo = Prestamo(
         tipo=tipo,
         cantidad=cantidad,
@@ -49,6 +49,12 @@ def crearPrestamo(request, tipo, cantidad, info, cuenta:Cuenta, persona:Persona,
         persona=persona
     )
     prestamo.save()
+    transaccionPrestamo = TransaccionPrestamo(
+        prestamo=prestamo,
+        transaccion=transaccion,
+        tipo=1
+    )
+    transaccionPrestamo.save()
     return prestamo
 
 def crearCompraCredito(creditCard:CreditCard, valor:int, cuotas:int, info, etiqueta:Etiqueta, subtag:SubTag, fecha=None):
@@ -295,7 +301,7 @@ def crearGrupoTransaccion(request, transaccionPadre, transaccionNueva) -> Transa
                     tipo = transaccionPadre.tipo,
                     saldo_anterior = 0,
                     cantidad = transaccionPadre.cantidad,
-                    info = '(Grupo) ' + transaccionPadre.info,
+                    info = '[Grupo] ' + transaccionPadre.info,
                     fecha = transaccionPadre.fecha,
                     estado = 3,
                     cuenta = transaccionPadre.cuenta,
@@ -325,7 +331,8 @@ def crearGrupoTransaccion(request, transaccionPadre, transaccionNueva) -> Transa
                 return transaccionPadre
     except Exception as ex:
         printException(ex)
-        messages.error(request, 'Ocurrio un error al intentar agrupar las transacciones', extra_tags='error')
+        if request:
+            messages.error(request, 'Ocurrio un error al intentar agrupar las transacciones', extra_tags='error')
         return None
 
 def printException(ex):

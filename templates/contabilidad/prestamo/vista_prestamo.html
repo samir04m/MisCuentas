@@ -63,7 +63,7 @@
                         {% endif %}
                     </div>
                 </div>
-                {% if prestamo.transaccionprestamo_set.all %}
+                {% if transaccionesPago %}
                     <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Registro de pagos</h5>
                     <div class="card animate__animated animate__fadeInUp">
                         <div class="card-body">
@@ -76,7 +76,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for tp in prestamo.transaccionprestamo_set.all %}
+                                    {% for tp in transaccionesPago %}
                                         <tr>
                                             <td>{{tp.transaccion.fecha|date:'l, d F Y h:i A'}}</td>
                                             <td>$ {{tp.transaccion.cantidad|puntomil}}</td>

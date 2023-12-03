@@ -68,7 +68,7 @@ class TransaccionPrestamoResource(resources.ModelResource):
         model = TransaccionPrestamo
 
 class TransaccionPrestamoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('id','transaccion','prestamo',)
+    list_display = ('id','transaccion','prestamo','tipo',)
     resource_class = TransaccionPrestamoResource
 
 class CreditCardResource(resources.ModelResource):

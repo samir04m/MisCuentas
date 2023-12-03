@@ -144,6 +144,34 @@
                         {% endif %}
                     </div>
                 </div>
+
+                {% if prestamoRelacionado %}
+                    <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Prestamo relacionado</h5>
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-body">
+                            <table class="table table-responsive-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Persona</th>
+                                        <th>Saldo pendiente</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"><i class="{{prestamoRelacionado.cancelada|cancelada_icono}}"></i></td>
+                                        <td>{{prestamoRelacionado.persona}}</td>
+                                        <td>$ {{prestamoRelacionado.saldo_pendiente|puntomil}}</td>
+                                        <td>
+                                            <a href="{% url 'panel:vista_prestamo' prestamoRelacionado.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
