@@ -292,7 +292,7 @@ def getFormatoDinero(cantidad) -> str:
 #             transaccionExistente = transaccionesExistentes.first()
 #         crearGrupoTransaccion(request, transaccionExistente, transaccionNueva)
 
-def crearGrupoTransaccion(request, transaccionPadre, transaccionNueva) -> Transaccion:
+def crearGrupoTransaccion(request, transaccionPadre:Transaccion, transaccionNueva:Transaccion, fechaTransaccionGrupo = None) -> Transaccion:
     try:
         with transaction.atomic():
             if transaccionPadre.estado == 1:
@@ -302,7 +302,7 @@ def crearGrupoTransaccion(request, transaccionPadre, transaccionNueva) -> Transa
                     saldo_anterior = 0,
                     cantidad = transaccionPadre.cantidad,
                     info = '[Grupo] ' + transaccionPadre.info,
-                    fecha = transaccionPadre.fecha,
+                    fecha = fechaTransaccionGrupo if fechaTransaccionGrupo else transaccionPadre.fecha,
                     estado = 3,
                     cuenta = transaccionPadre.cuenta,
                     user = transaccionPadre.user

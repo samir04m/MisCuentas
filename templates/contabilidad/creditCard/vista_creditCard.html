@@ -143,6 +143,15 @@
                         </label>
                     </div>
                 </div>
+                <div class="collapse pb-3" id="collapseDate">
+                    <label for="datetime">Fecha</label>
+                    <input type="text" class="form-control" name="datetime" id="datetime">
+                </div>
+                <div class="text-right py-2">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate" title="Seleccionar fecha">
+                        Seleccionar <i class="fal fa-calendar-alt"></i>
+                    </button>
+                </div>
                 <div class="text-center">
                     <button class="btn btn-outline-primary">Realizar Pago</button>
                 </div>
@@ -195,4 +204,15 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
+        });
+    </script>
 {% endblock %}

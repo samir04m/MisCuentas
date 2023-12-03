@@ -69,7 +69,7 @@ def pagar_tarjeta(request, tarjeta_id):
             messages.error(request, 'La cuenta seleccionada no tiene el saldo suficiente para pagar la deuda', extra_tags='error')
         else:
             try:
-                pagarDeuda(creditCard, cuenta, tipoPago)
+                pagarDeuda(request, creditCard, cuenta, tipoPago)
                 messages.success(request, 'Pago realizado', extra_tags='success')
             except Exception as ex:
                 print("----- Exception -----", ex)
@@ -139,25 +139,32 @@ def eliminar_compra(request, compra_id):
 
     return redirect('panel:vista_creditCard', creditCard.id)
 
-def pagarDeuda(creditCard:CreditCard, cuenta:Cuenta, tipoPago:int):
+def pagarDeuda(request, creditCard:CreditCard, cuenta:Cuenta, tipoPago:int):
     comprasPendientes = CompraCredito.objects.filter(creditCard=creditCard, cancelada=False)
+    transaccionPadre = None
     for compra in comprasPendientes:
         cuotasCanceladas = 0
         for transaccionCompra in compra.transaccionpagocredito_set.all():
             transaccion = transaccionCompra.transaccion
+            transaccionNueva = None
             if transaccion.estado == 0:
                 if tipoPago == 1: # Totalidad deuda
-                    realizarPagoTransaccion(transaccion, cuenta, compra)
+                    transaccionNueva = realizarPagoTransaccion(transaccion, cuenta, compra)
                     compra.deuda -= transaccion.cantidad
                     creditCard.cupoDisponible += transaccion.cantidad
                     cuotasCanceladas += 1
                 elif tipoPago == 2: # Solo pagar correspondientes al mes actual
                     fecha = datetime.now()
                     if transaccion.fecha.year == fecha.year and transaccion.fecha.month == fecha.month:
-                        realizarPagoTransaccion(transaccion, cuenta, compra)
+                        transaccionNueva = realizarPagoTransaccion(transaccion, cuenta, compra)
                         compra.deuda -= transaccion.cantidad
                         creditCard.cupoDisponible += transaccion.cantidad
                         cuotasCanceladas += 1
+                if transaccionNueva: # logica para agrupar las transacciones que se van realizando
+                    if transaccionPadre:
+                        transaccionPadre = crearGrupoTransaccion(None, transaccionPadre, transaccionNueva, getDate(request.POST.get('datetime')))
+                    else:
+                        transaccionPadre = transaccionNueva # Solo se iguala la primera vez
             elif transaccion.estado == 1:
                 cuotasCanceladas += 1
         if cuotasCanceladas == compra.transaccionpagocredito_set.count():
@@ -166,7 +173,7 @@ def pagarDeuda(creditCard:CreditCard, cuenta:Cuenta, tipoPago:int):
             compra.save()
             creditCard.save()
 
-def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta, compra:CompraCredito):
+def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta, compra:CompraCredito) -> Transaccion:
     transaccion.saldo_anterior = cuenta.saldo
     cuenta.saldo = cuenta.saldo - transaccion.cantidad
     transaccion.cuenta = cuenta
@@ -175,6 +182,7 @@ def realizarPagoTransaccion(transaccion:Transaccion, cuenta:Cuenta, compra:Compr
     transaccion.estado = 1
     cuenta.save()
     transaccion.save()
+    return transaccion
 
 def getPagoMes(creditCard:CreditCard, fecha=None):
     if not fecha:
