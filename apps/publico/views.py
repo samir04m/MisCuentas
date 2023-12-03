@@ -48,7 +48,8 @@ def vistaPrestamo(request, prestamoId, token):
             prestamo =  get_object_or_404(Prestamo, id=prestamoId, persona=persona)
             context = {
                 "prestamo": prestamo,
-                "token": token
+                "token": token,
+                "transaccionesPago":TransaccionPrestamo.objects.filter(prestamo=prestamo, tipo=2).all()
             }
             return render(request, 'publico/vistaPrestamo.html', context)
     raise Http404("No se encontró la página")
