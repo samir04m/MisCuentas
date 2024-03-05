@@ -62,7 +62,7 @@ class Transaccion(models.Model):
     cantidad = models.IntegerField('Cantidad')
     info = models.TextField('Descripción', max_length=300)
     fecha = models.DateTimeField('Fecha')
-    estado = models.IntegerField('Estado', default=1) # 0 programada, 1 realizada
+    estado = models.IntegerField('Estado', default=1) # 0 programada, 1 realizada, 2 realizada agrupada, 3 padre grupo
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
     etiqueta = models.ForeignKey(Etiqueta, null=True, blank=True, on_delete=models.CASCADE)
     subtag = models.ForeignKey(SubTag, null=True, blank=True, on_delete=models.CASCADE)

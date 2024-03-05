@@ -86,7 +86,7 @@ class CompraCreditoResource(resources.ModelResource):
 
 class CompraCreditoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     # search_fields = ['creditCard_nombre']
-    list_display = ('id','creditCard','valor','fecha')
+    list_display = ('id','creditCard','valor','fecha','cancelada')
     resource_class = CompraCreditoResource
 
 class TransaccionPagoCreditoResource(resources.ModelResource):
