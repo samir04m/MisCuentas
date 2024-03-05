@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Pagos recurrentes{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="offset-lg-1 col-lg-7">
+                <h4 class="text-center text-white animate__animated animate__fadeInDown">Pagos recurrentes</h4>
+
+                <div class="card mb-3 animate__animated animate__fadeInUp" style="z-index: 1000;">
+                    <div class="card-body py-2">
+                        <form action="{% url 'pagos:establecerFechaPagos' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-sm-12 col-md-5 fz-14 pt-2 my-1">Establecer fecha para los pagos</div>
+                                <div class="col-sm-12 col-md-4 my-1">
+                                    <input type="text" class="form-control" name="datetime" id="datetime" value="{{fechaPagos}}">
+                                </div>
+                                <div class="col-sm-12 col-md-3 my-1">
+                                    <button type="submit" class="btn btn-primary btn-block">Establecer</button>
+                                </div>
+                            </div>
+                        </form>                        
+                    </div>
+                </div>
+
+                <div class="card animate__animated animate__fadeInUp">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:pago_apartamento' %}">Apartamento</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:hbomax' %}" onclick="return confirm('¿Desea realizar el pago de HBO Max?')">HBO Max</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:spotify' %}" onclick="return confirm('¿Desea realizar el pago de Spotify?')">Spotify</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:internet' %}" onclick="return confirm('¿Desea realizar el pago del Internet?')">Internet</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'pagos:cuotamoto' %}" onclick="return confirm('¿Desea realizar el pago de Cuota moto?')">Cuota moto</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="offset-lg-1 col-lg-3 animate__animated animate__fadeInRight">
+                <br>
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
+        });
+    </script>
+{% endblock %}

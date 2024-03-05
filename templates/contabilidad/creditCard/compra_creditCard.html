@@ -1,0 +1,119 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Compra con {{creditCard.nombre}}{% endblock %}
+
+{% block contenido %}
+    <div class="container pt-2">
+        <div class="row">
+            <div class="offset-lg-3 col-lg-6">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">
+                            Compra con {{creditCard.nombre}}
+                        </h5>
+                        <hr>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group col-8">
+                                    <label for="cantidad">Valor</label>
+                                    <input type="text" id="cantidad" name="cantidad" class="form-control" autocomplete="off" placeholder="$" required >
+                                </div>
+                                <div class="form-group col-4">
+                                    <label for="cuotas">Cuotas</label>
+                                    <input type="number" id="cuotas" name="cuotas" class="form-control" min="1" max="24" value="1" required >
+                                </div>
+                                <div class="form-group col-lg-12">
+                                    <label for="info">Descripción</label>
+                                    <textarea name="info" id="info" rows="3" class="form-control" required></textarea>
+                                </div>
+                            </div>
+                            {% if tags %}
+                                <div class="mb-3">
+                                    <label for="tag">Etiqueta</label>
+                                    <select name="tag" class="form-control" id="tag">
+                                        <option value="" selected disabled></option>
+                                        {% for t in tags %}
+                                            <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary" role="alert">
+                                    No hay etiquetas
+                                </div>
+                            {% endif %}
+
+                            <div class="collapse pb-3" id="collapseTag">
+                                <label for="newTag">Crear nueva etiqueta</label>
+                                <input type="text" class="form-control" name="newTag" id="newTag" placeholder="Nombre">
+                            </div>
+                            <div class="collapse pb-3" id="collapseSubTag">
+                                <label for="subtag">Segunda etiqueta</label>
+                                <select name="subtag" class="form-control" id="subtag">
+                                    <option value="" selected disabled></option>
+                                    {% for t in request.user.subtag_set.all %}
+                                        <option value="{{t.id}}">{{t.nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="collapse pb-3" id="collapsePeople">
+                                <div class="form-group">
+                                    <label for="personas">Personas que deberan pagar esta compra</label>
+                                    <select multiple class="form-control" id="personas" name="personas">
+                                        {% for persona in personas %}
+                                            <option value="{{persona.id}}">{{persona.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="collapse pb-3" id="collapseDate">
+                                <label for="datetime">Fecha</label>
+                                <input type="text" class="form-control" name="datetime" id="datetime">
+                            </div>
+                            
+                            <div class="text-right py-2">
+                                <button class="btn btn-outline-secondary btn-sm my-1" type="button" data-toggle="collapse" data-target="#collapseTag" aria-expanded="false" aria-controls="collapseTag" title="Nueva etiqueta">
+                                    Nueva <i class="fal fa-tag"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm my-1" type="button" data-toggle="collapse" data-target="#collapseSubTag" aria-expanded="false" aria-controls="collapseSubTag" title="Agregar sub tag">
+                                    Agregar <i class="fal fa-tags"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm my-1" type="button" data-toggle="collapse" data-target="#collapsePeople" aria-expanded="false" aria-controls="collapsePeople" title="Seleccionar personas">
+                                    Seleccionar <i class="far fa-users"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm my-1" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate" title="Seleccionar fecha">
+                                    Seleccionar <i class="fal fa-calendar-alt"></i>
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <button class="btn btn-outline-primary m-t-20">
+                                    Registrar compra <i class="fal fa-chevron-double-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#cantidad', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
+        });
+    </script>
+{% endblock %}

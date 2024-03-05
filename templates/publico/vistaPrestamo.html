@@ -1,0 +1,75 @@
+{% extends 'base/basePublico.html' %}
+{% load misTags %}
+
+{% block title %}Detalles del prestamo{% endblock %}
+
+{% block contenido %}
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">Detalles del Prestamo</h5>
+                        <table class="table table-borderless table-responsive-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{prestamo.fecha|date:'l, d F Y, h:i A'}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Persona involucrada:</th>
+                                    <td><a href="{% url 'publico:resumenPrestamos' token %}">{{prestamo.persona.nombre}}</a></td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo de prestamo:</th>
+                                    <td>{{prestamo.tipo|tipoPrestamoPublico}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valor del prestamo:</th>
+                                    <td>$ {{prestamo.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Pendiente de pago:</th>
+                                    <td>$ {{prestamo.saldo_pendiente|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Información:</th>
+                                    <td>{{prestamo.info}}</td>
+                                </tr>                                
+                            </tbody>
+                        </table>
+                        {% if prestamo.cancelada %}
+                            <hr>
+                            <div class="text-center">
+                                <div class="text-secondary fs-14">YA SE PAGO LA TOTALIDAD DEL PRESTAMO</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if transaccionesPago %}
+                    <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Registro de pagos</h5>
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-body">
+                            <table class="table table-responsive-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tp in transaccionesPago %}
+                                        <tr>
+                                            <td>{{tp.transaccion.fecha|date:'l, d F Y h:i A'}}</td>
+                                            <td>$ {{tp.transaccion.cantidad|puntomil}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

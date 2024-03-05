@@ -1,0 +1,81 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load misTags %}
+
+{% block title %}Movimientos en {{cuenta.nombre}}{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <div class="mb-3 text-center animate__animated animate__fadeInDown">
+                            <h5 class="">
+                                Movimientos en {{cuenta.nombre}} 
+                                {% if mostrarSaldoCuentas %} | <span class="">Saldo: ${{cuenta.saldo|puntomil}}</span> {% endif %}
+                            </h5>
+                            <a href="{% url 'panel:crear_ingreso' cuenta.id %}" class="btn btn-sm btn-outline-primary my-1">
+                                <i class="fas fa-plus"></i> Crear Ingreso  
+                            </a>
+                            <a href="{% url 'panel:crear_egreso' cuenta.id %}" class="btn btn-sm btn-outline-danger my-1">
+                                <i class="fas fa-minus"></i> Crear Egreso
+                            </a>
+                            <a href="{% url 'panel:transferir' cuenta.id %}" class="btn btn-sm btn-outline-warning my-1">
+                                <i class="fas fa-exchange-alt"></i> Hacer Transferencia
+                            </a>
+                        </div>
+                        <hr>
+                        {% if transacciones %}
+                            <table class="table table-sm table-responsive-sm" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Valor</th>
+                                        <th>Etiqueta</th>
+                                        <th>Información</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in transacciones %}
+                                        <tr class="{{t|textcolor}}">
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{t.fecha|date:'D, d/m/y h:iA'}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{t.fecha|date:'d/m/y h:iA'}}
+                                                </span>
+                                            </td>
+                                            <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
+                                            <td>
+                                                {% if t.etiqueta.id %}
+                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}"  class="reset-color-a">{{t|sin_etiqueta}}</a>
+                                                {% else %}
+                                                    {{t|sin_etiqueta}}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{t.info|truncatechars:'35'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' t.id %}"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                <i class="fal fa-external-link"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+
+                        {% else %}
+                            <div class="fs-18 text-center my-4">
+                                No hay movimientos en esta cuenta.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista de Transaccion{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">
+                            Detalles de la Transacción
+                            <div class="float-right">
+                                {% if request.user.is_superuser %}
+                                    <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success btn-sm" target="_blank"><i class="fal fa-edit"></i></a>
+                                {% endif %}
+                                {% if transaccion.estado == 1 %}
+                                    <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('¿Esta seguro de deshacer la transacción?')"><i class="fal fa-undo"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </h5>
+                        <hr>
+                        {% if transaccion.estado == 0 %}
+                            <div class="alert alert-primary" role="alert">
+                                <h4 class="alert-heading">Esta es una transacción programada!</h4>
+                                <p class="mb-0">Lo que significa que no ha sido debitada o pagada todavia</p>
+                            </div>
+                        {% endif %}
+
+                        <table class="table table-responsive-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{transaccion.fecha|date:'l d F Y - h:i A'}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo:</th>
+                                    <td>
+                                        {% if transaccion.tipo == 'egreso' %}
+                                            <a href="{% url 'reporte:egresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% else %}
+                                            <a href="{% url 'reporte:ingresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Valor:</th>
+                                    <td>$ {{transaccion.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cuenta:</th>
+                                    <td>
+                                        {% if transaccion.cuenta %}
+                                            <a href="{% url 'panel:movimientos_cuenta' transaccion.cuenta.id %}">
+                                                {{transaccion.cuenta.nombre}}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo anterior:</th>
+                                    <td>$ {{transaccion.saldo_anterior|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Etiqueta</th>
+                                    <td>
+                                        {% if transaccion.etiqueta %}
+                                            <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
+                                                {{transaccion.etiqueta.nombre}}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Sub etiqueta</th>
+                                    <td>
+                                        {% if transaccion.subtag %}
+                                            {{transaccion.subtag.nombre}}
+                                        {% else %}
+                                            <a class="btn btn-outline-secondary btn-sm rounded-circle" data-toggle="collapse" href="#collapseAddSubTag" role="button" aria-expanded="false" aria-controls="collapseAddSubTag">
+                                                <i class="fal fa-plus"></i>
+                                            </a>
+                                            <div class="collapse pt-2" id="collapseAddSubTag" >
+                                                <form action="{% url 'panel:agregar_subtag'  transaccion.id %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <div class="form-row">
+                                                        <div class="col-8 my-1">
+                                                            <select class="custom-select mr-sm-2" id="subtag" name="subtag" required>
+                                                                <option value="" selected disabled></option>
+                                                                {% for subtag in request.user.subtag_set.all %}
+                                                                    <option value="{{subtag.id}}">{{subtag.nombre}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4 my-1">
+                                                            <button type="submit" class="btn btn-outline-primary">
+                                                                <i class="fal fa-plus"></i> <i class="fal fa-tags"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Información:</th>
+                                    <td>{{transaccion.info|linebreaks}}</td>
+                                </tr>
+                                {% if transaccion.transaccionpagocredito_set.first %}
+                                    <tr>
+                                        <th>Compra a crédito</th>
+                                        <td>
+                                            <a href="{% url 'panel:vista_compra' transaccion.transaccionpagocredito_set.first.compraCredito.id %}">
+                                                {{transaccion.transaccionpagocredito_set.first.compraCredito.creditCard}}
+                                                {{transaccion.transaccionpagocredito_set.first.compraCredito.fecha|date:'d/m/y'}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                                {% if transaccion.transacciones_hijas.first %}
+                                    <tr>
+                                        <th>Grupo</th>
+                                        <td>
+                                            <a href="{% url 'panel:vista_transaccion' transaccion.transacciones_hijas.first.transaccionPadre.id %}">
+                                                Ver transacciones de este grupo
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        {% if transaccion.estado == 1 and not transaccion.transaccionpagocredito_set.first  %}
+                            <div class="text-center">
+                                <a href="{% url 'panel:agregar_transaccion_grupo' transaccion.id %}" class="btn btn-outline-primary">Agregar transacción al grupo</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if prestamoRelacionado %}
+                    <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Prestamo relacionado</h5>
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-body">
+                            <table class="table table-responsive-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Persona</th>
+                                        <th>Saldo pendiente</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"><i class="{{prestamoRelacionado.cancelada|cancelada_icono}}"></i></td>
+                                        <td>{{prestamoRelacionado.persona}}</td>
+                                        <td>$ {{prestamoRelacionado.saldo_pendiente|puntomil}}</td>
+                                        <td>
+                                            <a href="{% url 'panel:vista_prestamo' prestamoRelacionado.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

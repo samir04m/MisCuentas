@@ -1,0 +1,218 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}{{creditCard.nombre}}{% endblock %}
+
+{% block contenido %}
+    <div class="container pt-2">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h3>
+                                <i class="fal fa-credit-card"></i> {{creditCard.nombre}}
+                                <button type="button" class="btn btn-outline-primary rounded-circle px-2 py-0" data-toggle="modal" data-target="#modalInfo">
+                                    <i class="fal fa-info"></i>
+                                </button>
+                            </h3>
+                            <a href="{% url 'panel:crear_compra' creditCard.id %}" class="btn btn-sm btn-outline-primary m-l-10">
+                                Registrar compra <i class="fal fa-plus"></i>
+                            </a>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                                <p>
+                                    Cupo total: ${{creditCard.cupo|puntomil}} <br>
+                                    Cupo disponible: ${{creditCard.cupoDisponible|puntomil}} <br>
+                                    Deuda total: ${{creditCard.deuda|puntomil}} 
+                                    {% if deudaAjena %}
+                                        (${{deudaPropia|puntomil}} propia, ${{deudaAjena|puntomil}} ajena)
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-sm-12 col-md-6 text-right">
+                                {% if creditCard.deuda %}
+                                    <button type="button" class="btn btn-outline-info my-1" data-toggle="modal" data-target="#staticBackdrop">
+                                        Pagar tarjeta
+                                    </button> <br>
+                                    Pago mínimo: ${{deudaMes|puntomil}}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr>
+                        <h5 class="text-center my-3">
+                            Compras realizadas
+                        </h5>
+                        {% if creditCard.compracredito_set.all %}
+                            <table class="table table-responsive-sm" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Fecha</th>
+                                        <th>Valor</th>
+                                        <th>Deuda</th>
+                                        <th>Etiqueta</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for compra in creditCard.compracredito_set.all %}
+                                        <tr class="{{compra.cancelada|cancelada_color}}">
+                                            <td class="text-center">
+                                                <i class="{{compra.cancelada|cancelada_icono}}"></i>
+                                            </td>
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{compra.fecha|date:'D, d/m/y h:iA'}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{compra.fecha|date:'d/m/y h:iA'}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                ${{compra.valor|puntomil}}
+                                            </td>
+                                            <td>
+                                                ${{compra.deuda|puntomil}}
+                                            </td>
+                                            <td>
+                                                {{compra.etiqueta}}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_compra' compra.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fal fa-external-link"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center text-secondary">
+                                <i class="fal fa-transporter-empty fa-2x"></i> <br>
+                                No se han registrado compras
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Realizar Pago -->
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Pagar de tarjeta de crédito</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'panel:pagar_tarjeta' creditCard.id %}" method="POST">
+                {% csrf_token %}
+                <input type="number" name="deudaMes" id="deudaMes" value="{{deudaMes}}" class="d-none">
+                <input type="number" name="deudaTotal" id="deudaTotal" value="{{creditCard.deuda}}" class="d-none">
+
+                <div class="form-group">
+                    <label for="cuenta">Seleccione una cuenta para realizar el pago</label>
+                    <select name="cuenta" class="form-control" id="cuenta">
+                        {% for cuenta in cuentas %}
+                            <option value="{{cuenta.id}}">{{cuenta.nombre}} - ${{cuenta.saldo|puntomil}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipoPago" id="tipoPago1" value="2" checked>
+                        <label class="form-check-label" for="tipoPago1">
+                            Pago mínimo ${{deudaMes|puntomil}}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipoPago" id="tipoPago2" value="1">
+                        <label class="form-check-label" for="tipoPago2">
+                            Pagar total ${{creditCard.deuda|puntomil}}
+                        </label>
+                    </div>
+                </div>
+                <div class="collapse pb-3" id="collapseDate">
+                    <label for="datetime">Fecha</label>
+                    <input type="text" class="form-control" name="datetime" id="datetime">
+                </div>
+                <div class="text-right py-2">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseDate" aria-expanded="false" aria-controls="collapseDate" title="Seleccionar fecha">
+                        Seleccionar <i class="fal fa-calendar-alt"></i>
+                    </button>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-outline-primary">Realizar Pago</button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal Información -->
+    <div class="modal fade" id="modalInfo" tabindex="-1" aria-labelledby="modalInfoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalInfoLabel">Información de la tarjeta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Dia de corte: {{creditCard.diaCorte}}
+                    <span class="float-right">Dia de pago: {{creditCard.diaPago}}</span> 
+                </p>
+                <h6 class="text-center">Próximos pagos</h6>
+                {% if proximosPagos %}
+                    <table class="table table-responsive-sm table-borderless">
+                        <tbody>
+                            {% for pagoMes in proximosPagos %}
+                                <tr>
+                                    <th>{{pagoMes.fecha}}</th>
+                                    <td>${{pagoMes.pagoMes|puntomil}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center text-muted">
+                        No hay pagos en los siguentes meses
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetime').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A'
+            });
+        });
+    </script>
+{% endblock %}

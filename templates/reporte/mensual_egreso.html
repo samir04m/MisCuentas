@@ -1,0 +1,90 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load misTags %}
+
+{% block title %}Egresos por Mes{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-lg-9">
+                <h5 class="text-white text-center mb-3">Reporte Mensual de Egresos</h5>
+                <div class="card">
+                    <div class="card-body">
+                        {% if egresos %}
+                            <div id="container" style="width:100%; height:400px;"></div>
+                                <br>
+                            <table class="table table-responsive-sm" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Mes</th>
+                                        <th>N° Egresos</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for egreso in egresos %}
+                                        <tr>
+                                            <td>{{egreso.fecha|date:'F Y'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_mes' 'egreso' egreso.fecha|date:'m-Y' %}" class="reset-">{{egreso.nregistros}} egresos</a>
+                                            </td>
+                                            <td>$ {{egreso.total|puntomil}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        {% else %}
+                            <div class="text-center">No hay Reporte disponible</div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-3">
+                <br>
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+                <br>
+                {% include 'user/alert_switchUserSetting.html' %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/highcharts.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var myChart = Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Egresos de los ultimos {{numeroMeses}} meses'
+                },
+                xAxis: {
+                    categories: [
+                        {% for g in grafica %}"{{g.fecha|date:'M Y'}}", {% endfor %}
+                    ]
+                },
+                yAxis: {
+                    title: {
+                        text: '$ COP'
+                    }
+                },
+                series: [{
+                    name: 'Egreso',
+                    color: '#ff5d5d',
+                    data: [
+                        {% for g in grafica %}{{g.total}}, {% endfor %}
+                    ]
+                }]
+            });
+        });
+    </script>
+{% endblock %}

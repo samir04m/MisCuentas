@@ -1,0 +1,96 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista grupo de transacciones{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">
+                            Grupo de Transacciones
+                            <div class="float-right">
+                                {% if request.user.is_superuser %}
+                                    <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success btn-sm" target="_blank"><i class="fal fa-edit"></i></a>
+                                {% endif %}
+                            </div>
+                        </h5>
+                        <hr>
+                        <table class="table table-responsive-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{transaccion.fecha|date:'l d F Y - h:i A'}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo:</th>
+                                    <td>
+                                        {% if transaccion.tipo == 'egreso' %}
+                                            <a href="{% url 'reporte:egresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% else %}
+                                            <a href="{% url 'reporte:ingresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Valor total:</th>
+                                    <td>$ {{transaccion.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cuenta:</th>
+                                    <td>
+                                        {% if transaccion.cuenta %}
+                                            <a href="{% url 'panel:movimientos_cuenta' transaccion.cuenta.id %}">
+                                                {{transaccion.cuenta.nombre}}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    <th>Valor</th>
+                                    <th>Descripción</th>
+                                    <th>Etiqueta</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for grupo in transaccion.transacciones_padres.all %}
+                                    <tr>
+                                        <td>${{grupo.transaccionHija.cantidad|puntomil}}</td>
+                                        <td>{{grupo.transaccionHija.info|truncatechars:'40'}}</td>
+                                        <td>
+                                            {% if grupo.transaccionHija.etiqueta %}
+                                                <a href="{% url 'panel:movimientos_etiqueta' grupo.transaccionHija.etiqueta.id %}">
+                                                    {{grupo.transaccionHija.etiqueta.nombre}}
+                                                </a>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'panel:vista_transaccion' grupo.transaccionHija.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fal fa-external-link"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="text-center">
+                            <a href="{% url 'panel:agregar_transaccion_grupo' transaccion.id %}" class="btn btn-outline-primary">Agregar transacción al grupo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

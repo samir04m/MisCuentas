@@ -1,0 +1,96 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista Prestamo{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">Detalles del Prestamo</h5>
+                        <table class="table table-borderless table-responsive-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Persona involucrada:</th>
+                                    <td><a href="{% url 'panel:vista_persona' prestamo.persona.id %}">{{prestamo.persona.nombre}}</a></td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo de prestamo:</th>
+                                    <td>{{prestamo.get_tipo_display}}</td>
+                                </tr>
+                                {% if prestamo.cuenta %}
+                                    <tr>
+                                        <th>Cuenta relacionada:</th>
+                                        <td><a href="{% url 'panel:movimientos_cuenta' prestamo.cuenta.id %}">{{prestamo.cuenta.nombre}}</a></td>
+                                    </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>Valor del prestamo:</th>
+                                    <td>$ {{prestamo.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo pendiente:</th>
+                                    <td>$ {{prestamo.saldo_pendiente|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Información:</th>
+                                    <td>{{prestamo.info}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cancelado:</th>
+                                    <td><i class="{{prestamo.cancelada|cancelada_icono}}"></i></td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{prestamo.fecha|date:'l, d F Y h:i A'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr>
+                        {% if prestamo.cancelada %}
+                            <div class="text-center">
+                                <div class="text-secondary fs-14">El PRESTAMO YA FUE CANCELADO</div>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'panel:eliminar_prestamo' prestamo.id %}" class="btn btn-outline-danger mr-3" id="confirmDelete">
+                                <i class="fal fa-undo"></i> Deshacer
+                            </a>
+                            <a href="{% url 'panel:pagar_prestamo' prestamo.id %}" class="btn btn-outline-primary float-right">
+                                Registrar Pago <i class="fal fa-money-check-edit-alt"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if transaccionesPago %}
+                    <h5 class="text-center mt-4 mb-2 text-light animate__animated animate__fadeInUp">Registro de pagos</h5>
+                    <div class="card animate__animated animate__fadeInUp">
+                        <div class="card-body">
+                            <table class="table table-responsive-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tp in transaccionesPago %}
+                                        <tr>
+                                            <td>{{tp.transaccion.fecha|date:'l, d F Y h:i A'}}</td>
+                                            <td>$ {{tp.transaccion.cantidad|puntomil}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' tp.transaccion.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

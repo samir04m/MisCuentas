@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Egreso{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card shadow animate__animated animate__fadeIn">
+                    <div class="card-header text-center">
+                        Agregar {{transaccionPadre.tipo}} al grupo
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info p-10" role="alert">
+                            Saldo disponible: ${{cuenta.saldo|puntomil}} ({{ cuenta.nombre }})
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="cantidad">Valor</label>
+                                <input type="text" class="form-control" name="cantidad" id="cantidad" placeholder="$" autocomplete="off" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="info">Descripción</label>
+                                <textarea class="form-control" name="info" id="info" rows="2" required></textarea>
+                            </div>
+
+                            {% if tags %}
+                                <div class="mb-3">
+                                    <label for="tag">Etiqueta</label>
+                                    <select name="tag" class="form-control selectConBuscador" id="tag">
+                                        <option value="" selected disabled></option>
+                                        {% for t in tags %}
+                                            <option value="{{t.id}}">{{t.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-secondary" role="alert">
+                                    No se han creado etiquetas todavía.
+                                </div>
+                            {% endif %}
+
+
+                            <div class="collapse pb-3" id="collapseSubTag">
+                                <label for="subtag">Segunda etiqueta</label>
+                                <select name="subtag" class="form-control" id="subtag">
+                                    <option value="" selected disabled></option>
+                                    {% for t in request.user.subtag_set.all %}
+                                        <option value="{{t.id}}">{{t.nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="text-right py-2">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseSubTag" aria-expanded="false" aria-controls="collapseSubTag" title="Agregar sub tag">
+                                    Agregar sub tag <i class="fal fa-tags"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-outline-primary m-t-20">Agregar transacción</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#cantidad', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
+{% endblock %}
