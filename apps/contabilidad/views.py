@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect, request
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
+from django.http import Http404
 from datetime import datetime
 from apps.usuario.models import UserSetting
 from apps.usuario.views import getUserSetting, setUserSetting
@@ -29,11 +30,13 @@ def panel(request):
     cuentas = Cuenta.objects.filter(user = request.user, visible = True).order_by('id')
     personas = Persona.objects.filter(user = request.user, visible = True).order_by('id')
     creditCards = CreditCard.objects.filter(user = request.user, visible = True).order_by('id')
+    userpersonas = UserPersona.objects.filter(user = request.user)
     context = {
         "cuentas":cuentas,
         "personas":personas, 
         "creditCards":creditCards,
-        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
+        "userpersonas":userpersonas
     }
     return render(request, 'contabilidad/panel.html', context)
 
@@ -138,14 +141,18 @@ def crear_ingreso(request, cuenta_id):
 
 @login_required
 def vista_transaccion(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, id=transaccion_id, user=request.user)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+    userpersona = UserPersona.objects.filter(admin=transaccion.user, user=request.user).first()
+    if transaccion.user != request.user and not userpersona: # Si el usuario logeado no esta relacionado con la transacción no se permite verla
+        raise Http404("Página no encontrada")
     fileName =  'vista_transaccionGrupo.html' if transaccion.estado == 3 else 'vista_transaccion.html'
     request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
     transaccionPrestamo = TransaccionPrestamo.objects.filter(transaccion=transaccion, tipo=1).first()
     prestamoRelacionado = transaccionPrestamo.prestamo if transaccionPrestamo else None
     context = {
         "transaccion":transaccion,
-        "prestamoRelacionado":prestamoRelacionado
+        "prestamoRelacionado":prestamoRelacionado,
+        "userpersona":userpersona
     }
     return render(request, 'contabilidad/transaccion/'+fileName, context)
 

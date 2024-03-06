@@ -97,6 +97,12 @@ class Prestamo(models.Model):
     def __str__(self):
         return "{} - {} {} - {}".format(self.id, self.tipo, self.persona.nombre, self.fecha.strftime("%d/%b/%Y"))
 
+    def nombreTipoInvertido(self):
+        tipo_dict = dict(self.TIPO_CHOICES)
+        tipoContrario = 'yopresto' if self.tipo == 'meprestan' else 'meprestan'
+        return tipo_dict.get(tipoContrario, None)
+
+
 class TransaccionPrestamo(models.Model):
     transaccion = models.ForeignKey(Transaccion, null=False, blank=False, on_delete=models.CASCADE)
     prestamo = models.ForeignKey(Prestamo, null=False, blank=False, on_delete=models.CASCADE)
@@ -175,3 +181,22 @@ class CompraCreditoPrestamo(models.Model):
     class Meta:
         verbose_name = 'CompraCreditoPrestamo'
         verbose_name_plural = 'CompraCreditoPrestamo'
+
+class SolicitudPagoPrestamo(models.Model):
+    pagoMultiple = models.BooleanField(default=False)
+    valorPago = models.IntegerField()
+    info = models.CharField(max_length=250, null=True, blank=True)
+    prestamo = models.ForeignKey(Prestamo, null=True, blank=True, on_delete=models.CASCADE)
+    cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    fechaPago = models.CharField(max_length=250, null=True, blank=True)
+    tipoPrestamoPagoMultiple = models.CharField(max_length=20, null=True, blank=True)
+    fechaSolicitud = models.DateTimeField()
+    estado = models.IntegerField(default=0) # 0-Creado, 1-Aprobada, 2-Rechazada
+    class Meta:
+        ordering = ['-fechaSolicitud']
+    def __str__(self):
+        return "prestamo [{}] - cuenta [{}] - usuario [{}] - Estado {}".format(self.prestamo, self.cuenta, self.user, self.estado)
+
+
+

@@ -154,7 +154,7 @@ def eliminarTransaccion(transaccion):
         cuenta.save()
     transaccion.delete()
 
-def getDate(inputDate):
+def getDate(inputDate:str):
     now = datetime.now()
     if inputDate:
         grupos = inputDate.split(" ")
@@ -219,11 +219,11 @@ def selectCuentas(request):
 def selectEtiquetas(request):
     return Etiqueta.objects.filter(user=request.user, tipo=1)
 
-def getCuentaFromPost(request) -> int:
+def getCuentaFromPost(request) -> Cuenta:
     if request.POST.get('cuenta') == '0':
         return None
     else:
-        return Cuenta.objects.get(id=int(request.POST.get('cuenta')))
+        return Cuenta.objects.filter(id=int(request.POST.get('cuenta'))).first()
 
 def getEtiquetaFromPost(request) -> Etiqueta:
     if request.POST.get('tag'):

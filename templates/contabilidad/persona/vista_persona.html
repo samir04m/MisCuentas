@@ -12,7 +12,17 @@
                     <div class="card-body">
                         <div class="text-center">
                             <div style="font-size:40px;">
-                                <i class="fas fa-user-circle"></i> {{persona.nombre}}
+                                <i class="fas fa-user-circle"></i>
+                                {% if not userpersona %}
+                                    {{persona.nombre}}
+                                    <span class="text-muted fz-26">
+                                        {% if persona.userpersona_set.first %}
+                                            [ {{ persona.userpersona_set.first.user }} ]
+                                        {% endif %}
+                                    </span>
+                                {% else %}
+                                    {{ userpersona.admin }}
+                                {% endif %}
                             </div>
                             <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">
                                 Crear Prestamo <i class="fal fa-plus"></i>
@@ -60,7 +70,13 @@
                                                     {{p.fecha|date:'d/m/y h:iA'}}
                                                 </span>
                                             </td>
-                                            <td>{{p.get_tipo_display}}</td>
+                                            <td>
+                                                {% if userpersona %}
+                                                    {{p.nombreTipoInvertido}}
+                                                {% else %}
+                                                    {{p.get_tipo_display}}
+                                                {% endif %}
+                                            </td>
                                             
                                             <td>${{p.cantidad|puntomil}}</td>
                                             <td>${{p.saldo_pendiente|puntomil}}</td>

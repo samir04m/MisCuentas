@@ -106,6 +106,29 @@
                     </p>
                 {% endif %}
 
+                {% if userpersonas %}
+                    <div class="text-center text-light my-3 animate__animated animate__fadeInDown">
+                        <b class="fs-22">Co administración de prestamos</b>
+                    </div>
+                    <div class="row">
+                        {% for userpersona in userpersonas %}
+                            <div class="col-sm-12 col-lg-6 py-2">
+                                <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
+                                    <div class="card-body p-2 pl-3">
+                                        <a href="{% url 'panel:vista_persona' userpersona.persona.id %}" class="fs-20">
+                                            <i class="fas fa-user-circle"></i> {{userpersona.admin}}
+                                        </a>
+                                        <div class="float-right">
+                                            <a href=""
+                                                class="btn btn-sm btn-primary rounded-pill">Prestar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
             </div>
             <div class="col-sm-12 offset-md-1 col-md-5 offset-lg-1 col-lg-3 mt-3">
                 {% include 'base/panel_enlaces.html' %}

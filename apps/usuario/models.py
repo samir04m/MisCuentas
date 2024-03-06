@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from apps.contabilidad.models import Persona
 
 class UserSetting(models.Model):
     key = models.CharField(max_length=100)
@@ -12,3 +13,18 @@ class UserSetting(models.Model):
 
     def __str__(self):
         return "{} {} {}".format(self.key, self.value, self.user)
+
+class UserPersona(models.Model):
+    admin = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE, related_name='user_admin')
+    persona = models.ForeignKey(Persona, null=False, blank=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE, related_name='user_persona')
+    def __str__(self):
+        return "{} -> {} ({})".format(self.admin, self.user, self.persona)
+
+class UserNotification(models.Model):
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    relatedObject = models.CharField(max_length=250, null=True, blank=True)
+    date = models.DateTimeField()
+    readDate = models.DateTimeField(null=True, blank=True)

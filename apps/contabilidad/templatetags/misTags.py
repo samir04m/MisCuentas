@@ -165,3 +165,8 @@ def tipoPrestamoPublico(tipoPrestamo):
         return "Me deben"
     else:
         return ""
+
+@register.filter
+def estadoSolicitudPagoPrestamo(estado:int):
+    nombreEstados = ["Creada", "Aprobada", "Rechazada"]
+    return nombreEstados[estado]

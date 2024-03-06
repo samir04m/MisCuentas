@@ -9,6 +9,7 @@ from .models import *
 from .forms import *
 from .myFuncs import *
 from apps.usuario.views import getUserSetting
+from apps.usuario.models import UserPersona
 
 @login_required
 def crear_persona(request):
@@ -24,32 +25,19 @@ def crear_persona(request):
 
 @login_required
 def vista_persona(request, persona_id):
-    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
-    prestamos = Prestamo.objects.filter(persona=persona, cancelada=False)
-    yoDebo = 0
-    meDeben = 0
-    for p in prestamos:
-        if p.tipo == 'meprestan': 
-            yoDebo += p.saldo_pendiente
-        elif p.tipo == 'yopresto':
-            meDeben += p.saldo_pendiente
-
-    diferencia = meDeben-yoDebo if (yoDebo > 0 and meDeben > 0) else 0
-    diferenciaMensaje = ""
-    if diferencia > 0: 
-        diferenciaMensaje = "Finalmente a usted le deben"
-    elif diferencia < 0:
-        diferenciaMensaje = "Finalmente usted debe"
+    userpersona = UserPersona.objects.filter(persona__id=persona_id, user=request.user).first()
+    if userpersona:
+        persona = get_object_or_404(Persona, id=persona_id, user=userpersona.admin)
+    else:
+        persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
     
     context = {
-        "persona": persona, 
-        "yoDebo": yoDebo,
-        "meDeben": meDeben,
-        "diferencia": abs(diferencia),
-        "diferenciaMensaje": diferenciaMensaje,
+        "persona": persona,
         "cuentas": Cuenta.objects.filter(user=request.user),
-        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
+        "userpersona":userpersona
     }
+    context.update(obtenerInfoPrestamosPersona(persona, userpersona))
     return render(request, 'contabilidad/persona/vista_persona.html', context)
 
 @login_required
@@ -74,3 +62,32 @@ def ocultar_persona(request, persona_id):
     persona.visible = not persona.visible
     persona.save()
     return redirect(request.META.get('HTTP_REFERER')) # redirect url anterior vista anterior
+
+def obtenerInfoPrestamosPersona(persona:Persona, userpersona:UserPersona):
+    prestamos = Prestamo.objects.filter(persona=persona, cancelada=False)
+    yoDebo = 0
+    meDeben = 0
+    for p in prestamos:
+        if p.tipo == 'meprestan': 
+            yoDebo += p.saldo_pendiente
+        elif p.tipo == 'yopresto':
+            meDeben += p.saldo_pendiente
+    
+    if userpersona:
+        temp = yoDebo
+        yoDebo = meDeben
+        meDeben = temp
+
+    diferencia = meDeben-yoDebo if (yoDebo > 0 and meDeben > 0) else 0
+    diferenciaMensaje = ""
+    if diferencia > 0: 
+        diferenciaMensaje = "Finalmente a usted le deben"
+    elif diferencia < 0:
+        diferenciaMensaje = "Finalmente usted debe"
+
+    return {
+        "yoDebo": yoDebo,
+        "meDeben": meDeben,
+        "diferencia": abs(diferencia),
+        "diferenciaMensaje": diferenciaMensaje
+    }

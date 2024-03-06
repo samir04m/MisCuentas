@@ -23,6 +23,9 @@ urlpatterns = [
     path('pagar-prestamo/<int:prestamo_id>/', pagar_prestamo, name='pagar_prestamo'),
     path('pagar-conjunto-prestamos/<int:persona_id>/', pagarConjuntoPrestamos, name='pagarConjuntoPrestamos'),
     path('eliminar-prestamo/<int:prestamo_id>/', eliminar_prestamo, name='eliminar_prestamo'),
+    path('solicitudPagoPrestamo/<int:id>/', vistaSolicitudPagoPrestamo, name='vistaSolicitudPagoPrestamo'),
+    path('cambiarEstadoSolicitudPagoPrestamo/<int:id>/<int:nuevoEstado>/', cambiarEstadoSolicitudPagoPrestamo, name='cambiarEstadoSolicitudPagoPrestamo'),
+    path('eliminar-solicitudPagoPrestamo/<int:id>/', eliminarSolicitudPagoPrestamo, name='eliminarSolicitudPagoPrestamo'),
 
     path('crear-etiqueta/', crear_etiqueta, name='crear_etiqueta'),
     path('administar-etiquetas', listar_etiquetas, name='listar_etiquetas'),

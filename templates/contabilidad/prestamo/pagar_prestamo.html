@@ -12,21 +12,22 @@
                         Pagar prestamo
                     </div>
                     <div class="card-body">
-                        
-                        <div class="alert alert-primary" role="alert">
-                            <div class="text-center">Información del prestamo</div>
-                            <hr class="my-1">
-                            Persona: <b>{{prestamo.persona.nombre}}</b> <br>
-                            Tipo de prestamo: <b>{{prestamo.get_tipo_display}}</b> <br>
-                            Cuenta involucrada: 
-                            <b>
-                                {% if prestamo.cuenta %}
-                                    {{prestamo.cuenta.nombre}}
-                                {% else %}
-                                    Ninguna
-                                {% endif %}
-                            </b>
-                        </div>
+                        {% if not userpersona %}
+                            <div class="alert alert-primary" role="alert">
+                                <div class="text-center">Información del prestamo</div>
+                                <hr class="my-1">
+                                Persona: <b>{{prestamo.persona.nombre}}</b> <br>
+                                Tipo de prestamo: <b>{{prestamo.get_tipo_display}}</b> <br>
+                                Cuenta involucrada: 
+                                <b>
+                                    {% if prestamo.cuenta %}
+                                        {{prestamo.cuenta.nombre}}
+                                    {% else %}
+                                        Ninguna
+                                    {% endif %}
+                                </b>
+                            </div>
+                        {% endif %}
 
                         <form method="post">
                             {% csrf_token %}
@@ -41,7 +42,7 @@
                                     <option selected disabled value="">Seleccionar cuenta</option>
                                     <option value="0">Ninguna</option>
                                     {% for c in cuentas %}
-                                        <option value="{{c.id}}">{{c.nombre}} - Saldo $ {{c.saldo|puntomil}}</option>
+                                        <option value="{{c.id}}">{{c.nombre}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -74,7 +75,7 @@
                             </div>
                             
                             <div class="text-center">
-                                <button class="btn btn-primary m-t-20">Confirmar pago</button>
+                                <button class="btn btn-primary m-t-20">Registrar pago</button>
                             </div>
                         </form>
                     </div>

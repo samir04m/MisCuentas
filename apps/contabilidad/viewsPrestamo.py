@@ -1,21 +1,27 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.db import transaction
-from django.http import request
 from django.db.models import Sum
+from django.http import request
 from .models import *
 from .forms import *
 from .myFuncs import *
 from apps.usuario.views import getUserSetting
+from apps.usuario.models import UserPersona
 
 @login_required
 def vista_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
+    userpersona = UserPersona.objects.filter(persona=prestamo.persona, user=request.user).first()
+    print(' ----', dir(prestamo))
     context = {
         "prestamo":prestamo,
-        "transaccionesPago":TransaccionPrestamo.objects.filter(prestamo=prestamo, tipo=2).all()
+        "transaccionesPago":TransaccionPrestamo.objects.filter(prestamo=prestamo, tipo=2).all(),
+        "userpersona":userpersona,
+        "solicitudes":SolicitudPagoPrestamo.objects.filter(prestamo=prestamo).all()
     }
     return render(request, 'contabilidad/prestamo/vista_prestamo.html', context)
 
@@ -94,24 +100,28 @@ def crear_prestamo(request, persona_id):
 @login_required
 def pagar_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
+    userpersona = UserPersona.objects.filter(persona=prestamo.persona, user=request.user).first()
 
     if request.method == 'POST':
         monto = int(request.POST.get('monto').replace('.',''))
-        monto = validarMiles(monto)
+        # monto = validarMiles(monto)
         try:
             with transaction.atomic():
-                pagarPrestamo(prestamo, monto, request)
+                procesarPagoPrestamo(prestamo, monto, request)
         except Exception as ex:
             print("----- Exception -----", ex)
         return redirect('panel:vista_prestamo', prestamo_id)
     else:
         cuentas = Cuenta.objects.filter(user=request.user)
+        if not cuentas and userpersona:
+            cuentas = Cuenta.objects.filter(user=userpersona.admin)
         tags = Etiqueta.objects.filter(user=request.user).exclude(nombre='Prestamo').exclude(nombre='Transferencia')
         context = {
             "prestamo":prestamo, 
             "cuentas": cuentas, 
             "saldo_pendiente": prestamo.saldo_pendiente,
-            "tags": tags
+            "tags": tags,
+            "userpersona": userpersona
         }
         return render(request, 'contabilidad/prestamo/pagar_prestamo.html', context)
 
@@ -142,7 +152,8 @@ def pagarConjuntoPrestamos(request, persona_id):
     if request.method == 'POST':
         pagoTotal = validarMiles(int(request.POST.get('pagoTotal').replace('.','')))
         if pagoTotal <= 0:
-            messages.error(request, 'El total a pagar debe ser mayor a cero', extra_tags='error')
+            if request:
+                messages.error(request, 'El total a pagar debe ser mayor a cero', extra_tags='error')
             return redirect('panel:vista_persona', persona_id)
         prestamos = Prestamo.objects.filter(tipo=request.POST.get('tipoPrestamo'), persona=persona_id, cancelada=False).order_by('fecha')
         disponible = pagoTotal
@@ -155,23 +166,64 @@ def pagarConjuntoPrestamos(request, persona_id):
                     else:
                         monto = disponible
                     disponible -= monto
-                    transaccionNueva = pagarPrestamo(prestamo, monto, request)
+                    # transaccionNueva = pagarPrestamo(prestamo, monto, request)
                     
-                    if transaccionPadre:
-                        transaccionPadre = crearGrupoTransaccion(request, transaccionPadre, transaccionNueva)
-                    else:
-                        transaccionPadre = transaccionNueva # Solo se iguala la primera vez
+                    # if transaccionPadre:
+                    #     transaccionPadre = crearGrupoTransaccion(request, transaccionPadre, transaccionNueva)
+                    # else:
+                    #     transaccionPadre = transaccionNueva # Solo se iguala la primera vez
 
                     if disponible == 0:
                         break
-            messages.success(request, 'Pago de multiples prestamos realizado', extra_tags='success')
+            if request:
+                messages.success(request, 'Pago de multiples prestamos realizado', extra_tags='success')
         except Exception as ex:
             print("----- Exception -----", ex)
-            messages.error(request, 'Ocurrio un error', extra_tags='error')
+            if request:
+                messages.error(request, 'Ocurrio un error', extra_tags='error')
 
     return redirect('panel:vista_persona', persona_id)
 
-def pagarPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
+@login_required
+def vistaSolicitudPagoPrestamo(request, id):
+    solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
+    return render(request, 'contabilidad/prestamo/vista_solicitudPagoPrestamo.html', {"solicitud":solicitud})
+
+@login_required
+def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):
+    solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
+    solicitud.estado = nuevoEstado
+    solicitud.save()
+    if nuevoEstado == 1:
+        pagarPrestamo(solicitud.prestamo, solicitud.valorPago, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.user)
+    messages.success(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!', extra_tags='success')
+    return redirect('panel:vistaSolicitudPagoPrestamo', id)
+
+def eliminarSolicitudPagoPrestamo(request, id):
+    solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
+    prestamo = solicitud.prestamo
+    solicitud.delete()
+    messages.success(request, 'La solicitud fue eliminada!', extra_tags='success')
+    if prestamo:
+        return redirect('panel:vista_prestamo', prestamo.id)
+    else:
+        return redirect('panel:inicio')
+
+def procesarPagoPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
+    userpersona = UserPersona.objects.filter(persona=prestamo.persona, user=request.user).first()
+    cuenta = getCuentaFromPost(request)
+    info = request.POST.get('info')
+    user = request.user
+    fechaPago = request.POST.get('datetime')
+
+    if not userpersona:
+        return pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
+    else:
+        crearSolicitudPagoPrestamo(False, monto, info, prestamo, cuenta, user, fechaPago, "")
+        messages.success(request, 'Se le ha solicitado a la persona involucrada confirmar el pago. Una vez aprobado se reflejara el comprobante.', extra_tags='success')
+        return None
+
+def pagarPrestamo(prestamo:Prestamo, monto:int, cuenta:Cuenta, info:str, fechaPago:str, user:User) -> Transaccion:
     if monto > prestamo.saldo_pendiente: # Si el monto es mayor al saldo pendiente
         monto = prestamo.saldo_pendiente # El monto a pagar se iguala para que no lo supere
 
@@ -179,14 +231,6 @@ def pagarPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
     if prestamo.saldo_pendiente == 0:
         prestamo.cancelada = True
     prestamo.save()
-
-    cuentaId = int(request.POST.get('cuenta'))
-    if cuentaId:
-        cuenta = Cuenta.objects.get(id = cuentaId)
-        saldo_anterior = cuenta.saldo
-    else:
-        cuenta = None
-        saldo_anterior = 0
 
     if prestamo.tipo == 'yopresto':
         if cuenta:
@@ -207,19 +251,33 @@ def pagarPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
     if compraCreditoPrestamo:
         tag = Etiqueta.objects.filter(tipo=3).first()
     else:
-        tag = getEtiquetaByName('Prestamo', request.user)
-    infoAdicional = "\n" + request.POST.get('info') if (request.POST.get('info')) else ""
+        tag = getEtiquetaByName('Prestamo', user)
+
     transaccion = Transaccion(
         tipo = tipoTransaccion,
-        saldo_anterior = saldo_anterior,
+        saldo_anterior = cuenta.saldo if cuenta else 0,
         cantidad = monto,
-        info = infoTransaccion + infoAdicional,
+        info = infoTransaccion + "\n" + info if info else "",
         cuenta = cuenta,
         etiqueta = tag,
-        fecha = getDate(request.POST.get('datetime')),
-        user = request.user
+        fecha = getDate(fechaPago),
+        user = user
     )
     transaccion.save()
     transaccionPrestamo = TransaccionPrestamo(transaccion=transaccion, prestamo=prestamo)
     transaccionPrestamo.save()
     return transaccion
+
+def crearSolicitudPagoPrestamo(pagoMultiple:bool, valor:int, info:str, prestamo:Prestamo, cuenta:Cuenta, user:User, fechaPago:str, tipoPrestamo:str):
+    solicitud = SolicitudPagoPrestamo(
+        pagoMultiple = pagoMultiple,
+        valorPago = valor,
+        info = info,
+        prestamo = prestamo,
+        cuenta = cuenta,
+        user = user,
+        fechaPago = fechaPago,
+        tipoPrestamoPagoMultiple = tipoPrestamo,
+        fechaSolicitud = datetime.now()
+    )
+    solicitud.save()

@@ -25,3 +25,5 @@ class UserSettingAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 admin.site.register(UserSetting, UserSettingAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(UserPersona)
+admin.site.register(UserNotification)

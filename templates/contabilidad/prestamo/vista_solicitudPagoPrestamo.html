@@ -1,0 +1,74 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista Solicitud pago prestamo{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="text-center">
+                            Solicitud de pago de prestamo
+                            <a href="{% url 'panel:eliminarSolicitudPagoPrestamo' solicitud.id %}" class="btn btn-outline-danger btn-sm float-right"
+                                id="confirmDelete"> <i class="fal fa-trash-alt"></i>
+                            </a>
+                        </h5>
+                        <table class="table table-borderless table-responsive-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Prestamo:</th>
+                                    <td>
+                                        <b>Persona:</b> 
+                                        {% if solicitud.user == request.user %}
+                                            {{solicitud.prestamo.persona.user}} 
+                                        {% else %}
+                                            {{solicitud.prestamo.persona.nombre}} 
+                                        {% endif %}
+                                        <br>
+                                        <b>Valor:</b> $ {{solicitud.prestamo.cantidad|puntomil}} <br>
+                                        <b>Tipo:</b> 
+                                        {% if solicitud.user == request.user %}
+                                            {{solicitud.prestamo.nombreTipoInvertido}} 
+                                        {% else %}
+                                            {{solicitud.prestamo.get_tipo_display}} 
+                                        {% endif %}
+                                        <br>
+                                        <b>Información:</b> {{solicitud.prestamo.info}} <br>
+                                        <b>Fecha:</b> {{solicitud.prestamo.fecha|date:'d/m/Y h:i A'}} <br>
+                                        <a href="{% url 'panel:vista_prestamo' solicitud.prestamo.id %}" target="_blank">Ver detalles</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Valor a pagar:</th>
+                                    <td>$ {{solicitud.valorPago|puntomil}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr>
+                        {% if solicitud.estado == 0 %}
+                            {% if solicitud.user == request.user %}
+                                <div class="text-center">
+                                    <div class="text-secondary">La solicitud se encuentra en espera de aprobación</div>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'panel:cambiarEstadoSolicitudPagoPrestamo' solicitud.id 2 %}" class="btn btn-outline-danger mr-3">
+                                    Rechazar <i class="fal fa-times-circle"></i>
+                                </a>
+                                <a href="{% url 'panel:cambiarEstadoSolicitudPagoPrestamo' solicitud.id 1 %}" class="btn btn-outline-primary float-right">
+                                    Aprobar <i class="fal fa-check-circle"></i>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="text-center">
+                                <div class="text-secondary">Solicitud <b>{{solicitud.estado|estadoSolicitudPagoPrestamo}}</b></div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
