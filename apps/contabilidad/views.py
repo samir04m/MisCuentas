@@ -51,7 +51,7 @@ def crear_cuenta(request):
             cuenta = form.save(commit=False)
             cuenta.user = request.user
             cuenta.save()
-            messages.success(request, 'Cuenta creada exitosamente', extra_tags='success')
+            alert(request, 'Cuenta creada exitosamente')
             return redirect('panel:inicio')
     else:
         form = CuentaForm()
@@ -76,14 +76,14 @@ def crear_egreso(request, cuenta_id):
                     with transaction.atomic():
                         transaccion = crearTransaccion(request, 'egreso', cuenta, cantidad, info, tag, 1, fecha)
                         agregarSubTagFromPost(request, transaccion)
-                    messages.success(request, 'Egreso registrado', extra_tags='success')
+                    alert(request, 'Egreso registrado')
                 except Exception as ex:
                     print("----- Exception -----", ex)
-                    messages.error(request, 'Ocurrio un error', extra_tags='error')
+                    alert(request, 'Ocurrio un error', 'e')
                 return redirect(request.session['vistaRedireccion'])               
             else:
                 form = TransaccionForm(request.POST)
-                messages.error(request, 'El valor del egreso no puede superar el saldo de la cuenta.', extra_tags='error')
+                alert(request, 'El valor del egreso no puede superar el saldo de la cuenta.', 'e')
     else:
         request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
         form = TransaccionForm()
@@ -125,7 +125,7 @@ def crear_ingreso(request, cuenta_id):
             transaccion.save()
             cuenta.saldo += transaccion.cantidad
             cuenta.save()
-            messages.success(request, 'Ingreso registrado', extra_tags='success')
+            alert(request, 'Ingreso registrado')
             return redirect(request.session['vistaRedireccion'])
     else:
         request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
@@ -198,7 +198,7 @@ def transferir(request, cuenta_id):
             cuenta_destino.save()
             return redirect(request.session['vistaRedireccion'])
         else:
-            messages.error(request, "El valor de la transferencia no puede superar el valor maximo.", extra_tags='error')
+            alert(request, "El valor de la transferencia no puede superar el valor maximo.", 'e')
     else:
         request.session['vistaRedireccion'] = request.META.get('HTTP_REFERER')
 
@@ -231,9 +231,9 @@ def transaccion_rollback(request, transaccion_id):
     if ok:
         ok = rollbackTransaction(request, transaccion)
     if ok:
-        messages.success(request, 'Se ha deshecho la transacción', extra_tags='success')
+        alert(request, 'Se ha deshecho la transacción')
     else:
-        messages.error(request, 'No fue posible deshacer la transacción', extra_tags='error')
+        alert(request, 'No fue posible deshacer la transacción', 'e')
     return redirect(request.session.get('vistaRedireccion'))
 
 def rollbackTransaction(request, transaccion):
@@ -273,10 +273,10 @@ def crear_transaccion_programada(request):
                     user = request.user
                 )
                 transaccion.save()
-            messages.success(request, 'Transacción creada', extra_tags='success')
+            alert(request, 'Transacción creada')
         except Exception as ex:
             print("----- Exception -----", ex)
-            messages.error(request, 'Ocurrio un error', extra_tags='error')
+            alert(request, 'Ocurrio un error', 'e')
         return redirect('panel:transacciones_programadas')        
     else:
         context = {"cuentas":selectCuentas(request), "tags":selectEtiquetas(request)}
@@ -298,10 +298,10 @@ def pagar_transaccion_programada(request, transaccion_id):
         with transaction.atomic():
             crearTransaccion(request, tp.tipo, tp.cuenta, tp.cantidad, tp.info, tp.etiqueta, 1)
             tp.delete()
-        messages.success(request, 'Se realizó la transacción', extra_tags='success')
+        alert(request, 'Se realizó la transacción')
     except Exception as ex:
         print("----- Exception -----", ex)
-        messages.error(request, 'Ocurrio un error', extra_tags='error')
+        alert(request, 'Ocurrio un error', 'e')
     return redirect('panel:transacciones_programadas')
 
 @login_required
@@ -316,12 +316,12 @@ def agregar_transaccion_grupo(request, transaccionPadre_id):
                 transaccion = crearTransaccion(request, transaccionPadre.tipo, transaccionPadre.cuenta, cantidad, info, etiqueta, 1)
                 agregarSubTagFromPost(request, transaccion)
                 nuevaTransaccionPadreGrupo = crearGrupoTransaccion(request, transaccionPadre, transaccion)
-            messages.success(request, 'Se agregó la transacción al grupo', extra_tags='success')
+            alert(request, 'Se agregó la transacción al grupo')
             if nuevaTransaccionPadreGrupo:
                 return redirect('panel:vista_transaccion', nuevaTransaccionPadreGrupo.id)
         except Exception as ex:
             printException(ex)
-            messages.error(request, 'Ocurrio un error', extra_tags='error')
+            alert(request, 'Ocurrio un error', 'e')
         return redirect(request.META.get('HTTP_REFERER'))
     else:
         context = {

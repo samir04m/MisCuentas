@@ -337,8 +337,7 @@ def crearGrupoTransaccion(request, transaccionPadre:Transaccion, transaccionNuev
                 return transaccionPadre
     except Exception as ex:
         printException(ex)
-        if request:
-            messages.error(request, 'Ocurrio un error al intentar agrupar las transacciones', extra_tags='error')
+        alert(request, 'Ocurrio un error al intentar agrupar las transacciones', 'e')
         return None
 
 def printException(ex):
@@ -347,6 +346,17 @@ def printException(ex):
     print(' | | | | | | | | | | |  Exception | | | | | | | | | | | ')
     print(f" File: {fileName}, line: {line}, Message: {ex}")
     print(' | | | | | | | | | | |  | | | | | | | | | | | | | | | | ')
+
+def alert(request, message:str, type:str='s'):
+    if request:
+        if type == 's':
+            messages.success(request, message)
+        elif type == 'e':
+            messages.error(request, message)
+        elif type == 'i':
+            messages.info(request, message)
+        elif type == 'w':
+            messages.warning(request, message)
 
 def crearEtiquetaPrestamoCompraTC(request):
     etiquetaPrestamoCompraTC = Etiqueta.objects.filter(tipo=3).first()

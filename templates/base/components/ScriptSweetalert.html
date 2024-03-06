@@ -2,12 +2,14 @@
 {% if messages %}
     <script type="text/javascript">
         $(function () {
-            Swal.fire({
-                icon: '{{messages|getMessage:"icon" }}',
-                title: '{{messages|getMessage }}',
-                showConfirmButton: true
-                // timer: 2500
-            });
+            {% for message in messages %}
+                Swal.fire({
+                    icon: '{{message.tags}}',
+                    title: '{{message}}',
+                    showConfirmButton: true
+                    // timer: 2500
+                });
+            {% endfor %}
         });
     </script>
 {% endif %}

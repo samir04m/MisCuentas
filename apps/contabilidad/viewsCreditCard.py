@@ -20,10 +20,10 @@ def crear_creditCard(request):
             creditCard.user = request.user
             try:
                 creditCard.save()
-                messages.success(request, 'Tarjeta de crédito creada', extra_tags='success')
+                alert(request, 'Tarjeta de crédito creada')
             except Exception as ex:
                 print("----- Exception -----", ex)
-                messages.error(request, 'No fue posible crear la tarjeta debido a un error', extra_tags='error')
+                alert(request, 'No fue posible crear la tarjeta debido a un error', 'e')
             return redirect('panel:inicio')
     else:
         form = CreditCardForm()
@@ -64,16 +64,16 @@ def pagar_tarjeta(request, tarjeta_id):
         elif tipoPago == 2:
             deudaAPagar = int(request.POST.get('deudaMes'))
         if deudaAPagar <= 0:
-            messages.error(request, 'La deuda a pagar debe ser mayor a cero', extra_tags='error')
+            alert(request, 'La deuda a pagar debe ser mayor a cero', 'e')
         elif cuenta.saldo < deudaAPagar:
-            messages.error(request, 'La cuenta seleccionada no tiene el saldo suficiente para pagar la deuda', extra_tags='error')
+            alert(request, 'La cuenta seleccionada no tiene el saldo suficiente para pagar la deuda', 'e')
         else:
             try:
                 pagarDeuda(request, creditCard, cuenta, tipoPago)
-                messages.success(request, 'Pago realizado', extra_tags='success')
+                alert(request, 'Pago realizado')
             except Exception as ex:
                 print("----- Exception -----", ex)
-                messages.error(request, 'Ocurrió un error al realizar el pago', extra_tags='error')
+                alert(request, 'Ocurrió un error al realizar el pago', 'e')
     return redirect('panel:vista_creditCard', tarjeta_id)
 
 # import traceback
@@ -99,11 +99,11 @@ def crear_compra(request, creditCard_id):
             with transaction.atomic():
                 compra = crearCompraCredito(creditCard, valor, cuotas, info, etiqueta, subtag, fecha)
                 crearPrestamoCompraTC(compra, personas)
-            messages.success(request, 'Compra registrada', extra_tags='success')
+            alert(request, 'Compra registrada')
         except Exception as ex:
             print("----- Exception -----", ex)
             # print("----- Exception -----",traceback.format_exc())
-            messages.error(request, 'No fue posible registrar la compra', extra_tags='error')
+            alert(request, 'No fue posible registrar la compra', 'e')
         return redirect('panel:vista_creditCard', creditCard.id)
     else:
         crearEtiquetaPrestamoCompraTC(request)
@@ -135,10 +135,10 @@ def eliminar_compra(request, compra_id):
             creditCard.cupoDisponible += compra.valor
             creditCard.save()
             compra.delete()
-        messages.success(request, 'Compra eliminada', extra_tags='success')
+        alert(request, 'Compra eliminada')
     except Exception as ex:
         print("----- Exception -----", ex)
-        messages.error(request, 'Ocurrio un error', extra_tags='error')
+        alert(request, 'Ocurrio un error', 'e')
 
     return redirect('panel:vista_creditCard', creditCard.id)
 

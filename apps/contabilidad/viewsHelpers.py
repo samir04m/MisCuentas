@@ -15,8 +15,8 @@ def relacionarUsuarioConTransaccion(request):
 
     if transacciones.count() > 0:
         text = "Se han relacionado {} transacciones".format(str(transacciones.count()))
-        messages.success(request, text, extra_tags='success')
+        alert(request, text)
     else:
-        messages.info(request, 'Todas las transacciones estan relacionadas', extra_tags='info')
+        alert(request, 'Todas las transacciones estan relacionadas', 'i')
 
     return redirect('panel:inicio')

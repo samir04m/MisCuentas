@@ -81,7 +81,7 @@ def crear_prestamo(request, persona_id):
                 prestamoCreado = crearPrestamo(request, prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, getDate(request.POST.get('datetime')))
                 return redirect('panel:vista_prestamo', prestamoCreado.id)
             except Exception as e:
-                messages.success(request, e, extra_tags='error')
+                alert(request, e, 'e')
 
             return redirect('panel:vista_persona', persona_id)                 
     else:
@@ -144,7 +144,7 @@ def eliminar_prestamo(request, prestamo_id):
             tp.delete()
 
     prestamo.delete()
-    messages.success(request, 'Se ha eliminado el prestamo', extra_tags='success')
+    alert(request, 'Se ha eliminado el prestamo')
     return redirect("panel:vista_persona", personaId)
 
 @login_required
@@ -152,8 +152,7 @@ def pagarConjuntoPrestamos(request, persona_id):
     if request.method == 'POST':
         pagoTotal = validarMiles(int(request.POST.get('pagoTotal').replace('.','')))
         if pagoTotal <= 0:
-            if request:
-                messages.error(request, 'El total a pagar debe ser mayor a cero', extra_tags='error')
+            alert(request, 'El total a pagar debe ser mayor a cero', 'e')
             return redirect('panel:vista_persona', persona_id)
         prestamos = Prestamo.objects.filter(tipo=request.POST.get('tipoPrestamo'), persona=persona_id, cancelada=False).order_by('fecha')
         disponible = pagoTotal
@@ -175,12 +174,10 @@ def pagarConjuntoPrestamos(request, persona_id):
 
                     if disponible == 0:
                         break
-            if request:
-                messages.success(request, 'Pago de multiples prestamos realizado', extra_tags='success')
+            alert(request, 'Pago de multiples prestamos realizado')
         except Exception as ex:
             print("----- Exception -----", ex)
-            if request:
-                messages.error(request, 'Ocurrio un error', extra_tags='error')
+            alert(request, 'Ocurrio un error', 'e')
 
     return redirect('panel:vista_persona', persona_id)
 
@@ -196,14 +193,14 @@ def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):
     solicitud.save()
     if nuevoEstado == 1:
         pagarPrestamo(solicitud.prestamo, solicitud.valorPago, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.user)
-    messages.success(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!', extra_tags='success')
+    alert(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!')
     return redirect('panel:vistaSolicitudPagoPrestamo', id)
 
 def eliminarSolicitudPagoPrestamo(request, id):
     solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
     prestamo = solicitud.prestamo
     solicitud.delete()
-    messages.success(request, 'La solicitud fue eliminada!', extra_tags='success')
+    alert(request, 'La solicitud fue eliminada!')
     if prestamo:
         return redirect('panel:vista_prestamo', prestamo.id)
     else:
@@ -220,7 +217,7 @@ def procesarPagoPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
         return pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
     else:
         crearSolicitudPagoPrestamo(False, monto, info, prestamo, cuenta, user, fechaPago, "")
-        messages.success(request, 'Se le ha solicitado a la persona involucrada confirmar el pago. Una vez aprobado se reflejara el comprobante.', extra_tags='success')
+        alert(request, 'Se le ha solicitado a la persona involucrada confirmar el pago. Una vez aprobado se reflejara el comprobante.')
         return None
 
 def pagarPrestamo(prestamo:Prestamo, monto:int, cuenta:Cuenta, info:str, fechaPago:str, user:User) -> Transaccion:

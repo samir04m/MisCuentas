@@ -44,9 +44,9 @@ def pago_hbomax(request):
             if not etiqueta:
                 error += f'No existe la etiqueta con id {etiquetaId}. '
     if error:
-        messages.error(request, error, extra_tags='error')
+        alert(request, error, 'e')
     else:
-        messages.success(request, 'Pago exitoso', extra_tags='success')    
+        alert(request, 'Pago exitoso')
     return redirect('pagos:listado')
 
 @login_required
@@ -75,9 +75,9 @@ def pago_spotify(request):
             if not etiqueta:
                 error += f'No existe la etiqueta con id {etiquetaId}. '
     if error:
-        messages.error(request, error, extra_tags='error')
+        alert(request, error, 'e')
     else:
-        messages.success(request, 'Pago exitoso', extra_tags='success')
+        alert(request, 'Pago exitoso')
     return redirect('pagos:listado')
 
 @login_required
@@ -111,9 +111,9 @@ def pago_internet(request):
             if not etiqueta:
                 error += f'No existe la etiqueta con id {etiquetaId}. '
     if error:
-        messages.error(request, error, extra_tags='error')
+        alert(request, error, 'e')
     else:
-        messages.success(request, 'Pago exitoso', extra_tags='success')    
+        alert(request, 'Pago exitoso') 
     return redirect('pagos:listado')
 
 @login_required
@@ -142,9 +142,9 @@ def pago_cuotamoto(request):
                 error += f'No existe la persona con id {personaId}. '
     
     if error:
-        messages.error(request, error, extra_tags='error')
+        alert(request, error, 'e')
     else:
-        messages.success(request, 'Pago exitoso', extra_tags='success')
+        alert(request, 'Pago exitoso')
     return redirect('pagos:listado')
 
 @login_required
@@ -181,9 +181,9 @@ def pago_apartamento(request):
             return render(request, 'pagos/pago_apartamento.html', context)
 
     if error:
-        messages.error(request, error, extra_tags='error')
+        alert(request, error, 'e')
     else:
-        messages.success(request, 'Se registro el pago exitosamente', extra_tags='success')
+        alert(request, 'Se registro el pago exitosamente')
     return redirect('pagos:listado')
 
 def agruparTransaccionesPagoApartamento(prestamo1, prestamo2, transaccion3):

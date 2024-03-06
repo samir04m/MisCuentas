@@ -19,7 +19,7 @@ def crear_persona(request):
             user = request.user
         )
         persona.save()
-        messages.success(request, 'Persona creada exitosamente', extra_tags='success')
+        alert(request, 'Persona creada exitosamente')
         return redirect('panel:inicio')
     return render(request, 'contabilidad/persona/crear_persona.html')
 
