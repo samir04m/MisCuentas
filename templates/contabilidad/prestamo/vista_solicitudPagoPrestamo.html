@@ -21,23 +21,25 @@
                                     <th>Prestamo:</th>
                                     <td>
                                         <b>Persona:</b> 
-                                        {% if solicitud.user == request.user %}
-                                            {{solicitud.prestamo.persona.user}} 
+                                        {% if solicitud.usuarioSolicita == request.user %}
+                                            {{solicitud.usuarioSolicita}} 
                                         {% else %}
-                                            {{solicitud.prestamo.persona.nombre}} 
+                                            {{solicitud.usuarioAprueba}} 
                                         {% endif %}
-                                        <br>
-                                        <b>Valor:</b> $ {{solicitud.prestamo.cantidad|puntomil}} <br>
-                                        <b>Tipo:</b> 
-                                        {% if solicitud.user == request.user %}
-                                            {{solicitud.prestamo.nombreTipoInvertido}} 
-                                        {% else %}
-                                            {{solicitud.prestamo.get_tipo_display}} 
+                                        {% if solicitud.prestamo %}
+                                            <br>
+                                            <b>Valor:</b> $ {{solicitud.prestamo.cantidad|puntomil}} <br>
+                                            <b>Tipo:</b> 
+                                            {% if solicitud.usuarioSolicita == request.user %}
+                                                {{solicitud.prestamo.nombreTipoInvertido}} 
+                                            {% else %}
+                                                {{solicitud.prestamo.get_tipo_display}} 
+                                            {% endif %}
+                                            <br>
+                                            <b>Información:</b> {{solicitud.prestamo.info}} <br>
+                                            <b>Fecha:</b> {{solicitud.prestamo.fecha|date:'d/m/Y h:i A'}} <br>
+                                            <a href="{% url 'panel:vista_prestamo' solicitud.prestamo.id %}" target="_blank">Ver detalles</a>
                                         {% endif %}
-                                        <br>
-                                        <b>Información:</b> {{solicitud.prestamo.info}} <br>
-                                        <b>Fecha:</b> {{solicitud.prestamo.fecha|date:'d/m/Y h:i A'}} <br>
-                                        <a href="{% url 'panel:vista_prestamo' solicitud.prestamo.id %}" target="_blank">Ver detalles</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -48,7 +50,7 @@
                         </table>
                         <hr>
                         {% if solicitud.estado == 0 %}
-                            {% if solicitud.user == request.user %}
+                            {% if solicitud.usuarioSolicita == request.user %}
                                 <div class="text-center">
                                     <div class="text-secondary">La solicitud se encuentra en espera de aprobación</div>
                                 </div>

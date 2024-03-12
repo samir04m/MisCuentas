@@ -183,20 +183,22 @@ class CompraCreditoPrestamo(models.Model):
         verbose_name_plural = 'CompraCreditoPrestamo'
 
 class SolicitudPagoPrestamo(models.Model):
-    pagoMultiple = models.BooleanField(default=False)
     valorPago = models.IntegerField()
     info = models.CharField(max_length=250, null=True, blank=True)
     prestamo = models.ForeignKey(Prestamo, null=True, blank=True, on_delete=models.CASCADE)
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     fechaPago = models.CharField(max_length=250, null=True, blank=True)
-    tipoPrestamoPagoMultiple = models.CharField(max_length=20, null=True, blank=True)
+    pagoMultiple = models.BooleanField(default=False)
+    pagoMultipleTipoPrestamo = models.CharField(max_length=20, null=True, blank=True)
+    pagoMultiplePersonaId = models.IntegerField(null=True, blank=True)
+    usuarioSolicita = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_solicita')
+    usuarioAprueba = models.ForeignKey(User, on_delete=models.CASCADE,  related_name='user_aprueba')
     fechaSolicitud = models.DateTimeField()
     estado = models.IntegerField(default=0) # 0-Creado, 1-Aprobada, 2-Rechazada
     class Meta:
         ordering = ['-fechaSolicitud']
     def __str__(self):
-        return "prestamo [{}] - cuenta [{}] - usuario [{}] - Estado {}".format(self.prestamo, self.cuenta, self.user, self.estado)
+        return "{} - {} - Estado {}".format(self.id, self.usuarioSolicita, self.estado)
 
 
 

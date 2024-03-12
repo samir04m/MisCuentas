@@ -5,6 +5,7 @@ from django.db import transaction
 from datetime import datetime, timedelta
 import pytz
 from .models import *
+from apps.usuario.models import *
 
 def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, tagName:str, estado:int, fecha=None) -> Transaccion:
     saldo_anterior = 0
@@ -213,8 +214,9 @@ class DeudaPrestamoData:
         self.meDeben = meDeben
         self.deudaTotal = meDeben - yoDebo
 
-def selectCuentas(request):
-    return Cuenta.objects.filter(user=request.user)
+def selectCuentas(request, userpersona:UserPersona=None):
+    user = userpersona.admin if userpersona else request.user
+    return Cuenta.objects.filter(user=user)
 
 def selectEtiquetas(request):
     return Etiqueta.objects.filter(user=request.user, tipo=1)

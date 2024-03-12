@@ -33,7 +33,7 @@ def vista_persona(request, persona_id):
     
     context = {
         "persona": persona,
-        "cuentas": Cuenta.objects.filter(user=request.user),
+        "cuentas": selectCuentas(request, userpersona),
         "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
         "userpersona":userpersona
     }

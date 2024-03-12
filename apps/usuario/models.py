@@ -23,8 +23,10 @@ class UserPersona(models.Model):
 
 class UserNotification(models.Model):
     message = models.TextField()
-    read = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    relatedObject = models.CharField(max_length=250, null=True, blank=True)
     date = models.DateTimeField()
+    read = models.BooleanField(default=False)
     readDate = models.DateTimeField(null=True, blank=True)
+    btnName = models.CharField(max_length=100, null=True, blank=True)
+    btnRoute = models.CharField(max_length=100, null=True, blank=True)
+    btnRouteParam = models.IntegerField(null=True, blank=True)

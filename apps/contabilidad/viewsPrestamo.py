@@ -16,7 +16,7 @@ from apps.usuario.models import UserPersona
 def vista_prestamo(request, prestamo_id):
     prestamo = get_object_or_404(Prestamo, id=prestamo_id)
     userpersona = UserPersona.objects.filter(persona=prestamo.persona, user=request.user).first()
-    print(' ----', dir(prestamo))
+    # solicitudesPagoPrestamo = SolicitudPagoPrestamo.objects.filter()
     context = {
         "prestamo":prestamo,
         "transaccionesPago":TransaccionPrestamo.objects.filter(prestamo=prestamo, tipo=2).all(),
@@ -112,9 +112,7 @@ def pagar_prestamo(request, prestamo_id):
             print("----- Exception -----", ex)
         return redirect('panel:vista_prestamo', prestamo_id)
     else:
-        cuentas = Cuenta.objects.filter(user=request.user)
-        if not cuentas and userpersona:
-            cuentas = Cuenta.objects.filter(user=userpersona.admin)
+        cuentas = selectCuentas(request, userpersona)
         tags = Etiqueta.objects.filter(user=request.user).exclude(nombre='Prestamo').exclude(nombre='Transferencia')
         context = {
             "prestamo":prestamo, 
@@ -154,32 +152,44 @@ def pagarConjuntoPrestamos(request, persona_id):
         if pagoTotal <= 0:
             alert(request, 'El total a pagar debe ser mayor a cero', 'e')
             return redirect('panel:vista_persona', persona_id)
-        prestamos = Prestamo.objects.filter(tipo=request.POST.get('tipoPrestamo'), persona=persona_id, cancelada=False).order_by('fecha')
-        disponible = pagoTotal
-        transaccionPadre = None
-        try:
-            with transaction.atomic():
-                for prestamo in prestamos:
-                    if disponible >= prestamo.saldo_pendiente:
-                        monto = prestamo.saldo_pendiente
-                    else:
-                        monto = disponible
-                    disponible -= monto
-                    # transaccionNueva = pagarPrestamo(prestamo, monto, request)
-                    
-                    # if transaccionPadre:
-                    #     transaccionPadre = crearGrupoTransaccion(request, transaccionPadre, transaccionNueva)
-                    # else:
-                    #     transaccionPadre = transaccionNueva # Solo se iguala la primera vez
-
-                    if disponible == 0:
-                        break
-            alert(request, 'Pago de multiples prestamos realizado')
-        except Exception as ex:
-            print("----- Exception -----", ex)
-            alert(request, 'Ocurrio un error', 'e')
+        
+        tipoPrestamo = request.POST.get('tipoPrestamo')
+        cuenta = getCuentaFromPost(request)
+        user = request.user
+        fechaPago = request.POST.get('datetime')
+        userpersona = UserPersona.objects.filter(persona__id=persona_id, user=user).first()
+        if not userpersona:
+            pagarMultiplesPrestamos(request, pagoTotal, cuenta, fechaPago, user, tipoPrestamo, persona_id)
+        else:
+            crearSolicitudPagoMultiplesPrestamos(pagoTotal, cuenta, userpersona, fechaPago, tipoPrestamo, persona_id)
 
     return redirect('panel:vista_persona', persona_id)
+
+def pagarMultiplesPrestamos(request, pagoTotal:int, cuenta:Cuenta, fechaPago:str, user:User, tipoPrestamo:str, personaId:int):
+    prestamos = Prestamo.objects.filter(tipo=tipoPrestamo, persona__id=personaId, cancelada=False).order_by('fecha')
+    disponible = pagoTotal
+    transaccionPadre = None
+    try:
+        with transaction.atomic():
+            for prestamo in prestamos:
+                if disponible >= prestamo.saldo_pendiente:
+                    monto = prestamo.saldo_pendiente
+                else:
+                    monto = disponible
+                disponible -= monto
+                transaccionNueva = pagarPrestamo(prestamo, monto, cuenta, "", fechaPago, user)
+                
+                if transaccionPadre:
+                    transaccionPadre = crearGrupoTransaccion(request, transaccionPadre, transaccionNueva)
+                else:
+                    transaccionPadre = transaccionNueva # Solo se iguala la primera vez
+
+                if disponible == 0:
+                    break
+        alert(request, 'Pago de multiples prestamos realizado')
+    except Exception as ex:
+        print("----- Exception -----", ex)
+        alert(request, 'Ocurrio un error', 'e')
 
 @login_required
 def vistaSolicitudPagoPrestamo(request, id):
@@ -192,7 +202,10 @@ def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):
     solicitud.estado = nuevoEstado
     solicitud.save()
     if nuevoEstado == 1:
-        pagarPrestamo(solicitud.prestamo, solicitud.valorPago, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.user)
+        if solicitud.pagoMultiple:
+            pagarMultiplesPrestamos(request, solicitud.valorPago, solicitud.cuenta, solicitud.fechaPago, solicitud.usuarioAprueba, solicitud.pagoMultipleTipoPrestamo, solicitud.pagoMultiplePersonaId)
+        else:
+            pagarPrestamo(solicitud.prestamo, solicitud.valorPago, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.usuarioAprueba)
     alert(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!')
     return redirect('panel:vistaSolicitudPagoPrestamo', id)
 
@@ -216,7 +229,7 @@ def procesarPagoPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
     if not userpersona:
         return pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
     else:
-        crearSolicitudPagoPrestamo(False, monto, info, prestamo, cuenta, user, fechaPago, "")
+        crearSolicitudPagoPrestamo(monto, info, prestamo, cuenta, userpersona, fechaPago)
         alert(request, 'Se le ha solicitado a la persona involucrada confirmar el pago. Una vez aprobado se reflejara el comprobante.')
         return None
 
@@ -265,16 +278,30 @@ def pagarPrestamo(prestamo:Prestamo, monto:int, cuenta:Cuenta, info:str, fechaPa
     transaccionPrestamo.save()
     return transaccion
 
-def crearSolicitudPagoPrestamo(pagoMultiple:bool, valor:int, info:str, prestamo:Prestamo, cuenta:Cuenta, user:User, fechaPago:str, tipoPrestamo:str):
+def crearSolicitudPagoPrestamo(valor:int, info:str, prestamo:Prestamo, cuenta:Cuenta, userpersona:UserPersona, fechaPago:str):
     solicitud = SolicitudPagoPrestamo(
-        pagoMultiple = pagoMultiple,
         valorPago = valor,
         info = info,
         prestamo = prestamo,
         cuenta = cuenta,
-        user = user,
         fechaPago = fechaPago,
-        tipoPrestamoPagoMultiple = tipoPrestamo,
+        pagoMultiple = False,
+        usuarioSolicita = userpersona.user,
+        usuarioAprueba = userpersona.admin,
+        fechaSolicitud = datetime.now()
+    )
+    solicitud.save()
+
+def crearSolicitudPagoMultiplesPrestamos(valor:int, cuenta:Cuenta, userpersona:UserPersona, fechaPago:str, tipoPrestamo:str, personaId:int):
+    solicitud = SolicitudPagoPrestamo(
+        valorPago = valor,
+        cuenta = cuenta,
+        fechaPago = fechaPago,
+        pagoMultiple = True,
+        pagoMultipleTipoPrestamo = 'meprestan' if tipoPrestamo == 'yopresto' else 'yopresto',
+        pagoMultiplePersonaId = personaId,
+        usuarioSolicita = userpersona.user,
+        usuarioAprueba = userpersona.admin,
         fechaSolicitud = datetime.now()
     )
     solicitud.save()

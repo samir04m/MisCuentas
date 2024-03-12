@@ -6,9 +6,34 @@
 
 {% block contenido %}
     <div class="container">
-        <h5 class="text-center text-light mb-3 animate__animated animate__fadeInDown">Prestamos</h5>
-        <div class="card animate__animated animate__fadeIn mb-3">
+        {% if prestamos %}
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card animate__animated animate__fadeIn">
+                        <div class="card-body">
+                            <h6 class="text-center">Resumen</h6>
+                            Saldo total en cuentas ${{saldoTotal|puntomil}} <br>
+                            Actualmente debe ${{yoDebo|puntomil}} y a usted le deben ${{meDeben|puntomil}} <br>
+                            {{pagandoPrestamosMensaje}} ${{pagandoPrestamosMeQueda|puntomil}} <br>
+                            Cancelados todos los prestamos su saldo seria de ${{saldoRestante|puntomil}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card animate__animated animate__fadeIn">
+                        <div class="card-body">
+                            <h6 class="text-center">Pagos por confirmar</h6>
+                            <div class="text-center">
+                                <a href="" class="btn btn-outline-primary">Ver solicitudes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="card animate__animated animate__fadeIn my-4">
             <div class="card-body">
+                <h5 class="text-center mb-3">Prestamos</h5>
                 {% if prestamos %}
                     <table class="table table-responsive-sm" id="datatable">
                         <thead>
@@ -62,17 +87,5 @@
                 {% endif %}
             </div>
         </div>
-        {% if prestamos %}
-            <div class="card animate__animated animate__fadeIn">
-                <div class="card-body">
-                    <h6 class="text-center">Resumen</h6>
-                    Saldo total en cuentas ${{saldoTotal|puntomil}} <br>
-                    Actualmente debe ${{yoDebo|puntomil}} y a usted le deben ${{meDeben|puntomil}} <br>
-                    {{pagandoPrestamosMensaje}} ${{pagandoPrestamosMeQueda|puntomil}} <br>
-                    Cancelados todos los prestamos su saldo seria de ${{saldoRestante|puntomil}}
-
-                </div>
-            </div>
-        {% endif %}
     </div>
 {% endblock %}
