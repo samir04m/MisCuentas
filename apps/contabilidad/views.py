@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import Http404
 from datetime import datetime
-from apps.usuario.models import UserSetting
+from apps.usuario.models import UserSetting, UserNotification
 from apps.usuario.views import getUserSetting, setUserSetting
 
 from .forms import *

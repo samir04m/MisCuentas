@@ -200,5 +200,19 @@ class SolicitudPagoPrestamo(models.Model):
     def __str__(self):
         return "{} - {} - Estado {}".format(self.id, self.usuarioSolicita, self.estado)
 
-
+class SolicitudCreacionPrestamo(models.Model):
+    tipo = models.CharField(max_length=30)
+    valor = models.IntegerField()
+    info = models.TextField()
+    fechaPrestamo = models.CharField(max_length=100, null=True, blank=True)
+    cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, null=False, blank=False, on_delete=models.CASCADE)
+    usuarioSolicita = models.ForeignKey(User, on_delete=models.CASCADE, related_name='userSolicita')
+    usuarioAprueba = models.ForeignKey(User, on_delete=models.CASCADE,  related_name='userAprueba')
+    fechaSolicitud = models.DateTimeField()
+    estado = models.IntegerField(default=0) # 0-Creado, 1-Aprobada, 2-Rechazada
+    class Meta:
+        ordering = ['-fechaSolicitud']
+    def __str__(self):
+        return "{} - {} - Estado {}".format(self.id, self.usuarioSolicita, self.estado)
 

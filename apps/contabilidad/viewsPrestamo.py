@@ -38,7 +38,7 @@ def listar_prestamos(request):
         saldoRestante = saldoTotal
         pagandoPrestamosMeQueda = 0
         pagandoPrestamosMensaje = "Pagados todos los prestamos "
-        pagandoPrestamosMeQueda = meDeben-yoDebo    
+        pagandoPrestamosMeQueda = meDeben-yoDebo
         if pagandoPrestamosMeQueda >= 0:
             saldoRestante += pagandoPrestamosMeQueda
             pagandoPrestamosMensaje += " recuperaria"
@@ -53,6 +53,8 @@ def listar_prestamos(request):
             'pagandoPrestamosMensaje': pagandoPrestamosMensaje,
             'pagandoPrestamosMeQueda': abs(pagandoPrestamosMeQueda),
             'saldoRestante': saldoRestante,
+            'solicitudesCreacion':SolicitudCreacionPrestamo.objects.filter(usuarioAprueba=request.user, estado=0),
+            'solicitudesPago':SolicitudPagoPrestamo.objects.filter(usuarioAprueba=request.user, estado=0)
         }
     else:
         context = {
@@ -62,24 +64,26 @@ def listar_prestamos(request):
 
 @login_required
 def crear_prestamo(request, persona_id):
-    persona = get_object_or_404(Persona, id=persona_id, user=request.user.id)
-    mensaje = None
+    userpersona = UserPersona.objects.filter(persona__id=persona_id, user=request.user).first()
+    user = userpersona.admin if userpersona else request.user
+    persona = get_object_or_404(Persona, id=persona_id, user=user)
 
     if request.method == 'POST':
         request.POST._mutable = True
         form = PrestamoForm(request.POST)
-        form.data['cantidad'] = int(form.data['cantidad'].replace('.',''))
+        form.data['cantidad'] = validarMiles(int(form.data['cantidad'].replace('.','')))
 
         if form.is_valid():
             prestamo = form.save(commit=False)
-            prestamo.cantidad = validarMiles(prestamo.cantidad)
-            cuenta = None
-            if request.POST.get('cuenta') != 'ninguna':
-                cuenta = get_object_or_404(Cuenta, id=int(request.POST.get('cuenta')), user=request.user.id)
-            
+            cuenta = getCuentaFromPost(request)
+            fecha = getDate(request.POST.get('datetime'))
             try:
-                prestamoCreado = crearPrestamo(request, prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, getDate(request.POST.get('datetime')))
-                return redirect('panel:vista_prestamo', prestamoCreado.id)
+                if not userpersona:
+                    prestamoCreado = crearPrestamo(request, prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, fecha)
+                    return redirect('panel:vista_prestamo', prestamoCreado.id)
+                else:
+                    crearSolicitudCreacionPrestamo(prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, fecha, userpersona)
+                    alert(request, 'Se ha enviado la solicitud de creación del prestamo. Este sera creado una vez la persona involucrada lo apruebe.',)
             except Exception as e:
                 alert(request, e, 'e')
 
@@ -87,13 +91,12 @@ def crear_prestamo(request, persona_id):
     else:
         form = PrestamoForm()
 
-    cuentas = Cuenta.objects.filter(user=request.user.id)
     context = {
         "form": form, 
-        "cuentas":cuentas, 
-        "persona":persona, 
-        "mensaje":mensaje,
-        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user)
+        "cuentas":selectCuentas(request, userpersona), 
+        "persona":persona,
+        "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
+        "userpersona":userpersona
     }
     return render(request, 'contabilidad/prestamo/crear_prestamo.html', context)
 
@@ -300,6 +303,20 @@ def crearSolicitudPagoMultiplesPrestamos(valor:int, cuenta:Cuenta, userpersona:U
         pagoMultiple = True,
         pagoMultipleTipoPrestamo = 'meprestan' if tipoPrestamo == 'yopresto' else 'yopresto',
         pagoMultiplePersonaId = personaId,
+        usuarioSolicita = userpersona.user,
+        usuarioAprueba = userpersona.admin,
+        fechaSolicitud = datetime.now()
+    )
+    solicitud.save()
+
+def crearSolicitudCreacionPrestamo(tipo:str, valor:int, info:str, cuenta:Cuenta, persona:Persona, fecha:str, userpersona:UserPersona):
+    solicitud = SolicitudCreacionPrestamo(
+        tipo = 'meprestan' if tipo == 'yopresto' else 'yopresto',
+        valor = valor,
+        info = info,
+        cuenta = cuenta,
+        persona = persona,
+        fechaPrestamo = fecha,
         usuarioSolicita = userpersona.user,
         usuarioAprueba = userpersona.admin,
         fechaSolicitud = datetime.now()

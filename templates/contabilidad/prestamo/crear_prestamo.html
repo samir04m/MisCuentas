@@ -13,7 +13,13 @@
                     </div>
                     <div class="card-body">
                         <div class="fs-20 m-b-20 text-primary">
-                            <b>Prestamo con {{persona.nombre}}</b>
+                            <b>Prestamo con 
+                                {% if userpersona %}
+                                    {{userpersona.admin}}
+                                {% else %}
+                                    {{persona.nombre}}
+                                {% endif %}
+                            </b>
                         </div>
                         <hr>
                         {% if mensaje %}
@@ -27,11 +33,9 @@
                                 <label for="cuenta">Seleccione una cuenta</label>
                                 <select class="form-control" name="cuenta" required>
                                     <option selected disabled value="">Seleccionar</option>
-                                    <option value="ninguna">Ninguna</option>
+                                    <!-- <option value="ninguna">Ninguna</option> -->
                                     {% for c in cuentas %}
-                                        <option value="{{c.id}}">{{c.nombre}} 
-                                            {% if mostrarSaldoCuentas %} - Saldo $ {{c.saldo|puntomil}}{% endif %}
-                                        </option>
+                                        <option value="{{c.id}}">{{c.nombre}}</option>
                                     {% endfor %}
                                 </select>
                             </p>
