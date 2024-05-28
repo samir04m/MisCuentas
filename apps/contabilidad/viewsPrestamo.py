@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 from django.db.models import Sum
 from django.http import request
+from typing import List
 from .models import *
 from .forms import *
 from .myFuncs import *
@@ -69,33 +70,28 @@ def crear_prestamo(request, persona_id):
     persona = get_object_or_404(Persona, id=persona_id, user=user)
 
     if request.method == 'POST':
-        request.POST._mutable = True
-        form = PrestamoForm(request.POST)
-        form.data['cantidad'] = validarMiles(int(form.data['cantidad'].replace('.','')))
+        tipo = request.POST.get('tipo')
+        cantidad = validarMiles(int(request.POST.get('cantidad').replace('.','')))
+        info = request.POST.get('info')
+        cuenta = getCuentaFromPost(request)
+        fecha = getDate(request.POST.get('datetime'))
+        try:
+            if not userpersona:
+                prestamoCreado = crearPrestamo(request, tipo, cantidad, info, cuenta, persona, fecha)
+                return redirect('panel:vista_prestamo', prestamoCreado.id)
+            else:
+                crearSolicitudCreacionPrestamo(tipo, cantidad, info, cuenta, persona, fecha, userpersona)
+                alert(request, 'Se ha enviado la solicitud de creación del prestamo. Este sera creado una vez la persona involucrada lo apruebe.')
+        except Exception as e:
+            alert(request, e, 'e')
 
-        if form.is_valid():
-            prestamo = form.save(commit=False)
-            cuenta = getCuentaFromPost(request)
-            fecha = getDate(request.POST.get('datetime'))
-            try:
-                if not userpersona:
-                    prestamoCreado = crearPrestamo(request, prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, fecha)
-                    return redirect('panel:vista_prestamo', prestamoCreado.id)
-                else:
-                    crearSolicitudCreacionPrestamo(prestamo.tipo, prestamo.cantidad, prestamo.info, cuenta, persona, fecha, userpersona)
-                    alert(request, 'Se ha enviado la solicitud de creación del prestamo. Este sera creado una vez la persona involucrada lo apruebe.',)
-            except Exception as e:
-                alert(request, e, 'e')
-
-            return redirect('panel:vista_persona', persona_id)                 
-    else:
-        form = PrestamoForm()
+        return redirect('panel:vista_persona', persona_id)      
 
     context = {
-        "form": form, 
         "cuentas":selectCuentas(request, userpersona), 
         "persona":persona,
         "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
+        "tiposPrestamos":getTipoPrestamoSelect(userpersona),
         "userpersona":userpersona
     }
     return render(request, 'contabilidad/prestamo/crear_prestamo.html', context)
@@ -218,7 +214,7 @@ def cambiarEstadoSolicitudCreacionPrestamo(request, id, nuevoEstado):
         prestamo = crearPrestamo(request, solicitud.tipo, solicitud.valor, solicitud.info, solicitud.cuenta, solicitud.persona, solicitud.fechaPrestamo)
         return redirect('panel:vista_prestamo', prestamo.id)
     else:
-        return redirect('panel:vistaSolicitudesPrestamos')
+        return RedireccionarVistaAnterior(request)
 
 @login_required
 def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):
@@ -343,3 +339,20 @@ def crearSolicitudCreacionPrestamo(tipo:str, valor:int, info:str, cuenta:Cuenta,
         fechaSolicitud = datetime.now()
     )
     solicitud.save()
+
+class TipoPrestamo:
+    def __init__(self, id:str, nombre:str):
+        self.id = id
+        self.nombre = nombre
+
+def getTipoPrestamoSelect(userpersona:UserPersona) -> List[TipoPrestamo]:
+    if not userpersona:
+        return [
+            TipoPrestamo('yopresto', 'Yo Presto'),
+            TipoPrestamo('meprestan', 'Me Prestan'),
+        ]
+    else:
+        return [
+            TipoPrestamo('yopresto', 'Me Prestan'),
+            TipoPrestamo('meprestan', 'Yo Presto'),
+        ]

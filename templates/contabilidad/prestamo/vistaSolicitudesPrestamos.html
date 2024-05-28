@@ -40,11 +40,11 @@
                                     <td>{{item.cuenta.nombre}}</td>
                                     <td>
                                         <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" 
-                                            data-html="true" title="{{item.info}} <br> Fecha prestamo: {{item.fechaPrestamo}}">
+                                            data-html="true" title="{{item|infoSolicitudPrestamo}}">
                                             <i class="fal fa-info"></i>
                                         </button>
                                     </td>
-                                    <td>{{item.estado|estadoSolicitudPagoPrestamo}}</td>
+                                    <td>{{item.estado|estadoSolicitudPrestamo}}</td>
                                     <td>
                                         {% if item.estado == 0 %}
                                             <a href="{% url 'panel:cambiarEstadoSolicitudCreacionPrestamo' item.id 2 %}" class="btn btn-outline-danger btn-sm">
@@ -52,10 +52,6 @@
                                             </a>
                                             <a href="{% url 'panel:cambiarEstadoSolicitudCreacionPrestamo' item.id 1 %}" class="btn btn-outline-primary btn-sm">
                                                 <i class="fal fa-check-circle"></i>
-                                            </a>
-                                        {% else %}
-                                            <a href="{% url 'panel:vista_prestamo' item.id %}" class="btn btn-outline-primary btn-sm">
-                                                Ver prestamo
                                             </a>
                                         {% endif %}
                                     </td>
@@ -73,12 +69,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% block script %}
-    <script type="text/javascript">
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        });
-    </script>
-{% endblock %}
-

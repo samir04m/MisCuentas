@@ -8,7 +8,7 @@
     <div class="container pt-2">
         <div class="row">
             <div class="col-lg-9">
-                <div class="card animate__animated animate__fadeIn">
+                <div class="card mb-3 animate__animated animate__fadeIn">
                     <div class="card-body">
                         <div class="text-center">
                             <div style="font-size:40px;">
@@ -92,6 +92,60 @@
                         {% endif %}
                     </div>
                 </div>
+
+                {% if solicitudesCreacion %}
+                    <div class="card mb-3 animate__animated animate__fadeIn">
+                        <div class="card-body">
+                            <h5 class="text-center">Solicitudes de creación de prestamos</h5>
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Tipo</th>
+                                        <th>Valor</th>
+                                        <th>Info</th>
+                                        <th>Estado</th>
+                                        {% if not userpersona %}
+                                            <th>Opciones</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in solicitudesCreacion %}
+                                        <tr>
+                                            <td>{{i.fechaSolicitud|date:'d/m/y h:i A'}}</td>
+                                            <td>{{i.tipo|tipoPrestamo:userpersona}}</td>
+                                            <td>{{i.valor|dinero}}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="bottom" 
+                                                    data-html="true" title="{{i|infoSolicitudPrestamo}}">
+                                                    <i class="fal fa-info"></i>
+                                                </button>
+                                            </td>
+                                            <td>{{i.estado|estadoSolicitudPrestamo}}</td>
+                                            {% if not userpersona %}
+                                                <td>
+                                                    {% if i.estado == 0 %}
+                                                    <a href="{% url 'panel:cambiarEstadoSolicitudCreacionPrestamo' i.id 2 %}" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fal fa-times-circle"></i>
+                                                    </a>
+                                                    <a href="{% url 'panel:cambiarEstadoSolicitudCreacionPrestamo' i.id 1 %}" class="btn btn-outline-primary btn-sm">
+                                                        <i class="fal fa-check-circle"></i>
+                                                    </a>
+                                                    {% else %}
+                                                        <a href="{% url 'panel:vista_prestamo' i.id %}" class="btn btn-outline-primary btn-sm">
+                                                            Ver prestamo
+                                                        </a>
+                                                    {% endif %}
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             <div class="col-lg-3">
                 {% include 'base/panel_enlaces.html' %}
@@ -100,6 +154,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal -->
     <div class="modal fade" id="modalPagoMultiple" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="modalPagoMultipleLabel" aria-hidden="true">
         <div class="modal-dialog">

@@ -29,17 +29,32 @@
                         {% endif %}
                         <form method="post">
                             {% csrf_token %}
-                            <p>
-                                <label for="cuenta">Seleccione una cuenta</label>
+                            <div class="mb-3">
+                                <label for="cuenta">Cuenta</label>
                                 <select class="form-control" name="cuenta" required>
-                                    <option selected disabled value="">Seleccionar</option>
+                                    <option selected disabled value="">Seleccione una cuenta</option>
                                     <!-- <option value="ninguna">Ninguna</option> -->
                                     {% for c in cuentas %}
                                         <option value="{{c.id}}">{{c.nombre}}</option>
                                     {% endfor %}
                                 </select>
-                            </p>
-                            {{form.as_p}}
+                            </div>
+                            <div class="mb-3">
+                                <label for="tipo">Tipo de prestamo</label>
+                                <select name="tipo" class="form-control" id="tipo" required>
+                                    {% for tipo in tiposPrestamos %}
+                                        <option value="{{tipo.id}}">{{tipo.nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cantidad">Valor del prestamo</label>
+                                <input type="text" id="cantidad" name="cantidad" class="form-control" autocomplete="off" placeholder="$" required >
+                            </div>
+                            <div class="mb-3">
+                                <label for="info">Descripción</label>
+                                <input type="text" id="info" name="info" class="form-control" autocomplete="off" required >
+                            </div>
 
                             <div class="text-right">
                                 <button class="btn btn-outline-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">

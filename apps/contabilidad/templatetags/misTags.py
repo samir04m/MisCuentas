@@ -167,10 +167,17 @@ def tipoPrestamoPublico(tipoPrestamo):
         return ""
 
 @register.filter
-def estadoSolicitudPagoPrestamo(estado:int):
+def estadoSolicitudPrestamo(estado:int):
     nombreEstados = ["Creada", "Aprobada", "Rechazada"]
     return nombreEstados[estado]
 
 @register.filter
-def tipoPrestamo(tipoPrestamo:str):
-    return "Yo presto" if tipoPrestamo == "yopresto" else "Me prestan"
+def tipoPrestamo(tipoPrestamo:str, userpersona=None):
+    if not userpersona:
+        return "Yo presto" if tipoPrestamo == "yopresto" else "Me prestan"
+    else:
+        return "Me prestan" if tipoPrestamo == "yopresto" else "Yo presto"
+
+@register.filter
+def infoSolicitudPrestamo(solicitudPrestamo) -> str:
+    return "Cuenta: {} \nInfo: {} \nFecha prestamo: {}".format(solicitudPrestamo.cuenta.nombre, solicitudPrestamo.info, solicitudPrestamo.fechaPrestamo)

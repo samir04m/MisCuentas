@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.db.models import Sum
 from django.contrib import messages
 from django.utils import timezone
@@ -369,3 +370,6 @@ def crearEtiquetaPrestamoCompraTC(request):
             user=request.user
         )
         etiquetaPrestamoCompraTC.save()
+
+def RedireccionarVistaAnterior(request):
+    return redirect(request.META.get('HTTP_REFERER'))

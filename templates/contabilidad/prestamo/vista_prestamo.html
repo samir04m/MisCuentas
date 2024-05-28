@@ -123,7 +123,7 @@
                                     <tr>
                                         <td>{{solicitud.fechaSolicitud|date:'l, d F Y h:i A'}}</td>
                                         <td>$ {{solicitud.valorPago|puntomil}}</td>
-                                        <td>{{solicitud.estado|estadoSolicitudPagoPrestamo}}</td>
+                                        <td>{{solicitud.estado|estadoSolicitudPrestamo}}</td>
                                         <td>
                                             <a href="{% url 'panel:vistaSolicitudPagoPrestamo' solicitud.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt"></i></a>
                                         </td>

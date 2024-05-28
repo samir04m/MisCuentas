@@ -23,4 +23,8 @@ $(document).ready(function() {
     $('#datatable').DataTable({
         order: []
     });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
 });
