@@ -195,9 +195,30 @@ def pagarMultiplesPrestamos(request, pagoTotal:int, cuenta:Cuenta, fechaPago:str
         alert(request, 'Ocurrio un error', 'e')
 
 @login_required
+def vistaSolicitudesPrestamos(request):
+    solicitudesCreacion = SolicitudCreacionPrestamo.objects.filter(usuarioAprueba=request.user)
+    context = {
+        'solicitudesCreacion': solicitudesCreacion
+    }
+    return render(request, 'contabilidad/prestamo/vistaSolicitudesPrestamos.html', context)
+
+
+@login_required
 def vistaSolicitudPagoPrestamo(request, id):
     solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
     return render(request, 'contabilidad/prestamo/vista_solicitudPagoPrestamo.html', {"solicitud":solicitud})
+
+@login_required
+def cambiarEstadoSolicitudCreacionPrestamo(request, id, nuevoEstado):
+    solicitud = get_object_or_404(SolicitudCreacionPrestamo, id=id)
+    solicitud.estado = nuevoEstado
+    solicitud.save()
+    alert(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!')
+    if nuevoEstado == 1:
+        prestamo = crearPrestamo(request, solicitud.tipo, solicitud.valor, solicitud.info, solicitud.cuenta, solicitud.persona, solicitud.fechaPrestamo)
+        return redirect('panel:vista_prestamo', prestamo.id)
+    else:
+        return redirect('panel:vistaSolicitudesPrestamos')
 
 @login_required
 def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):

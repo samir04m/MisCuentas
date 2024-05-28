@@ -37,9 +37,9 @@ def crearTransaccion(request, tipo:str, cuenta:Cuenta, cantidad:int, info:str, t
 def crearPrestamo(request, tipo:str, valor:int, info:str, cuenta:Cuenta, persona:Persona, fecha=None) -> Prestamo:
     fecha = validarFecha(fecha)
     if tipo == 'yopresto':
-        transaccion = crearTransaccion(request, 'egreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
+        transaccion = crearTransaccion(request, 'egreso', cuenta, valor, info, 'Prestamo', 1, fecha)
     if tipo == 'meprestan':
-        transaccion = crearTransaccion(request, 'ingreso', cuenta, cantidad, info, 'Prestamo', 1, fecha)
+        transaccion = crearTransaccion(request, 'ingreso', cuenta, valor, info, 'Prestamo', 1, fecha)
     prestamo = Prestamo(
         tipo=tipo,
         cantidad=valor,

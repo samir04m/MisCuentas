@@ -126,8 +126,8 @@ def getHeightBarChart(listTagData:List[TagData]):
     return (len(listTagData)-1) * 45
 
 @register.filter
-def dinero(cantidad, mostarSigno=False):
-    strCantidad = "${}".format(puntomil(cantidad))
+def dinero(cantidad:int, mostarSigno=False):
+    strCantidad = "$ {}".format(puntomil(cantidad))
     signo = ""
     if mostarSigno:
         if cantidad > 0: signo = '+ '
@@ -170,3 +170,7 @@ def tipoPrestamoPublico(tipoPrestamo):
 def estadoSolicitudPagoPrestamo(estado:int):
     nombreEstados = ["Creada", "Aprobada", "Rechazada"]
     return nombreEstados[estado]
+
+@register.filter
+def tipoPrestamo(tipoPrestamo:str):
+    return "Yo presto" if tipoPrestamo == "yopresto" else "Me prestan"

@@ -119,8 +119,7 @@
                                             <i class="fas fa-user-circle"></i> {{userpersona.admin}}
                                         </a>
                                         <div class="float-right">
-                                            <a href=""
-                                                class="btn btn-sm btn-primary rounded-pill">Prestar</a>
+                                            <a href="{% url 'panel:crear_prestamo' userpersona.persona.id %}" class="btn btn-sm btn-primary rounded-pill">Prestar</a>
                                         </div>
                                     </div>
                                 </div>
