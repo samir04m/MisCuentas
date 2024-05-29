@@ -36,7 +36,8 @@ def vista_persona(request, persona_id):
         "cuentas": selectCuentas(request, userpersona),
         "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
         "userpersona":userpersona,
-        "solicitudesCreacion":SolicitudCreacionPrestamo.objects.filter(persona=persona, estado=0).all()
+        "solicitudesCreacion":SolicitudCreacionPrestamo.objects.filter(persona=persona, estado=0).all(),
+        "solicitudesPago":SolicitudPagoPrestamo.objects.filter(persona=persona, estado=0).all()
     }
     context.update(obtenerInfoPrestamosPersona(persona, userpersona))
     return render(request, 'contabilidad/persona/vista_persona.html', context)

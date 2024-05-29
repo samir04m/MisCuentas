@@ -183,14 +183,14 @@ class CompraCreditoPrestamo(models.Model):
         verbose_name_plural = 'CompraCreditoPrestamo'
 
 class SolicitudPagoPrestamo(models.Model):
-    valorPago = models.IntegerField()
-    info = models.CharField(max_length=250, null=True, blank=True)
+    pagoMultiple = models.BooleanField(default=False)
+    valor = models.IntegerField(default=0)
+    info = models.CharField(max_length=250, null=False, blank=False, default="")
     prestamo = models.ForeignKey(Prestamo, null=True, blank=True, on_delete=models.CASCADE)
     cuenta = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, null=True, blank=True, on_delete=models.CASCADE)
     fechaPago = models.CharField(max_length=250, null=True, blank=True)
-    pagoMultiple = models.BooleanField(default=False)
     pagoMultipleTipoPrestamo = models.CharField(max_length=20, null=True, blank=True)
-    pagoMultiplePersonaId = models.IntegerField(null=True, blank=True)
     usuarioSolicita = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_solicita')
     usuarioAprueba = models.ForeignKey(User, on_delete=models.CASCADE,  related_name='user_aprueba')
     fechaSolicitud = models.DateTimeField()

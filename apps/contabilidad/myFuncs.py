@@ -373,3 +373,11 @@ def crearEtiquetaPrestamoCompraTC(request):
 
 def RedireccionarVistaAnterior(request):
     return redirect(request.META.get('HTTP_REFERER'))
+
+def getTipoPrestamoOpuesto(tipoPrestamo:str) -> str:
+    if tipoPrestamo == 'yopresto':
+        return 'meprestan'
+    elif tipoPrestamo == 'meprestan':
+        return 'yopresto'
+    else:
+        raise Exception('No existe un tipo de prestamo opuesto para el valor indicado -> ', tipoPrestamo)

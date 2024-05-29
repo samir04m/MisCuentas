@@ -1,4 +1,5 @@
 from django import template
+from datetime import datetime
 from apps.contabilidad.models import Transaccion
 from apps.reporte.myFuncs import TagData
 from typing import List
@@ -180,4 +181,18 @@ def tipoPrestamo(tipoPrestamo:str, userpersona=None):
 
 @register.filter
 def infoSolicitudPrestamo(solicitudPrestamo) -> str:
-    return "Cuenta: {} \nInfo: {} \nFecha prestamo: {}".format(solicitudPrestamo.cuenta.nombre, solicitudPrestamo.info, solicitudPrestamo.fechaPrestamo)
+    nombreCuenta =  solicitudPrestamo.cuenta.nombre if solicitudPrestamo.cuenta else 'Ninguna'
+    fechaStr = solicitudPrestamo.fechaPrestamo if hasattr(solicitudPrestamo, 'fechaPrestamo') else solicitudPrestamo.fechaPago
+    # if not fechaStr: # si sigue vacio quiere decir que no se selecciono una fecha diferente, por lo cual se toma la fecha de la solicitud
+    #     fechaStr = solicitudPrestamo.fechaSolicitud.strftime("%Y-%m-%d %H:%M:%S.%f") # se convierte a str para despues poderle darle manejo como str
+    #     print("solicitudPrestamo.fechaSolicitud", solicitudPrestamo.fechaSolicitud)
+    try:
+        fechaDateTime = datetime.strptime(fechaStr, "%Y-%m-%d %H:%M:%S.%f")
+    except:
+        fechaDateTime = datetime.strptime(fechaStr, "%Y-%m-%d %H:%M:%S")
+    fecha_formateada = fechaDateTime.strftime("%d/%m/%Y %I:%M %p")    
+    return "Cuenta: {}. \nInfo: {}. \nFecha: {}".format(nombreCuenta, solicitudPrestamo.info, fecha_formateada)
+
+@register.filter
+def pagoMultiple(pagoMultiple:bool) -> str:
+    return 'Multiple' if pagoMultiple else 'Individual'

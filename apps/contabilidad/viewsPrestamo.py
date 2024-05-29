@@ -152,15 +152,16 @@ def pagarConjuntoPrestamos(request, persona_id):
             alert(request, 'El total a pagar debe ser mayor a cero', 'e')
             return redirect('panel:vista_persona', persona_id)
         
+        persona = get_object_or_404(Persona, id=persona_id)
         tipoPrestamo = request.POST.get('tipoPrestamo')
         cuenta = getCuentaFromPost(request)
         user = request.user
-        fechaPago = request.POST.get('datetime')
+        fechaPago = getDate(request.POST.get('datetime'))
         userpersona = UserPersona.objects.filter(persona__id=persona_id, user=user).first()
         if not userpersona:
             pagarMultiplesPrestamos(request, pagoTotal, cuenta, fechaPago, user, tipoPrestamo, persona_id)
         else:
-            crearSolicitudPagoMultiplesPrestamos(pagoTotal, cuenta, userpersona, fechaPago, tipoPrestamo, persona_id)
+            crearSolicitudPagoMultiplesPrestamos(pagoTotal, cuenta, userpersona, fechaPago, tipoPrestamo, persona)
 
     return redirect('panel:vista_persona', persona_id)
 
@@ -219,15 +220,20 @@ def cambiarEstadoSolicitudCreacionPrestamo(request, id, nuevoEstado):
 @login_required
 def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):
     solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
-    solicitud.estado = nuevoEstado
-    solicitud.save()
-    if nuevoEstado == 1:
-        if solicitud.pagoMultiple:
-            pagarMultiplesPrestamos(request, solicitud.valorPago, solicitud.cuenta, solicitud.fechaPago, solicitud.usuarioAprueba, solicitud.pagoMultipleTipoPrestamo, solicitud.pagoMultiplePersonaId)
-        else:
-            pagarPrestamo(solicitud.prestamo, solicitud.valorPago, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.usuarioAprueba)
-    alert(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!')
-    return redirect('panel:vistaSolicitudPagoPrestamo', id)
+    try:
+        with transaction.atomic():
+            solicitud.estado = nuevoEstado
+            solicitud.save()
+            if nuevoEstado == 1:
+                if solicitud.pagoMultiple:
+                    pagarMultiplesPrestamos(request, solicitud.valor, solicitud.cuenta, solicitud.fechaPago, solicitud.usuarioAprueba, solicitud.pagoMultipleTipoPrestamo, solicitud.persona.id)
+                else:
+                    pagarPrestamo(solicitud.prestamo, solicitud.valor, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.usuarioAprueba)
+            alert(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!')
+    except Exception as ex:
+        printException(ex)
+        alert(request, 'No fue posible cambiar el estado de la solicitud', 'e')
+    return RedireccionarVistaAnterior(request)
 
 def eliminarSolicitudPagoPrestamo(request, id):
     solicitud = get_object_or_404(SolicitudPagoPrestamo, id=id)
@@ -239,19 +245,18 @@ def eliminarSolicitudPagoPrestamo(request, id):
     else:
         return redirect('panel:inicio')
 
-def procesarPagoPrestamo(prestamo:Prestamo, monto, request) -> Transaccion:
+def procesarPagoPrestamo(prestamo:Prestamo, monto, request):
     userpersona = UserPersona.objects.filter(persona=prestamo.persona, user=request.user).first()
     cuenta = getCuentaFromPost(request)
     info = request.POST.get('info')
     user = request.user
-    fechaPago = request.POST.get('datetime')
+    fechaPago = getDate(request.POST.get('datetime'))
 
     if not userpersona:
-        return pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
+        pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
     else:
         crearSolicitudPagoPrestamo(monto, info, prestamo, cuenta, userpersona, fechaPago)
         alert(request, 'Se le ha solicitado a la persona involucrada confirmar el pago. Una vez aprobado se reflejara el comprobante.')
-        return None
 
 def pagarPrestamo(prestamo:Prestamo, monto:int, cuenta:Cuenta, info:str, fechaPago:str, user:User) -> Transaccion:
     if monto > prestamo.saldo_pendiente: # Si el monto es mayor al saldo pendiente
@@ -290,7 +295,7 @@ def pagarPrestamo(prestamo:Prestamo, monto:int, cuenta:Cuenta, info:str, fechaPa
         info = infoTransaccion + "\n" + info if info else "",
         cuenta = cuenta,
         etiqueta = tag,
-        fecha = getDate(fechaPago),
+        fecha = fechaPago,
         user = user
     )
     transaccion.save()
@@ -300,10 +305,11 @@ def pagarPrestamo(prestamo:Prestamo, monto:int, cuenta:Cuenta, info:str, fechaPa
 
 def crearSolicitudPagoPrestamo(valor:int, info:str, prestamo:Prestamo, cuenta:Cuenta, userpersona:UserPersona, fechaPago:str):
     solicitud = SolicitudPagoPrestamo(
-        valorPago = valor,
+        valor = valor,
         info = info,
         prestamo = prestamo,
         cuenta = cuenta,
+        persona = prestamo.persona,
         fechaPago = fechaPago,
         pagoMultiple = False,
         usuarioSolicita = userpersona.user,
@@ -312,14 +318,14 @@ def crearSolicitudPagoPrestamo(valor:int, info:str, prestamo:Prestamo, cuenta:Cu
     )
     solicitud.save()
 
-def crearSolicitudPagoMultiplesPrestamos(valor:int, cuenta:Cuenta, userpersona:UserPersona, fechaPago:str, tipoPrestamo:str, personaId:int):
+def crearSolicitudPagoMultiplesPrestamos(valor:int, cuenta:Cuenta, userpersona:UserPersona, fechaPago:str, tipoPrestamo:str, persona:Persona):
     solicitud = SolicitudPagoPrestamo(
-        valorPago = valor,
+        valor = valor,
         cuenta = cuenta,
         fechaPago = fechaPago,
         pagoMultiple = True,
-        pagoMultipleTipoPrestamo = 'meprestan' if tipoPrestamo == 'yopresto' else 'yopresto',
-        pagoMultiplePersonaId = personaId,
+        pagoMultipleTipoPrestamo = getTipoPrestamoOpuesto(tipoPrestamo),
+        persona = persona,
         usuarioSolicita = userpersona.user,
         usuarioAprueba = userpersona.admin,
         fechaSolicitud = datetime.now()
@@ -328,7 +334,7 @@ def crearSolicitudPagoMultiplesPrestamos(valor:int, cuenta:Cuenta, userpersona:U
 
 def crearSolicitudCreacionPrestamo(tipo:str, valor:int, info:str, cuenta:Cuenta, persona:Persona, fecha:str, userpersona:UserPersona):
     solicitud = SolicitudCreacionPrestamo(
-        tipo = 'meprestan' if tipo == 'yopresto' else 'yopresto',
+        tipo = tipo,
         valor = valor,
         info = info,
         cuenta = cuenta,
