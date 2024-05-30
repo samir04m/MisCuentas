@@ -24,17 +24,23 @@
                                     {{ userpersona.admin }}
                                 {% endif %}
                             </div>
-                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-l-10">
-                                Crear Prestamo <i class="fal fa-plus"></i>
+                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-1">
+                                Crear prestamo <i class="fal fa-plus"></i>
+                            </a>
+                            {% if yoDebo or meDeben %}
+                                <button type="button" class="btn btn-outline-info btn-sm m-1" data-toggle="modal" data-target="#modalPagoMultiple">
+                                    Registrar pago <i class="fal fa-money-check-edit-alt"></i>
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'user:userNotificationView' 1 %}" class="btn btn-sm btn-outline-secondary m-1">
+                                {% if numeroNotificacionesNuevas %}
+                                    <span class="badge badge-primary">{{numeroNotificacionesNuevas}}</span>
+                                {% endif %}
+                                Ver pagos <i class="fal fa-comment-exclamation"></i>
                             </a>
                         </div>
                         <hr>
                         <div style="overflow: hidden;">
-                            {% if yoDebo or meDeben %}
-                                <button type="button" class="btn btn-outline-info float-right" data-toggle="modal" data-target="#modalPagoMultiple">
-                                    Pago multiple
-                                </button>
-                            {% endif %}
                             <p>
                                 Has realizado {{persona.prestamo_set.count}} pretamos con esta persona.
                                 {% if persona.prestamo_set.count %}
@@ -96,7 +102,7 @@
                 {% if solicitudesCreacion %}
                     <div class="card mb-3 animate__animated animate__fadeIn">
                         <div class="card-body">
-                            <h5 class="text-center">Solicitudes de creación de prestamos</h5>
+                            <h5 class="text-center">Solicitudes de creación de prestamos pendientes</h5>
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
@@ -150,7 +156,7 @@
                 {% if solicitudesPago %}
                     <div class="card mb-3 animate__animated animate__fadeIn">
                         <div class="card-body">
-                            <h5 class="text-center">Solicitudes de creación de prestamos</h5>
+                            <h5 class="text-center">Solicitudes de pago de prestamos pendientes</h5>
                             <table class="table table-responsive-sm">
                                 <thead>
                                     <tr>
@@ -219,8 +225,8 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <div class="modal-body">
-                <form action="{% url 'panel:pagarConjuntoPrestamos' persona.id %}" method="POST">
+            <form action="{% url 'panel:pagarConjuntoPrestamos' persona.id %}" method="POST">
+                <div class="modal-body">
                     {% csrf_token %}
                     <input type="number" name="personaId" id="personaId" value="{{persona.id}}" class="d-none">
     
@@ -246,9 +252,9 @@
                         {% endif %}
                     </div>
                     <div class="form-group">
-                        <label for="cuenta">Seleccione una cuenta para realizar el pago:</label>
+                        <label for="cuenta">Cuenta para realizar el pago:</label>
                         <select name="cuenta" class="form-control" id="cuenta" required>
-                            <option value="" disabled selected>Seleccione</option>
+                            <option value="" disabled selected>Seleccione una cuenta</option>
                             <option value="0">Ninguna</option>
                             {% for cuenta in cuentas %}
                                 <option value="{{cuenta.id}}">{{cuenta.nombre}}</option>
@@ -256,8 +262,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="pagoTotal">Ingrese la cantidad a pagar:</label>
+                        <label for="pagoTotal">Valor del pago:</label>
                         <input type="text" class="form-control" id="pagoTotal" name="pagoTotal" value="{{meDeben|valorPagoMultiplePrestamo:yoDebo}}" autocomplete="off" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="info">Información del pago:</label>
+                        <input type="text" class="form-control" id="info" name="info" autocomplete="off" required>
                     </div>
                     <div class="collapse pb-3" id="collapseDate">
                         <label for="datetime">Fecha</label>
@@ -268,14 +278,12 @@
                             Seleccionar <i class="fal fa-calendar-alt"></i>
                         </button>
                     </div>
-                    <div class="text-center">
-                        <button class="btn btn-outline-primary">Pagar prestamos</button>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-outline-primary">Pagar prestamos</button>
+                </div>
+            </form>
         </div>
         </div>
     </div>

@@ -22,8 +22,17 @@ class UserSettingAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('key','value','user',)
     resource_class = UserSettingResource
 
+class UserNotificationResource(resources.ModelResource):
+    class Meta:
+        model = UserNotification
+
+class UserNotificationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    # search_fields = ['key']
+    list_display = ('id','message','user','date','read','type',)
+    resource_class = UserNotificationResource
+
 admin.site.register(UserSetting, UserSettingAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(UserPersona)
-admin.site.register(UserNotification)
+admin.site.register(UserNotification, UserNotificationAdmin)

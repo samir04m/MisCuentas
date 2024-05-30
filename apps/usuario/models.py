@@ -21,14 +21,11 @@ class UserPersona(models.Model):
     def __str__(self):
         return "{} -> {} ({})".format(self.admin, self.user, self.persona)
 
-class NotificationLinkButton(models.Model):
-    name = models.CharField(max_length=100)
-    route = models.CharField(max_length=100)
-
 class UserNotification(models.Model):
     message = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField()
     read = models.BooleanField(default=False)
-    linkButton = models.ForeignKey(NotificationLinkButton, null=True, blank=True, on_delete=models.CASCADE)
-    routeParam = models.IntegerField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.TextField(default=0) # 0-NoClasificado, 1-PagoPrestamo
+    class Meta:
+        ordering = ['-date']

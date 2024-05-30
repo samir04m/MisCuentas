@@ -15,12 +15,17 @@
                         </a>
                     </li>
                     {% if request.user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pagos:listado' %}">
+                                <i class="fal fa-wallet"></i> Pagos <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pagos:listado' %}">
-                            <i class="fal fa-wallet"></i> Pagos <span class="sr-only">(current)</span>
+                        <a class="nav-link" href="{% url 'user:userNotificationView' 0 %}">
+                            <i class="fal fa-comment-lines"></i>
                         </a>
                     </li>
-                    {% endif %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                             aria-expanded="false">

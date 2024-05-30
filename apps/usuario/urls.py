@@ -6,4 +6,6 @@ urlpatterns = [
     path('registro-exitoso/', confirm_registro, name='confirm_registro'),
 
     path('switchUserSetting/<str:key>/', switchUserSetting, name='switchUserSetting'),
+
+    path('notifications/<int:type>/', userNotificationView, name='userNotificationView'),
 ]

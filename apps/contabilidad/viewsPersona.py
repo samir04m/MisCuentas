@@ -8,7 +8,7 @@ from django.http import request
 from .models import *
 from .forms import *
 from .myFuncs import *
-from apps.usuario.views import getUserSetting
+from apps.usuario.views import getUserSetting, UserNotification, NotificationType
 from apps.usuario.models import UserPersona
 
 @login_required
@@ -37,7 +37,8 @@ def vista_persona(request, persona_id):
         "mostrarSaldoCuentas":getUserSetting('MostrarSaldoCuentas', request.user),
         "userpersona":userpersona,
         "solicitudesCreacion":SolicitudCreacionPrestamo.objects.filter(persona=persona, estado=0).all(),
-        "solicitudesPago":SolicitudPagoPrestamo.objects.filter(persona=persona, estado=0).all()
+        "solicitudesPago":SolicitudPagoPrestamo.objects.filter(persona=persona, estado=0).all(),
+        "numeroNotificacionesNuevas":UserNotification.objects.filter(user=request.user, type=NotificationType.PagoPrestamo.value, read=False).count()
     }
     context.update(obtenerInfoPrestamosPersona(persona, userpersona))
     return render(request, 'contabilidad/persona/vista_persona.html', context)

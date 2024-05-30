@@ -196,3 +196,7 @@ def infoSolicitudPrestamo(solicitudPrestamo) -> str:
 @register.filter
 def pagoMultiple(pagoMultiple:bool) -> str:
     return 'Multiple' if pagoMultiple else 'Individual'
+
+@register.filter
+def notificationColor(read:bool) -> str:
+    return 'secondary' if read else 'primary'

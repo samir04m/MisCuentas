@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Notificaciones{% endblock %}
+
+{% block contenido %}
+
+    <div class="container pt-2">
+        <div class="row">
+            <div class="col-lg-9">
+                <h4 class="text-center text-light">{{title}}</h4>
+                {% if notifications %}
+                    {% for item in notifications %}
+                        <div class="alert alert-{{item.read|notificationColor}}" role="alert">
+                            <p>{{item.message}}</p>
+                            <hr class="m-1">
+                            <div class="text-muted fz-12">
+                                {% if item.read %}
+                                    Leído
+                                {% else %}
+                                    Nueva
+                                {% endif %}
+                                <div class="float-right">
+                                    {{item.date|date:'l, d M Y, h:i A'}}
+                                </div> 
+                            </div>
+                                    
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h2 class="text-center text-light py-4">
+                        <i class="fal fa-smile-wink"></i> No tienes notificaciones
+                    </h2>
+                {% endif %}
+            </div>
+            <div class="col-lg-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
