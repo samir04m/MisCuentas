@@ -59,9 +59,9 @@
                                         <th></th>
                                         <th>Fecha</th>
                                         <th>Tipo</th>
-                                        <th>Cantidad</th>
                                         <th>Pendiente</th>
-                                        <th>Ver</th>
+                                        <th>Info</th>
+                                        <th>Opciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -84,11 +84,14 @@
                                                 {% endif %}
                                             </td>
                                             
-                                            <td>${{p.cantidad|puntomil}}</td>
                                             <td>${{p.saldo_pendiente|puntomil}}</td>
+                                            <td>{{p.info|truncatechars:'20'}}</td>
                                             <td>
-                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary">
+                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-info">
                                                     <i class="fal fa-external-link"></i>
+                                                </a>
+                                                <a href="{% url 'panel:pagar_prestamo' p.id %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fal fa-envelope-open-dollar"></i>
                                                 </a>
                                             </td>
                                         </tr>

@@ -10,6 +10,7 @@ from typing import List
 from .models import *
 from .forms import *
 from .myFuncs import *
+from .enums import *
 from apps.usuario.views import getUserSetting, createUserNotification, NotificationType
 from apps.usuario.models import UserPersona
 
@@ -108,7 +109,7 @@ def pagar_prestamo(request, prestamo_id):
             with transaction.atomic():
                 procesarPagoPrestamo(prestamo, monto, request)
         except Exception as ex:
-            print("----- Exception -----", ex)
+            printException(ex)
         return redirect('panel:vista_prestamo', prestamo_id)
     else:
         cuentas = selectCuentas(request, userpersona)
@@ -160,17 +161,14 @@ def pagarConjuntoPrestamos(request, persona_id):
         fechaPago = getDate(request.POST.get('datetime'))
         userpersona = UserPersona.objects.filter(persona__id=persona_id, user=user).first()
         if not userpersona:
-            pagarMultiplesPrestamos(request, pagoTotal, cuenta, fechaPago, user, tipoPrestamo, persona_id)
-            crearNotificacionPagoPrestamosMultiples(pagoTotal, cuenta, info, user, persona.nombre)
-            usuarioPersonaRelacionado = UserPersona.objects.filter(persona__id=persona_id, admin=user).first()
-            if usuarioPersonaRelacionado:
-                crearNotificacionPagoPrestamosMultiples(pagoTotal, cuenta, info, usuarioPersonaRelacionado.user, user.username)
+            transaccion = pagarMultiplesPrestamos(request, pagoTotal, cuenta, fechaPago, user, tipoPrestamo, persona_id)
+            crearNotificacionPagoPrestamoFromTransaccion(transaccion, info, persona)
         else:
             crearSolicitudPagoMultiplesPrestamos(pagoTotal, cuenta, info, userpersona, fechaPago, tipoPrestamo, persona)
             alert(request, 'Se ha creado la solicitud de pago multiple. Cuando la persona involucrada la acepte se vera reflejado el pago.')
     return redirect('panel:vista_persona', persona_id)
 
-def pagarMultiplesPrestamos(request, pagoTotal:int, cuenta:Cuenta, fechaPago:str, user:User, tipoPrestamo:str, personaId:int) -> bool: # Retorna true si se completo con exito o false si ocurrio exception
+def pagarMultiplesPrestamos(request, pagoTotal:int, cuenta:Cuenta, fechaPago:str, user:User, tipoPrestamo:str, personaId:int) -> Transaccion:
     prestamos = Prestamo.objects.filter(tipo=tipoPrestamo, persona__id=personaId, cancelada=False).order_by('fecha')
     disponible = pagoTotal
     transaccionPadre = None
@@ -192,11 +190,11 @@ def pagarMultiplesPrestamos(request, pagoTotal:int, cuenta:Cuenta, fechaPago:str
                 if disponible == 0:
                     break
         alert(request, 'Pago de multiples prestamos realizado')
-        return True
+        return transaccionPadre
     except Exception as ex:
-        print("----- Exception -----", ex)
+        printException(ex)
         alert(request, 'Ocurrio un error', 'e')
-        return False
+        return None
 
 @login_required
 def vistaSolicitudesPrestamos(request):
@@ -233,12 +231,11 @@ def cambiarEstadoSolicitudPagoPrestamo(request, id, nuevoEstado):
             solicitud.save()
             if nuevoEstado == 1:
                 if solicitud.pagoMultiple:
-                    pagosExistosos = pagarMultiplesPrestamos(request, solicitud.valor, solicitud.cuenta, solicitud.fechaPago, solicitud.usuarioAprueba, solicitud.pagoMultipleTipoPrestamo, solicitud.persona.id)
-                    if pagosExistosos:
-                        crearNotificacionPagoPrestamosMultiples(solicitud.valor, solicitud.cuenta, solicitud.info, solicitud.usuarioAprueba, solicitud.usuarioSolicita.username)
-                        crearNotificacionPagoPrestamosMultiples(solicitud.valor, solicitud.cuenta, solicitud.info, solicitud.usuarioSolicita, solicitud.usuarioAprueba.username)
+                    transaccionDelPrestamo = pagarMultiplesPrestamos(request, solicitud.valor, solicitud.cuenta, solicitud.fechaPago, solicitud.usuarioAprueba, solicitud.pagoMultipleTipoPrestamo, solicitud.persona.id)
                 else:
-                    pagarPrestamo(solicitud.prestamo, solicitud.valor, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.usuarioAprueba)
+                    transaccionDelPrestamo = pagarPrestamo(solicitud.prestamo, solicitud.valor, solicitud.cuenta, solicitud.info, solicitud.fechaPago, solicitud.usuarioAprueba)
+                crearNotificacionPagoPrestamoFromTransaccion(transaccionDelPrestamo, solicitud.info, solicitud.persona)
+
             alert(request, 'Soliciud aprobada!' if nuevoEstado == 1 else 'Solicitud rechazada!')
     except Exception as ex:
         printException(ex)
@@ -261,9 +258,9 @@ def procesarPagoPrestamo(prestamo:Prestamo, monto, request):
     info = request.POST.get('info')
     user = request.user
     fechaPago = getDate(request.POST.get('datetime'))
-
     if not userpersona:
-        pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
+        transaccion = pagarPrestamo(prestamo, monto, cuenta, info, fechaPago, user)
+        crearNotificacionPagoPrestamoFromTransaccion(transaccion, info, prestamo.persona)
     else:
         crearSolicitudPagoPrestamo(monto, info, prestamo, cuenta, userpersona, fechaPago)
         alert(request, 'Se le ha solicitado a la persona involucrada confirmar el pago. Una vez aprobado se reflejara el comprobante.')
@@ -374,12 +371,28 @@ def getTipoPrestamoSelect(userpersona:UserPersona) -> List[TipoPrestamo]:
             TipoPrestamo('meprestan', 'Yo Presto'),
         ]
 
-def crearNotificacionPagoPrestamosMultiples(valorPago:int, cuenta:Cuenta, info:str, user:User, nombrePersona:str):
+def crearNotificacionPagoPrestamo(valorPago:int, cuenta:Cuenta, infoPago:str, persona:Persona, userOwnerPrestamo:User, pagoMultiple:bool):
     nombreCuenta = cuenta.nombre if cuenta else 'Ninguna'
-    message = '''
-    Se registró un pago de préstamos con {}, 
-    Valor del pago {}, 
-    Cuenta: {}. 
-    Información: {}.'''.format(nombrePersona, getFormatoDinero(valorPago), nombreCuenta, info)
+    mensajePago = 'varios préstamos' if pagoMultiple else 'un préstamo'
+    usuariosANotificar = [userOwnerPrestamo]
+    userpersona = UserPersona.objects.filter(admin=userOwnerPrestamo, persona=persona).first()
+    if userpersona:
+        usuariosANotificar.append(userpersona.user)
 
-    createUserNotification(message, user, NotificationType.PagoPrestamo)
+    for user in usuariosANotificar:
+        if user.username == userOwnerPrestamo.username:
+            nombrePersonaInvolucrada = persona.nombre
+        else:
+            nombrePersonaInvolucrada = userOwnerPrestamo.username
+        message = '''
+        Se registró el pago de {} con {}, 
+        Valor del pago {}, 
+        Cuenta: {}. 
+        Información: {}.'''.format(mensajePago, nombrePersonaInvolucrada, getFormatoDinero(valorPago), nombreCuenta, infoPago)
+
+        createUserNotification(message, user, NotificationType.PagoPrestamo)
+
+def crearNotificacionPagoPrestamoFromTransaccion(transaccion:Transaccion, infoPago:str, persona:Persona):
+    if transaccion:
+        pagoMultiple = True if transaccion.estado == EstadoTransaccion.PadreGrupo.value else False
+        crearNotificacionPagoPrestamo(transaccion.cantidad, transaccion.cuenta, infoPago, persona, transaccion.user, pagoMultiple)
