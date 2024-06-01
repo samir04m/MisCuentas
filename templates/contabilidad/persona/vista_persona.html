@@ -85,7 +85,10 @@
                                             </td>
                                             
                                             <td>${{p.saldo_pendiente|puntomil}}</td>
-                                            <td>{{p.info|truncatechars:'20'}}</td>
+                                            <td>
+                                                {{p.info|truncatechars:'20'}}
+                                                <span class="d-none">{{p.info}}</span>
+                                            </td>
                                             <td>
                                                 <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-info">
                                                     <i class="fal fa-external-link"></i>
