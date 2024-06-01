@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.reporte',
     'apps.pagos',
     'apps.publico',
+    'apps.apto',
     'import_export',
 ]
 
