@@ -14,6 +14,13 @@
                             <i class="fal fa-chart-bar"></i> Panel <span class="sr-only">(current)</span>
                         </a>
                     </li>
+                    {% if request.user.pagador_set.first %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'apto:home' %}">
+                                <i class="fal fa-building"></i> Apto <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    {% endif %}
                     {% if request.user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'pagos:listado' %}">

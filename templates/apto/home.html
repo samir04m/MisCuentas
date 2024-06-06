@@ -1,0 +1,56 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Apto{% endblock %}
+
+{% block contenido %}
+
+    <div class="container pt-2">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="my-3 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-22">Recibos</b>
+                    <a href="{% url 'apto:crearRecibo' %}" class="btn btn-sm btn-outline-light">
+                        Agregar  <i class="fal fa-plus"></i></a>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        {% if recibos %}
+                            <table class="table table-responsive-sm" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Servicio</th>
+                                        <th>Periodo</th>
+                                        <th>Valor Pago</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in recibos %}
+                                        <tr>
+                                            <td>{{item.empresa.nombre}}</td>
+                                            <td>{{item.periodo}}</td>
+                                            <td>{{item.valorPago|dinero}}</td>
+                                            <td>
+
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <h4 class="text-center text-secondary py-4">
+                                <i class="fal fa-smile-wink"></i> Todavia no se registran recibos
+                            </h4>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

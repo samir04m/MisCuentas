@@ -27,6 +27,8 @@ class Estadia(models.Model):
 
 class Empresa(models.Model):
     nombre = models.CharField(max_length=100)
+    def __str__(self):
+        return "{}".format(self.nombre)
 
 class Recibo(models.Model):
     periodo = models.CharField(max_length=50)
@@ -35,6 +37,9 @@ class Recibo(models.Model):
     fechaFin = models.CharField(max_length=100)
     diasFacturados = models.IntegerField()
     empresa = models.ForeignKey(Empresa, null=False, blank=False, on_delete=models.CASCADE)
+    apto = models.ForeignKey(Apartamento, null=False, blank=False, on_delete=models.CASCADE)
+    class Meta:
+        ordering = ['-periodo']
 
 class PagadorRecibo(models.Model):
     valorPago = models.IntegerField()

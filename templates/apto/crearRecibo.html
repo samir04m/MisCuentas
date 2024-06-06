@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Agregar Recibo{% endblock %}
+
+{% block contenido %}
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-sm-12 offset-md-3 col-md-6">
+                <div class="card animate__animated animate__fadeInUp">
+                    <div class="card-header text-center">
+                        Agregar Recibo
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="pb-2">
+                                <label for="periodo">Periodo</label>
+                                <input type="text" class="form-control fechaPeriodo" name="periodo" id="periodo" required>
+                            </div>
+                            <div class="pb-3">
+                                <label for="valorPago">Valor del prestamo</label>
+                                <input type="text" id="valorPago" name="valorPago" class="form-control" autocomplete="off" placeholder="$" required >
+                            </div>
+                            <div class="pb-2">
+                                <label for="fechaInicio">Fecha Inicio</label>
+                                <input type="text" class="form-control fechaIF" name="fechaInicio" id="fechaInicio" required>
+                            </div>
+                            <div class="pb-2">
+                                <label for="fechaFin">Fecha Fin</label>
+                                <input type="text" class="form-control fechaIF" name="fechaFin" id="fechaFin" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="empresa">Servicio</label>
+                                <select class="form-control" name="empresa" id="empresa" required>
+                                    {% for item in empresas %}
+                                        <option value="{{item.id}}">{{item.nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-flat">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.5.4"></script>
+    <script type="text/javascript">
+        new AutoNumeric('#valorPago', {
+            allowDecimalPadding: false,
+            digitGroupSeparator: ".",
+            decimalCharacter: ",",
+            currencySymbol : ''
+        });
+    </script>
+{% endblock %}

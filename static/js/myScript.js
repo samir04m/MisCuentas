@@ -25,6 +25,18 @@ $(document).ready(function() {
     });
 
     $(function () {
+        $('.fechaIF').datetimepicker({
+            format: 'YYYY/MM/DD'
+        });
+    });
+
+    $(function () {
+        $('.fechaPeriodo').datetimepicker({
+            format: 'YYYY-MM'
+        });
+    });
+
+    $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
 });

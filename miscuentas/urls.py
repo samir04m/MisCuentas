@@ -28,6 +28,7 @@ urlpatterns = [
     path('reporte/', include(('apps.reporte.urls', 'reporte'))),
     path('pagos/', include(('apps.pagos.urls', 'pagos'))),
     path('shared/', include(('apps.publico.urls', 'publico'))),
+    path('apto/', include(('apps.apto.urls', 'apto'))),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', logout_then_login, name='logout'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
