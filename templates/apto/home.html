@@ -32,7 +32,7 @@
                                             <td>{{item.periodo}}</td>
                                             <td>{{item.valorPago|dinero}}</td>
                                             <td>
-
+                                                <a href="{% url 'apto:vistaRecibo' item.id %}" class="btn btn-sm btn-outline-primary">Consultar</a>
                                             </td>
                                         </tr>
                                     {% endfor %}

@@ -45,3 +45,5 @@ class PagadorRecibo(models.Model):
     valorPago = models.IntegerField()
     pagador = models.ForeignKey(Pagador, null=False, blank=False, on_delete=models.CASCADE)
     recibo = models.ForeignKey(Recibo, null=False, blank=False, on_delete=models.CASCADE)
+    def __str__(self):
+        return "{} ({} {}) -> ${}".format(self.pagador.user.username, self.recibo.empresa.nombre, self.recibo.periodo, self.valorPago )

@@ -14,12 +14,20 @@
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="empresa">Servicio</label>
+                                <select class="form-control" name="empresa" id="empresa" required>
+                                    {% for item in empresas %}
+                                        <option value="{{item.id}}">{{item.nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <div class="pb-2">
                                 <label for="periodo">Periodo</label>
                                 <input type="text" class="form-control fechaPeriodo" name="periodo" id="periodo" required>
                             </div>
                             <div class="pb-3">
-                                <label for="valorPago">Valor del prestamo</label>
+                                <label for="valorPago">Valor del total</label>
                                 <input type="text" id="valorPago" name="valorPago" class="form-control" autocomplete="off" placeholder="$" required >
                             </div>
                             <div class="pb-2">
@@ -29,14 +37,6 @@
                             <div class="pb-2">
                                 <label for="fechaFin">Fecha Fin</label>
                                 <input type="text" class="form-control fechaIF" name="fechaFin" id="fechaFin" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="empresa">Servicio</label>
-                                <select class="form-control" name="empresa" id="empresa" required>
-                                    {% for item in empresas %}
-                                        <option value="{{item.id}}">{{item.nombre}}</option>
-                                    {% endfor %}
-                                </select>
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary btn-flat">Guardar</button>

@@ -4,9 +4,9 @@ Se requiere de Python en su versión 3.6.8. En este caso uso 3.9.9.
 ### Entorno Virtual
 Creación
 ```
-C:\Users\Name\project> python -m venv myvenv
+python -m venv venvMisCuentas
 ```
-Activación del entorno virtual: ```myvenv\Scripts\activate```
+Activación del entorno virtual: ```venvMisCuentas\Scripts\activate```
 
 Una vez activado el entorno virtual verificar que la versión de python predeterminada sea la 3.9.9: ```python --version```
 

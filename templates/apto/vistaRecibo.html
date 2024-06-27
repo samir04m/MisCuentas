@@ -1,0 +1,96 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista Recibo{% endblock %}
+
+{% block contenido %}
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-lg-4 pb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="text-center">Recibo de {{recibo.empresa.nombre}}</h5>
+                        <table class="table table-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>Periodo:</th>
+                                    <td>{{recibo.periodo}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Valor:</th>
+                                    <td>{{recibo.valorPago|dinero}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Inicio facturación:</th>
+                                    <td>{{recibo.fechaInicio}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Final facturación:</th>
+                                    <td>{{recibo.fechaFin}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Dias facturados:</th>
+                                    <td>{{recibo.diasFacturados}} dias</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 pb-4">
+                <div class="card">
+                    <div class="card-body pb-1">
+                        <h5 class="text-center">Estadias por persona</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <th>Persona</th>
+                                    {% for dia in listaDias %}
+                                        <th>{{dia}}</th>
+                                    {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for key, value in estadiaPersonas.items %}
+                                        <tr>
+                                            <td>{{key}}</td>
+                                            {% for i in value %}
+                                                <td class="{% if i == 1 %}table-primary{% endif %}"></td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-striped">
+                                <thead>
+                                    <th>Dia</th>
+                                    {% for i in nombresPagadores %}
+                                        <th>{{i}}</th>
+                                    {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for row in tableData %}
+                                        <tr>
+                                            {% for col in row %}
+                                                <td>{{col}}</td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

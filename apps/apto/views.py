@@ -38,3 +38,19 @@ def crearRecibo(request):
         'empresas' : Empresa.objects.all()
     }
     return render(request, 'apto/crearRecibo.html', context)
+
+@login_required
+def vistaRecibo(request, id):
+    recibo = get_object_or_404(Recibo, id=id)
+    datosEstadiasPersonas = ObtenerDatosEstadiasPersonas(recibo)
+    estadiaData = ObtenerDatosTablaEstadiaPersona(recibo, datosEstadiasPersonas)
+    datosTabla = CalcularPagoRecibo(recibo, datosEstadiasPersonas)
+    context = {
+        'recibo': recibo,
+        'listaDias': estadiaData['listaDias'],
+        'estadiaPersonas': estadiaData['estadiaPersonas'],
+        'nombresPagadores': datosTabla['nombresPagadores'],
+        'tableData': datosTabla['tableData']
+    }
+    # print(estadiaData['estadiaPersonas'])
+    return render(request, 'apto/vistaRecibo.html', context)
