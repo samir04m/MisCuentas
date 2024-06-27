@@ -49,7 +49,7 @@ def vistaRecibo(request, id):
         'recibo': recibo,
         'listaDias': estadiaData['listaDias'],
         'estadiaPersonas': estadiaData['estadiaPersonas'],
-        'nombresPagadores': datosTabla['nombresPagadores'],
+        'listaPagadorRecibo': datosTabla['listaPagadorRecibo'],
         'tableData': datosTabla['tableData']
     }
     # print(estadiaData['estadiaPersonas'])

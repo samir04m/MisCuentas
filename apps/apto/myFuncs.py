@@ -46,8 +46,8 @@ def ObtenerDatosEstadiasPersonas(recibo:Recibo):
                             personasConConsumo.append(persona)
         datosEstadia.append(diaEstadiaPersona)
         fechaActual += timedelta(days=1)
-    for i in datosEstadia:
-        print(i.dia, i.listaPersonas)
+    # for i in datosEstadia:
+    #     print(i.dia, i.listaPersonas)
     # print('personasConConsumo', personasConConsumo)
 
 
@@ -97,33 +97,36 @@ def CalcularPagoRecibo(recibo:Recibo, datosEstadiasPersonas):
     for diaEstadiaPersona in datosEstadiasPersonas['listaDiaEstadiaPersona']:
         fila = [diaEstadiaPersona.dia.strftime('%Y-%m-%d')]
         for pagadorRecibo in listaPagadorRecibo:
-            nPersonas = 0
-            valorPagoDia = 0
+            diaPagador = DiaPagador(0,0)
             for persona in diaEstadiaPersona.listaPersonas:
                 if persona.pagador == pagadorRecibo.pagador:
-                    nPersonas += 1
-                    valorPagoDia += valorDia/len(diaEstadiaPersona.listaPersonas)
+                    diaPagador.nPersonas += 1
+                    diaPagador.valorPagoDia += valorDia/len(diaEstadiaPersona.listaPersonas)
 
-            fila.append("{} persona(s) - ${}".format(nPersonas, format(valorPagoDia, '.2f')))
-            pagadorRecibo.valorPago += valorPagoDia
+            fila.append(diaPagador)
+            pagadorRecibo.valorPago += diaPagador.valorPagoDia
         tableData.append(fila)
             
-    print('valorDia', valorDia)
-    for i in tableData:
-        print(i)
+    # print('valorDia', valorDia)
+    # for i in tableData:
+    #     print(i)
 
     suma = 0
     for pagadorRecibo in listaPagadorRecibo:
-        print(pagadorRecibo)
+        # print(pagadorRecibo)
         pagadorReciboExistente = PagadorRecibo.objects.filter(recibo=pagadorRecibo.recibo, pagador=pagadorRecibo.pagador).first()
-        # if pagadorReciboExistente:
-        #     pagadorReciboExistente.valorPago = pagadorRecibo.valorPago
-        #     pagadorReciboExistente.save()
-        # else:
-        #     pagadorRecibo.save()
+        valorPagoEntero = int(pagadorRecibo.valorPago)
+        if pagadorReciboExistente:
+            if pagadorReciboExistente.valorPago != valorPagoEntero:
+                print("Acxtualizaaaa", pagadorReciboExistente.valorPago, valorPagoEntero)
+                pagadorReciboExistente.valorPago = valorPagoEntero
+                pagadorReciboExistente.save()
+        else:
+            print("Creaaa")
+            pagadorRecibo.save()
         suma += pagadorRecibo.valorPago
     print('suma',suma)
     return {
-        'nombresPagadores': nombresPagadores,
+        'listaPagadorRecibo': listaPagadorRecibo,
         'tableData': tableData
     }

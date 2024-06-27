@@ -10,7 +10,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="text-center">Recibo de {{recibo.empresa.nombre}}</h5>
-                        <table class="table table-sm table-borderless">
+                        <table class="table table-sm table-borderless mb-0">
                             <tbody>
                                 <tr>
                                     <th>Periodo:</th>
@@ -39,6 +39,32 @@
             </div>
             <div class="col-lg-8 pb-4">
                 <div class="card">
+                    <div class="card-body">
+                        <h5 class="text-center">Información de pago por persona</h5>
+                        <table class="table table-sm table-bordered table-striped mb-0">
+                            <thead>
+                                <th>Responsable</th>
+                                <th>Pago correspondiente</th>
+                                <th>Opciones</th>
+                            </thead>
+                            <tbody>
+                                {% for pagadorRecibo in listaPagadorRecibo %}
+                                    <tr>   
+                                        <td>{{pagadorRecibo.pagador.user}}</td>                                 
+                                        <td>{{pagadorRecibo.valorPago|DineroSinDecimales}}</td>
+                                        <td>
+                                            <a href="" class="btn btn-sm btn-outline-primary">Crear prestamo</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 pb-4">
+                <div class="card">
                     <div class="card-body pb-1">
                         <h5 class="text-center">Estadias por persona</h5>
                         <div class="table-responsive">
@@ -64,24 +90,28 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped">
                                 <thead>
                                     <th>Dia</th>
-                                    {% for i in nombresPagadores %}
-                                        <th>{{i}}</th>
+                                    {% for pagadorRecibo in listaPagadorRecibo %}
+                                        <th>{{pagadorRecibo.pagador.user}}</th>
                                     {% endfor %}
                                 </thead>
                                 <tbody>
                                     {% for row in tableData %}
                                         <tr>
                                             {% for col in row %}
-                                                <td>{{col}}</td>
+                                                <td>
+                                                    {% if forloop.counter0 == 0 %}
+                                                        {{col}}
+                                                    {% else %}
+                                                        {{col.nPersonas}} <i class="fad fa-users"></i> - ${{col.valorPagoDia|ReducirDecimales:2}}
+                                                    {% endif %}
+                                                </td>
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}

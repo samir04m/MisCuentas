@@ -200,3 +200,11 @@ def pagoMultiple(pagoMultiple:bool) -> str:
 @register.filter
 def notificationColor(read:bool) -> str:
     return 'secondary' if read else 'primary'
+
+@register.filter
+def ReducirDecimales(valor, nDecimales):
+    return format(valor, '.{}f'.format(nDecimales))
+
+@register.filter
+def DineroSinDecimales(valor):
+    return dinero(int(valor))
