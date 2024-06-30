@@ -21,14 +21,14 @@ class PagadorAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('id','user',)
     resource_class = PagadorResource
 
-class PersonaResource(resources.ModelResource):
+class PersonaPagadorResource(resources.ModelResource):
     class Meta:
-        model = Persona
+        model = PersonaPagador
 
-class PersonaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class PersonaPagadorAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','nombre','pagador__user__username']
     list_display = ('id','nombre','pagador',)
-    resource_class = PersonaResource
+    resource_class = PersonaPagadorResource
 
 class EstadiaResource(resources.ModelResource):
     class Meta:
@@ -47,6 +47,15 @@ class EmpresaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     search_fields = ['id','nombre']
     list_display = ('id','nombre', )
     resource_class = EmpresaResource
+
+class PeriodoResource(resources.ModelResource):
+    class Meta:
+        model = Periodo
+
+class PeriodoAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    search_fields = ['id','nombre']
+    list_display = ('id','nombre',)
+    resource_class = PeriodoResource
 
 class ReciboResource(resources.ModelResource):
     class Meta:
@@ -68,8 +77,9 @@ class PagadorReciboAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 admin.site.register(Pagador, PagadorAdmin)
 admin.site.register(Apartamento, ApartamentoAdmin)
-admin.site.register(Persona, PersonaAdmin)
+admin.site.register(PersonaPagador, PersonaPagadorAdmin)
 admin.site.register(Estadia, EstadiaAdmin)
 admin.site.register(Empresa, EmpresaAdmin)
+admin.site.register(Periodo, PeriodoAdmin)
 admin.site.register(Recibo, ReciboAdmin)
 admin.site.register(PagadorRecibo, PagadorReciboAdmin)

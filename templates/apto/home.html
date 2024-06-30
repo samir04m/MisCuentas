@@ -7,8 +7,8 @@
 
     <div class="container pt-2">
         <div class="row">
-            <div class="col-lg-9">
-                <div class="my-3 text-center text-light animate__animated animate__fadeInDown">
+            <div class="col-lg-8">
+                <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
                     <b class="fs-22">Recibos</b>
                     <a href="{% url 'apto:crearRecibo' %}" class="btn btn-sm btn-outline-light">
                         Agregar  <i class="fal fa-plus"></i></a>
@@ -47,8 +47,17 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                
+            <div class="col-lg-4">
+                <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-22">Periodos</b>
+                </div>
+                <div class="list-group">
+                    {% for periodo in periodos %}
+                        <a href="{% url 'apto:recibosPeriodo' periodo.id %}" class="list-group-item list-group-item-action">
+                            Recibos periodo {{periodo}} <span class="badge badge-primary">{{periodo.recibo_set.count}}</span>
+                        </a>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

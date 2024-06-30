@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from .models import *
-# from apps.contabilidad.myFuncs import getFormatoDinero
+from apps.contabilidad.myFuncs import getFormatoDinero
 
 def GetAptoFromRequest(request) -> Apartamento:
     pagador = Pagador.objects.filter(user=request.user).first()
@@ -8,17 +8,20 @@ def GetAptoFromRequest(request) -> Apartamento:
         raise Exception('No es posible obtener el Apartamento desde el request')
     return pagador.apto
 
+def GetPeriodo(nombrePeriodo:str) -> Periodo:
+    periodo = Periodo.objects.filter(nombre=nombrePeriodo).first()
+    print('perdiodo', nombrePeriodo, periodo)
+    if not periodo:
+        periodo = Periodo(nombre=nombrePeriodo)
+        periodo.save()
+    print('perdiodo2', nombrePeriodo, periodo)
+    return periodo
+
 def CalcularNumeroDias(fechaInicioStr:str, fechaFinStr:str) -> int:
     fechaInicio = datetime.strptime(fechaInicioStr, "%Y/%m/%d")
     fechaFin = datetime.strptime(fechaFinStr, "%Y/%m/%d")
     diferencia = fechaFin - fechaInicio + timedelta(days=1)
     return abs(diferencia.days)
-
-# class EstadiaPersona:
-#     def __init__(self, persona:Persona, dia:datetime, estuvo:bool):
-#         self.persona = persona
-#         self.date = date
-#         self.estuvo = estuvo
 
 class DiaEstadiaPersona:
     def __init__(self, dia:datetime):
@@ -36,7 +39,7 @@ def ObtenerDatosEstadiasPersonas(recibo:Recibo):
         fechaActualStr = fechaActual.strftime('%Y/%m/%d')
         diaEstadiaPersona = DiaEstadiaPersona(fechaActual)
         for pagador in Pagador.objects.filter(apto=recibo.apto).all():
-            for persona in pagador.persona_set.all():        
+            for persona in pagador.personapagador_set.all():        
                 for estadia in Estadia.objects.filter(persona=persona):
                     fechaInicioDt = datetime.strptime(estadia.fechaInicio, '%Y/%m/%d')
                     fechaFinDt = datetime.strptime(estadia.fechaFin, '%Y/%m/%d')
@@ -46,10 +49,6 @@ def ObtenerDatosEstadiasPersonas(recibo:Recibo):
                             personasConConsumo.append(persona)
         datosEstadia.append(diaEstadiaPersona)
         fechaActual += timedelta(days=1)
-    # for i in datosEstadia:
-    #     print(i.dia, i.listaPersonas)
-    # print('personasConConsumo', personasConConsumo)
-
 
     return {
         'listaDiaEstadiaPersona':datosEstadia,
@@ -57,7 +56,6 @@ def ObtenerDatosEstadiasPersonas(recibo:Recibo):
     }
 
 def ObtenerDatosTablaEstadiaPersona(recibo:Recibo, datosEstadiasPersonas):
-    # datosEstadiasPersonas = ObtenerDatosEstadiasPersonas(recibo)
     estadiaPersonas = {}
     for persona in datosEstadiasPersonas['personasConConsumo']:
         estadiaPersonas[persona.nombre] = []
@@ -68,7 +66,6 @@ def ObtenerDatosTablaEstadiaPersona(recibo:Recibo, datosEstadiasPersonas):
         for persona in datosEstadiasPersonas['personasConConsumo']:
             estuvo = 1 if persona in diaEstadiaPersona.listaPersonas else 0
             estadiaPersonas[persona.nombre].append(estuvo)    
-    # print(estadiaPersonas)
 
     return {
         'listaDias': listaDias,
@@ -95,7 +92,7 @@ def CalcularPagoRecibo(recibo:Recibo, datosEstadiasPersonas):
 
     tableData = []
     for diaEstadiaPersona in datosEstadiasPersonas['listaDiaEstadiaPersona']:
-        fila = [diaEstadiaPersona.dia.strftime('%Y-%m-%d')]
+        row = [diaEstadiaPersona.dia.strftime('%Y-%m-%d')]
         for pagadorRecibo in listaPagadorRecibo:
             diaPagador = DiaPagador(0,0)
             for persona in diaEstadiaPersona.listaPersonas:
@@ -103,30 +100,74 @@ def CalcularPagoRecibo(recibo:Recibo, datosEstadiasPersonas):
                     diaPagador.nPersonas += 1
                     diaPagador.valorPagoDia += valorDia/len(diaEstadiaPersona.listaPersonas)
 
-            fila.append(diaPagador)
+            row.append(diaPagador)
             pagadorRecibo.valorPago += diaPagador.valorPagoDia
-        tableData.append(fila)
-            
-    # print('valorDia', valorDia)
-    # for i in tableData:
-    #     print(i)
+        tableData.append(row)
 
-    suma = 0
-    for pagadorRecibo in listaPagadorRecibo:
-        # print(pagadorRecibo)
-        pagadorReciboExistente = PagadorRecibo.objects.filter(recibo=pagadorRecibo.recibo, pagador=pagadorRecibo.pagador).first()
-        valorPagoEntero = int(pagadorRecibo.valorPago)
-        if pagadorReciboExistente:
-            if pagadorReciboExistente.valorPago != valorPagoEntero:
-                print("Acxtualizaaaa", pagadorReciboExistente.valorPago, valorPagoEntero)
-                pagadorReciboExistente.valorPago = valorPagoEntero
-                pagadorReciboExistente.save()
-        else:
-            print("Creaaa")
-            pagadorRecibo.save()
-        suma += pagadorRecibo.valorPago
-    print('suma',suma)
+    sumaPagosPagadores = 0
+    sumaPagosPagadores = round(sum([pagadorRecibo.valorPago for pagadorRecibo in listaPagadorRecibo]))
+    print('sumaPagosPagadores',sumaPagosPagadores)
+    if recibo.valorPago == sumaPagosPagadores:
+        for pagadorRecibo in listaPagadorRecibo:
+            pagadorReciboExistente = PagadorRecibo.objects.filter(recibo=pagadorRecibo.recibo, pagador=pagadorRecibo.pagador).first()
+            valorPagoEntero = round(pagadorRecibo.valorPago)
+            if pagadorReciboExistente:
+                if pagadorReciboExistente.valorPago != valorPagoEntero:
+                    print("Acxtualizaaaa", pagadorReciboExistente.valorPago, valorPagoEntero)
+                    pagadorReciboExistente.valorPago = valorPagoEntero
+                    pagadorReciboExistente.save()
+            else:
+                print("Creaaa")
+                pagadorRecibo.save()
+
     return {
         'listaPagadorRecibo': listaPagadorRecibo,
+        'tableData': tableData,
+        'sumaPagosPagadores': sumaPagosPagadores
+    }
+
+def SumarValor(dict, key, valorASumar):
+    if not key in dict:
+        dict[key] = 0
+    dict[key] += valorASumar
+
+def GetTableDataRecibosPeriodo(periodo:Periodo, apto:Apartamento):
+    pagadores = Pagador.objects.filter(apto=apto).all()
+    # totalxPagador = {}
+    tableData = []
+    for recibo in Recibo.objects.filter(periodo=periodo, apto=apto).all():
+        row = [recibo.empresa.nombre]
+        suma = 0
+        for pagador in pagadores:
+            pagadorRecibo = PagadorRecibo.objects.filter(pagador=pagador, recibo=recibo).first()
+            valorPago = pagadorRecibo.valorPago if pagadorRecibo else 0
+            
+            row.append(valorPago)
+            suma += valorPago
+
+            # if not pagador.user.username in totalxPagador:
+            #     totalxPagador[pagador.user.username] = 0
+            # totalxPagador[pagador.user.username] += valorPago
+            # SumarValor(totalxPagador, pagador.user.username, valorPago)
+
+        row.append(suma)
+        row.append(recibo.valorPago)
+        # SumarValor(totalxPagador, 'suma', suma)
+        # SumarValor(totalxPagador, 'valorRecibo', recibo.valorPago)
+        tableData.append(row)
+    # print(totalxPagador)
+    rowTotal = ['Total']
+    for col in range(1, len(tableData[0])):
+        sumaColumna = 0
+        for fil in range(0, len(tableData)):
+            sumaColumna += tableData[fil][col]
+            print(fil, col)
+        rowTotal.append(sumaColumna)
+    tableData.append(rowTotal)
+
+    return {
+        'pagadores': pagadores,
         'tableData': tableData
     }
+
+
