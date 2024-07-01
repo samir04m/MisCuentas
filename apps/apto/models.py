@@ -47,7 +47,7 @@ class Recibo(models.Model):
     empresa = models.ForeignKey(Empresa, null=False, blank=False, on_delete=models.CASCADE)
     apto = models.ForeignKey(Apartamento, null=False, blank=False, on_delete=models.CASCADE)
     class Meta:
-        ordering = ['-periodo']
+        ordering = ['-periodo__nombre']
     def __str__(self):
         return "{} [{}] ${}".format(self.empresa, self.periodo, self.valorPago)
 

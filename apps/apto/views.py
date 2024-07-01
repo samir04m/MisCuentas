@@ -2,7 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from apps.contabilidad.myFuncs import *
+from apps.usuario.userSettingFuncs import getUserSetting
 from .myFuncs import *
 from .models import *
 
@@ -55,22 +57,59 @@ def crearRecibo(request):
 @login_required
 def vistaRecibo(request, id):
     recibo = get_object_or_404(Recibo, id=id)
-    datosEstadiasPersonas = ObtenerDatosEstadiasPersonas(recibo)
-    estadiaData = ObtenerDatosTablaEstadiaPersona(recibo, datosEstadiasPersonas)
-    dataPago = CalcularPagoRecibo(recibo, datosEstadiasPersonas)
     context = {
-        'recibo': recibo,
-        'listaDias': estadiaData['listaDias'],
-        'estadiaPersonas': estadiaData['estadiaPersonas'],
-        'listaPagadorRecibo': dataPago['listaPagadorRecibo'],
-        'tableData': dataPago['tableData'],
-        'sumaPagosPagadores': dataPago['sumaPagosPagadores']
+        'recibo': recibo
     }
-    print('valores', type(recibo.valorPago), type(dataPago['sumaPagosPagadores']))
-    print('valores', recibo.valorPago, dataPago['sumaPagosPagadores'])
-    if recibo.valorPago != dataPago['sumaPagosPagadores']:
-        print('diferente')
+    if recibo.empresa != GetEmpresaInternet():
+        context['reciboValorPagoFijo'] = False
+        datosEstadiasPersonas = ObtenerDatosEstadiasPersonas(recibo)
+        estadiaData = ObtenerDatosTablaEstadiaPersona(recibo, datosEstadiasPersonas)
+        context['listaDias'] = estadiaData['listaDias']
+        context['estadiaPersonas'] = estadiaData['estadiaPersonas']
+
+        dataPago = CalcularPagoRecibo(recibo, datosEstadiasPersonas)
+        context['listaPagadorRecibo'] = dataPago['listaPagadorRecibo']
+        context['tableData'] = dataPago['tableData']
+        context['sumaPagosPagadores'] = dataPago['sumaPagosPagadores']
     else:
-        print('igual')
+        context['reciboValorPagoFijo'] = True
+        pagadoresRecibos = PagadorRecibo.objects.filter(recibo=recibo).all()
+        if not pagadoresRecibos:
+            print('no existen calculo apgadores refirecionadno')
+            return redirect('apto:addReciboInternet', recibo.periodo.id)
+        context['listaPagadorRecibo'] = pagadoresRecibos
 
     return render(request, 'apto/vistaRecibo.html', context)
+
+@login_required
+def addReciboInternet(request, periodoId):
+    periodo = get_object_or_404(Periodo, id=periodoId)
+    valorRecibo = getUserSetting('ValorReciboInternet', request.user)
+    if valorRecibo:
+        seCreoPagadorReciboNuevo = False
+        try:
+            with transaction.atomic():
+                pagadores = GetPagadores(request)
+                recibo = GetReciboInternetByPeriodo(request, periodo, valorRecibo)
+                for pagador in pagadores:
+                    pagadorReciboExiste = PagadorRecibo.objects.filter(pagador=pagador, recibo=recibo).first()
+                    if not pagadorReciboExiste:
+                        pagadorRecibo = PagadorRecibo(
+                            valorPago=round(valorRecibo/len(pagadores)),
+                            pagador=pagador,
+                            recibo=recibo
+                        )
+                        pagadorRecibo.save()
+                        seCreoPagadorReciboNuevo = True
+                if seCreoPagadorReciboNuevo:
+                    alert(request, 'El recibo del internet se agregó correctamente')
+                else:
+                    alert(request, 'La información de pago del recibo de internet anteriormente', 'i')
+        except Exception as ex:
+            printException(ex)
+            alert(request, 'Ocurrio un error al calcular la información de pago del recibo de internet', 'e')
+        
+    else:
+        alert(request, 'No se ha establecido el valor del recibo', 'e')
+    # return redirect('apto:recibosPeriodo', periodo.id)
+    return RedireccionarVistaAnterior(request)

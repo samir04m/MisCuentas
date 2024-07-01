@@ -41,7 +41,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="text-center">Información de pago por persona</h5>
-                        {% if sumaPagosPagadores != recibo.valorPago %}
+                        {% if not reciboValorPagoFijo and sumaPagosPagadores != recibo.valorPago %}
                             <div class="alert alert-danger" role="alert">
                                 <b>Error:</b> El cálculo no es válido debido a que la suma de los pagos por persona no es igual al valor del recibo.
                                 La sumatoria de los pagos es igual a {{sumaPagosPagadores|dinero}}.
@@ -50,18 +50,14 @@
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered table-striped mb-0">
                                 <thead>
-                                    <th>Responsable</th>
-                                    <th>Pago</th>
-                                    <th>Opciones</th>
+                                    <th>Persona</th>
+                                    <th>Valor a pagar</th>
                                 </thead>
                                 <tbody>
                                     {% for pagadorRecibo in listaPagadorRecibo %}
                                         <tr>   
                                             <td>{{pagadorRecibo.pagador.user}}</td>                                 
                                             <td>{{pagadorRecibo.valorPago|DineroSinDecimales}}</td>
-                                            <td>
-                                                <a href="" class="btn btn-sm btn-outline-primary">Crear prestamo</a>
-                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -70,6 +66,7 @@
                     </div>
                 </div>
             </div>
+            {% if not reciboValorPagoFijo %}
             <div class="col-12 pb-4">
                 <div class="card">
                     <div class="card-body pb-1">
@@ -128,6 +125,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
