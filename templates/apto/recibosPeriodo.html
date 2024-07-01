@@ -39,13 +39,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div class="list-group">
-                    <a href="{% url 'apto:addReciboInternet' periodo.id %}" class="list-group-item list-group-item-action">Agregar Recibo Internet</a>
-                    <a href="#" class="list-group-item list-group-item-action">A third link item</a>
-                    <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
+            {% if request.user.is_superuser %}
+                <div class="col-lg-3">
+                    <div class="list-group">
+                        <a href="{% url 'apto:addReciboInternet' periodo.id %}" class="list-group-item list-group-item-action">Agregar Recibo Internet</a>
+                        {% for pagador in pagadores %}
+                            {% if pagador.user != request.user %}
+                                <a href="{% url 'apto:crearPrestamoRecibosPeriodo' periodo.id pagador.user.id %}" class="list-group-item list-group-item-action">Crear prestamo para {{pagador.user.username}}</a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
     

@@ -1,10 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from apps.contabilidad.myFuncs import *
 from apps.usuario.userSettingFuncs import getUserSetting
+from apps.usuario.models import UserPersona
 from .myFuncs import *
 from .models import *
 
@@ -112,4 +114,33 @@ def addReciboInternet(request, periodoId):
     else:
         alert(request, 'No se ha establecido el valor del recibo', 'e')
     # return redirect('apto:recibosPeriodo', periodo.id)
+    return RedireccionarVistaAnterior(request)
+
+@login_required
+def crearPrestamoRecibosPeriodo(request, periodoId, userId):
+    periodo = get_object_or_404(Periodo, id=periodoId)
+    user = get_object_or_404(User, id=userId)
+    userPersona = UserPersona.objects.filter(admin=request.user, user=user).first()
+    if userPersona:
+        periodoPrestamoPersona = PeriodoPrestamoPersona.objects.filter(periodo=periodo, persona=userPersona.persona).first()
+        if not periodoPrestamoPersona:
+            try:
+                with transaction.atomic():
+                    infoPago = GetInfoPagosRecibosPeriodoUser(request, periodo, user)
+                    prestamo = crearPrestamo(request, 'yopresto', infoPago['valorTotalPago'], infoPago['mensaje'], None, userPersona.persona)
+                    periodoPrestamoPersona = PeriodoPrestamoPersona(
+                        periodo=periodo,
+                        prestamo=prestamo,
+                        persona=userPersona.persona
+                    )
+                    periodoPrestamoPersona.save()
+                    alert(request, 'Se ha creado el prestamo con '+user.username)
+            except Exception as ex:
+                printException(ex)
+                alert(request, 'Ocurrio un error el intentar crear el prestamo', 'e')
+        else:
+            return redirect('panel:vista_prestamo', periodoPrestamoPersona.prestamo.id)
+    else:
+        alert(request, 'No se encontro una persona relacionada a este usuario', 'e')
+    
     return RedireccionarVistaAnterior(request)

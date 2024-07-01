@@ -7,4 +7,5 @@ urlpatterns = [
     path('recibo/<int:id>/', vistaRecibo, name='vistaRecibo'),
     path('recibosPeriodo/<int:periodoId>/', recibosPeriodo, name='recibosPeriodo'),
     path('addReciboInternet/<int:periodoId>/', addReciboInternet, name='addReciboInternet'),
+    path('crearPrestamoRecibosPeriodo/<int:periodoId>/<int:userId>/', crearPrestamoRecibosPeriodo, name='crearPrestamoRecibosPeriodo'),
 ]

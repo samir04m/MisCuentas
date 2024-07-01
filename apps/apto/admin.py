@@ -75,6 +75,15 @@ class PagadorReciboAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('id','valorPago','pagador','recibo',)
     resource_class = PagadorReciboResource
 
+class PeriodoPrestamoPersonaResource(resources.ModelResource):
+    class Meta:
+        model = PeriodoPrestamoPersona
+
+class PeriodoPrestamoPersonaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    search_fields = ['id','periodo','prestamo','persona']
+    list_display = ('id','periodo','prestamo','persona',)
+    resource_class = PeriodoPrestamoPersonaResource
+
 admin.site.register(Pagador, PagadorAdmin)
 admin.site.register(Apartamento, ApartamentoAdmin)
 admin.site.register(PersonaPagador, PersonaPagadorAdmin)
@@ -83,3 +92,4 @@ admin.site.register(Empresa, EmpresaAdmin)
 admin.site.register(Periodo, PeriodoAdmin)
 admin.site.register(Recibo, ReciboAdmin)
 admin.site.register(PagadorRecibo, PagadorReciboAdmin)
+admin.site.register(PeriodoPrestamoPersona, PeriodoPrestamoPersonaAdmin)

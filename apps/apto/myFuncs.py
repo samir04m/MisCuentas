@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from .models import *
 from apps.contabilidad.myFuncs import getFormatoDinero, alert
@@ -187,4 +188,16 @@ def GetTableDataRecibosPeriodo(periodo:Periodo, apto:Apartamento):
         'tableData': tableData
     }
 
+def GetInfoPagosRecibosPeriodoUser(request, periodo:Periodo, user:User):
+    pagador = Pagador.objects.filter(user=user, apto=GetApto(request)).first()
+    pagadorRecibosDelPeriodo = pagador.pagadorrecibo_set.filter(recibo__periodo=periodo)
+    suma = 0
+    mensaje = "Pago recibos {}: ".format(periodo.nombre)
+    for pagadorRecibo in pagadorRecibosDelPeriodo:
+        suma += pagadorRecibo.valorPago
+        mensaje += "{} {}, ".format(pagadorRecibo.recibo.empresa.nombre, getFormatoDinero(pagadorRecibo.valorPago))
+    return {
+        'valorTotalPago': suma,
+        'mensaje': mensaje
+    }
 
