@@ -32,7 +32,7 @@
                                     Registrar pago <i class="fal fa-money-check-edit-alt"></i>
                                 </button>
                             {% endif %}
-                            <a href="{% url 'user:userNotificationView' 1 %}" class="btn btn-sm btn-outline-secondary m-1">
+                            <a href="{% url 'user:userNotificationView' 1 persona.id %}" class="btn btn-sm btn-outline-secondary m-1">
                                 {% if numeroNotificacionesNuevas %}
                                     <span class="badge badge-primary">{{numeroNotificacionesNuevas}}</span>
                                 {% endif %}

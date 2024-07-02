@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.core.paginator import Paginator
 from datetime import datetime
 from copy import deepcopy
 from enum import Enum
@@ -33,12 +34,13 @@ def switchUserSetting(request, key:str):
     return redirect(url_anterior)
 
 @login_required
-def userNotificationView(request, type:int):
+def userNotificationView(request, type:int, personaId:int):
     titles = ['Notificaciones', 'Pagos de prestamos']
-    if type == 0:
-        notifications = UserNotification.objects.filter(user=request.user).all()
-    else:
-        notifications = UserNotification.objects.filter(user=request.user, type=type).all()
+    notifications = UserNotification.objects.filter(user=request.user).all()
+    if type != 0:
+        notifications = notifications.filter(type=type).all()
+    if personaId != 0:
+        notifications = notifications.filter(persona__id=personaId).all()
 
     notificationsCopy = [(deepcopy(n)) for n in notifications]
     for n in notifications:
@@ -46,9 +48,13 @@ def userNotificationView(request, type:int):
             n.read = True
             n.save()
 
+    paginator = Paginator(notificationsCopy, 10)
+    page = request.GET.get('page')
+    paginatedNotifications = paginator.get_page(page)
+
     context = {
         "title": titles[type],
-        "notifications": notificationsCopy
+        "notifications": paginatedNotifications
     }
     return render(request, 'user/userNotificationView.html', context)
 
@@ -66,10 +72,11 @@ def getMetaAhorroMes(month:str, year:str, request) -> int:
         setUserSetting("MetaAhorroMes_{}_{}".format(month, year), metaAhorroMensual, request.user)
     return metaAhorro
 
-def createUserNotification(message:str, user:User, type:NotificationType=NotificationType.General):
+def createUserNotification(message:str, user:User, type:NotificationType, persona:Persona=None):
     userNotification = UserNotification(
         message = message,
         user = user,
+        persona = persona,
         date = datetime.now(),
         type=type.value
     )

@@ -26,6 +26,7 @@ class UserNotification(models.Model):
     date = models.DateTimeField()
     read = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, null=True, blank=True, on_delete=models.CASCADE)
     type = models.TextField(default=0) # 0-NoClasificado, 1-PagoPrestamo
     class Meta:
         ordering = ['-date']

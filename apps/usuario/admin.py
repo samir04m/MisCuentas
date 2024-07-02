@@ -27,8 +27,8 @@ class UserNotificationResource(resources.ModelResource):
         model = UserNotification
 
 class UserNotificationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    # search_fields = ['key']
-    list_display = ('id','message','user','date','read','type',)
+    search_fields = ['message']
+    list_display = ('id','message','user','persona','date','read','type',)
     resource_class = UserNotificationResource
 
 admin.site.register(UserSetting, UserSettingAdmin)

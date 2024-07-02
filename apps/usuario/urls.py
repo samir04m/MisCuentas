@@ -7,5 +7,5 @@ urlpatterns = [
 
     path('switchUserSetting/<str:key>/', switchUserSetting, name='switchUserSetting'),
 
-    path('notifications/<int:type>/', userNotificationView, name='userNotificationView'),
+    path('notifications/<int:type>/<int:personaId>/', userNotificationView, name='userNotificationView'),
 ]

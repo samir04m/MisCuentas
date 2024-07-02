@@ -390,7 +390,7 @@ def crearNotificacionPagoPrestamo(valorPago:int, cuenta:Cuenta, infoPago:str, pe
         Cuenta: {}. 
         Información: {}.'''.format(mensajePago, nombrePersonaInvolucrada, getFormatoDinero(valorPago), nombreCuenta, infoPago)
 
-        createUserNotification(message, user, NotificationType.PagoPrestamo)
+        createUserNotification(message, user, NotificationType.PagoPrestamo, persona)
 
 def crearNotificacionPagoPrestamoFromTransaccion(transaccion:Transaccion, infoPago:str, persona:Persona):
     if transaccion:

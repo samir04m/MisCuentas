@@ -38,7 +38,7 @@ def vista_persona(request, persona_id):
         "userpersona":userpersona,
         "solicitudesCreacion":SolicitudCreacionPrestamo.objects.filter(persona=persona, estado=0).all(),
         "solicitudesPago":SolicitudPagoPrestamo.objects.filter(persona=persona, estado=0).all(),
-        "numeroNotificacionesNuevas":UserNotification.objects.filter(user=request.user, type=NotificationType.PagoPrestamo.value, read=False).count()
+        "numeroNotificacionesNuevas":UserNotification.objects.filter(user=request.user, persona=persona, type=NotificationType.PagoPrestamo.value, read=False).count()
     }
     context.update(obtenerInfoPrestamosPersona(persona, userpersona))
     return render(request, 'contabilidad/persona/vista_persona.html', context)
