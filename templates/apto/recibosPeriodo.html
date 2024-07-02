@@ -7,7 +7,7 @@
 
     <div class="container pt-2">
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-9 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="text-center">Recibos periodo {{periodo.nombre}}</h4>
@@ -16,9 +16,11 @@
                                 <thead class="table-primary">
                                     <th>Servicio</th>
                                     {% for pagador in pagadores %}
-                                        <th>{{pagador.user.username}}</th>
+                                        <th>{{pagador.user.username|capfirst}}</th>
                                     {% endfor %}
+                                    {% if request.user.is_superuser %}
                                     <th>Sumatoria</th>
+                                    {% endif %}
                                     <th>Valor Recibo</th>
                                 </thead>
                                 <tbody>
@@ -27,7 +29,9 @@
                                             {% for item in row %}
                                                 {% if forloop.counter0 == 0 %}
                                                     <td>{{item}}</td>
-                                                {% else %}    
+                                                {% elif forloop.counter0 == row|length|add:"-2" and not request.user.is_superuser %}
+                                                    
+                                                {% else %}
                                                     <td>{{item|dinero}}</td>
                                                 {% endif %}
                                             {% endfor %}
@@ -45,7 +49,7 @@
                         <a href="{% url 'apto:addReciboInternet' periodo.id %}" class="list-group-item list-group-item-action">Agregar Recibo Internet</a>
                         {% for pagador in pagadores %}
                             {% if pagador.user != request.user %}
-                                <a href="{% url 'apto:crearPrestamoRecibosPeriodo' periodo.id pagador.user.id %}" class="list-group-item list-group-item-action">Crear prestamo para {{pagador.user.username}}</a>
+                                <a href="{% url 'apto:crearPrestamoRecibosPeriodo' periodo.id pagador.user.id %}" class="list-group-item list-group-item-action">Crear prestamo para {{pagador.user.username|capfirst}}</a>
                             {% endif %}
                         {% endfor %}
                         

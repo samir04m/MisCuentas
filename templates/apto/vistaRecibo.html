@@ -56,7 +56,7 @@
                                 <tbody>
                                     {% for pagadorRecibo in listaPagadorRecibo %}
                                         <tr>   
-                                            <td>{{pagadorRecibo.pagador.user}}</td>                                 
+                                            <td>{{pagadorRecibo.pagador.user|capfirst}}</td>                                 
                                             <td>{{pagadorRecibo.valorPago|DineroSinDecimales}}</td>
                                         </tr>
                                     {% endfor %}
@@ -82,7 +82,7 @@
                                 <tbody>
                                     {% for key, value in estadiaPersonas.items %}
                                         <tr>
-                                            <td>{{key}}</td>
+                                            <th>{{key}}</th>
                                             {% for i in value %}
                                                 <td class="{% if i == 1 %}table-primary{% endif %}"></td>
                                             {% endfor %}
@@ -102,7 +102,7 @@
                                 <thead>
                                     <th>Dia</th>
                                     {% for pagadorRecibo in listaPagadorRecibo %}
-                                        <th>{{pagadorRecibo.pagador.user}}</th>
+                                        <th>{{pagadorRecibo.pagador.user|capfirst}}</th>
                                     {% endfor %}
                                 </thead>
                                 <tbody>

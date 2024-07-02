@@ -128,7 +128,7 @@ def getHeightBarChart(listTagData:List[TagData]):
 
 @register.filter
 def dinero(cantidad:int, mostarSigno=False):
-    strCantidad = "$ {}".format(puntomil(cantidad))
+    strCantidad = "${}".format(puntomil(cantidad))
     signo = ""
     if mostarSigno:
         if cantidad > 0: signo = '+ '
