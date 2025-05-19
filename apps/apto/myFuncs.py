@@ -164,14 +164,11 @@ def GetTableDataRecibosPeriodo(periodo:Periodo, apto:Apartamento):
     tableData = []
     for recibo in Recibo.objects.filter(periodo=periodo, apto=apto).all():
         row = [recibo.empresa.nombre]
-        suma = 0
         for pagador in pagadores:
             pagadorRecibo = PagadorRecibo.objects.filter(pagador=pagador, recibo=recibo).first()
             valorPago = pagadorRecibo.valorPago if pagadorRecibo else 0
             
             row.append(valorPago)
-            suma += valorPago
-        row.append(suma)
         row.append(recibo.valorPago)
         tableData.append(row)
 

@@ -18,9 +18,6 @@
                                     {% for pagador in pagadores %}
                                         <th>{{pagador.user.username|capfirst}}</th>
                                     {% endfor %}
-                                    {% if request.user.is_superuser %}
-                                    <th>Sumatoria</th>
-                                    {% endif %}
                                     <th>Valor Recibo</th>
                                 </thead>
                                 <tbody>
@@ -29,8 +26,6 @@
                                             {% for item in row %}
                                                 {% if forloop.counter0 == 0 %}
                                                     <td>{{item}}</td>
-                                                {% elif forloop.counter0 == row|length|add:"-2" and not request.user.is_superuser %}
-                                                    
                                                 {% else %}
                                                     <td>{{item|dinero}}</td>
                                                 {% endif %}
