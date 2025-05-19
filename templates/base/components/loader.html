@@ -1,0 +1,48 @@
+<div id="global-loader" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+">
+    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+        <span class="visually-hidden"></span>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('pageshow', function () {
+        const loader = document.getElementById('global-loader');
+        if (loader) loader.style.display = 'none';
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-loading]').forEach(button => {
+            button.addEventListener('click', function (e) {
+                const loader = document.getElementById('global-loader');
+
+                // Caso 1: El botón está dentro de un formulario Y es tipo submit
+                const form = button.closest('form');
+                const isSubmit = button.type === 'submit';
+
+                if (form && isSubmit) {
+                    // Validar usando checkValidity
+                    if (form.checkValidity()) {
+                        // Permitir el envío y mostrar el loader
+                        if (loader) loader.style.display = 'flex';
+                    } else {
+                        // Evita el envío y muestra los errores del navegador
+                        e.preventDefault();
+                        form.reportValidity();
+                    }
+                } else {
+                    // Caso 2: No es botón submit -> mostrar loader directamente
+                    if (loader) loader.style.display = 'flex';
+                }
+            });
+        });
+    });
+</script>

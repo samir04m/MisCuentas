@@ -26,7 +26,7 @@
                             <div class="col-sm-12 col-lg-6 my-2">
                                 <div class="card clearfix bg-white animate__animated animate__zoomIn" >
                                     <div class="card-body py-2">
-                                        <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
+                                        <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18" data-loading>{{c.nombre}}</a></b> <br>
                                         {% if mostrarSaldoCuentas %}
                                             Saldo $ {{c.saldo|puntomil}}
                                         {% endif %}
@@ -88,12 +88,11 @@
                             <div class="col-sm-12 col-lg-6 py-2">
                                 <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
                                     <div class="card-body p-2 pl-3">
-                                        <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
+                                        <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20" data-loading>
                                             <i class="fas fa-user-circle"></i> {{p.nombre}}
                                         </a>
                                         <div class="float-right">
-                                            <a href="{% url 'panel:crear_prestamo' p.id %}"
-                                                class="btn btn-sm btn-primary rounded-pill">Prestar</a>
+                                            <a href="{% url 'panel:crear_prestamo' p.id %}" class="btn btn-sm btn-primary rounded-pill" data-loading>Prestar</a>
                                         </div>
                                     </div>
                                 </div>

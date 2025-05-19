@@ -24,7 +24,7 @@
                                     {{ userpersona.admin }}
                                 {% endif %}
                             </div>
-                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-1">
+                            <a href="{% url 'panel:crear_prestamo' persona.id %}" class="btn btn-sm btn-outline-primary m-1" data-loading>
                                 Crear prestamo <i class="fal fa-plus"></i>
                             </a>
                             {% if yoDebo or meDeben %}
@@ -32,7 +32,7 @@
                                     Registrar pago <i class="fal fa-money-check-edit-alt"></i>
                                 </button>
                             {% endif %}
-                            <a href="{% url 'user:userNotificationView' 1 persona.id %}" class="btn btn-sm btn-outline-secondary m-1">
+                            <a href="{% url 'user:userNotificationView' 1 persona.id %}" class="btn btn-sm btn-outline-secondary m-1" data-loading>
                                 {% if numeroNotificacionesNuevas %}
                                     <span class="badge badge-primary">{{numeroNotificacionesNuevas}}</span>
                                 {% endif %}
@@ -90,10 +90,10 @@
                                                 <span class="d-none">{{p.info}}</span>
                                             </td>
                                             <td>
-                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-info">
+                                                <a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-info" data-loading>
                                                     <i class="fal fa-external-link"></i>
                                                 </a>
-                                                <a href="{% url 'panel:pagar_prestamo' p.id %}" class="btn btn-outline-primary btn-sm">
+                                                <a href="{% url 'panel:pagar_prestamo' p.id %}" class="btn btn-outline-primary btn-sm" data-loading>
                                                     <i class="fal fa-envelope-open-dollar"></i>
                                                 </a>
                                             </td>

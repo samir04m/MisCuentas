@@ -10,7 +10,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
                     <b class="fs-22">Recibos</b>
-                    <a href="{% url 'apto:crearRecibo' %}" class="btn btn-sm btn-outline-light">
+                    <a href="{% url 'apto:crearRecibo' %}" class="btn btn-sm btn-outline-light" data-loading>
                         Agregar  <i class="fal fa-plus"></i></a>
                 </div>
                 <div class="card">
@@ -32,7 +32,7 @@
                                             <td>{{item.periodo}}</td>
                                             <td>{{item.valorPago|dinero}}</td>
                                             <td>
-                                                <a href="{% url 'apto:vistaRecibo' item.id %}" class="btn btn-sm btn-outline-primary">Consultar</a>
+                                                <a href="{% url 'apto:vistaRecibo' item.id %}" class="btn btn-sm btn-outline-primary" data-loading>Consultar</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
