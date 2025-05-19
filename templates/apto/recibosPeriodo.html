@@ -7,7 +7,7 @@
 
     <div class="container pt-2">
         <div class="row">
-            <div class="col-lg-9 mb-4">
+            <div class="col-lg-8 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="text-center">Recibos periodo {{periodo.nombre}}</h4>
@@ -39,9 +39,9 @@
                 </div>
             </div>
             {% if request.user.is_superuser %}
-                <div class="col-lg-3">
+                <div class="col-lg-4">
                     <div class="list-group">
-                        <a href="{% url 'apto:addReciboInternet' periodo.id %}" class="list-group-item list-group-item-action">Agregar Recibo Internet</a>
+                        <a href="{% url 'apto:addReciboInternet' periodo.id %}" class="list-group-item list-group-item-action">Agregar recibo internet - {{valorInternet|dinero}}</a>
                         {% for pagador in pagadores %}
                             {% if pagador.user != request.user %}
                                 <a href="{% url 'apto:crearPrestamoRecibosPeriodo' periodo.id pagador.user.id %}" class="list-group-item list-group-item-action">Crear prestamo para {{pagador.user.username|capfirst}}</a>

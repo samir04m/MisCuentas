@@ -53,7 +53,7 @@
                 </div>
                 <div class="list-group">
                     {% for periodo in periodos %}
-                        <a href="{% url 'apto:recibosPeriodo' periodo.id %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'apto:recibosPeriodo' periodo.id %}" class="list-group-item list-group-item-action" data-loading>
                             Recibos periodo {{periodo}} <span class="badge badge-primary">{{periodo.recibo_set.count}}</span>
                         </a>
                     {% endfor %}

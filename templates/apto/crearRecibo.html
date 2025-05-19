@@ -58,5 +58,17 @@
             decimalCharacter: ",",
             currencySymbol : ''
         });
+
+        $(function () {
+            $('#periodo').datetimepicker({
+                format: 'YYYY-MM'
+            });
+            $('#fechaInicio').datetimepicker({
+                format: 'YYYY/MM/DD'
+            });
+            $('#fechaFin').datetimepicker({
+                format: 'YYYY/MM/DD'
+            });
+        });
     </script>
 {% endblock %}

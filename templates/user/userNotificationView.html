@@ -33,23 +33,59 @@
                     </h2>
                 {% endif %}
 
-                <div class="pagination">
-                    <span class="step-links">
+                <nav aria-label="Paginación de notificaciones">
+                    <ul class="pagination justify-content-center">
+
                         {% if notifications.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ notifications.previous_page_number }}">previous</a>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="Primera página">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ notifications.previous_page_number }}" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;&laquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
                         {% endif %}
-                
-                        <span class="current">
-                            Page {{ notifications.number }} of {{ notifications.paginator.num_pages }}.
-                        </span>
-                
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Página {{ notifications.number }} de {{ notifications.paginator.num_pages }}
+                            </span>
+                        </li>
+
                         {% if notifications.has_next %}
-                            <a href="?page={{ notifications.next_page_number }}">next</a>
-                            <a href="?page={{ notifications.paginator.num_pages }}">last &raquo;</a>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ notifications.next_page_number }}" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ notifications.paginator.num_pages }}" aria-label="Última página">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;&raquo;</span>
+                        </li>
                         {% endif %}
-                    </span>
-                </div>
+
+                    </ul>
+                </nav>
+
+
             </div>
             <div class="col-lg-3">
                 {% include 'base/panel_enlaces.html' %}

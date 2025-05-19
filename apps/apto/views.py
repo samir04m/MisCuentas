@@ -27,7 +27,8 @@ def recibosPeriodo(request, periodoId):
     context = {
         'periodo': periodo,
         'pagadores': tableData['pagadores'],
-        'tableData': tableData['tableData']
+        'tableData': tableData['tableData'],
+        'valorInternet':getUserSetting('ValorReciboInternet', request.user)
     }
     return render(request, 'apto/recibosPeriodo.html', context)
 
